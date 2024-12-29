@@ -17,6 +17,5 @@ namespace NEXUS_API.Models
         public DateTime SurveyDate { get; set; }
         public string SurveyStatus { get; set; } //not yet, invalid, valid
         public string SurveyDescribe { get; set; }
-
     }
 }
