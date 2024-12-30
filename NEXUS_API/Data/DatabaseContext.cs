@@ -5,6 +5,7 @@ namespace NEXUS_API.Data
 {
     public class DatabaseContext:DbContext
     {
+        //huy ne
         public DatabaseContext(DbContextOptions options) : base(options) { }
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
