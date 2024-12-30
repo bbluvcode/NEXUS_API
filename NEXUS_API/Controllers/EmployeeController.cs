@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace NEXUS_API.Controllers
 {
+    //man
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeeController : Controller
