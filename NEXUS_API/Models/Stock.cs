@@ -9,9 +9,6 @@ namespace NEXUS_API.Models
         public int StockId { get; set; } 
 
         [Required]
-        public int RegionId { get; set; } 
-
-        [Required]
         [MaxLength(100)]
         public string StockName { get; set; } 
 
@@ -29,6 +26,14 @@ namespace NEXUS_API.Models
 
         [Required]
         [MaxLength(30)]
-        public string Fax { get; set; } 
+        public string Fax { get; set; }
+
+        //Relationship
+        [Required]
+        public int RetainShopId { get; set; }
+        public RetainShop? RetainShop { get; set; }
+        public ICollection<Equipment>? Equipments { get; set; }
+        public ICollection<InStockOrder>? InStockOrders { get; set; }
+        public ICollection<OutStockOrder>? OutStockOrders { get; set; }
     }
 }

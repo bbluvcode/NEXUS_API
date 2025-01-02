@@ -18,7 +18,7 @@ namespace NEXUS_API.Models
         public string? Gender { get; set; }
 
         [Required]
-        public DateTime? BirthDate { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -41,5 +41,11 @@ namespace NEXUS_API.Models
 
         public string? AccountId { get; set; }
         public string? Password { get; set; }
+
+        //Relationship
+        public ICollection<CustomerRequest>? CustomerRequests { get; set; }
+        public ICollection<ServiceOrder>? ServiceOrders { get; set; }
+        public ICollection<ServiceBill>? ServiceBills { get; set; }
+        public ICollection<FeedBack>? FeedBacks { get; set; }
     }
 }

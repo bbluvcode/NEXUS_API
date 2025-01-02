@@ -1,13 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NEXUS_API.Models;
-using NEXUS_API.Models.Man;
-
 namespace NEXUS_API.Data
 {
     public class DatabaseContext:DbContext
     {
         public DatabaseContext(DbContextOptions options) : base(options) { }     
-        public DbSet<Account> Accounts { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiarys { get; set; }
         public DbSet<Customer> Customers { get; set; }

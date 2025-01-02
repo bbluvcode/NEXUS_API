@@ -23,5 +23,9 @@ namespace NEXUS_API.Models
 
         [Required]
         public bool isUsing { get; set; }
+
+        //Relationship
+        public ICollection<PlanFee>? PlanFees { get; set; }
+        public ICollection<Connection>? Connections { get; set; }
     }
 }

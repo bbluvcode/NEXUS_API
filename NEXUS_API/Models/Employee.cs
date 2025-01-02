@@ -7,8 +7,7 @@ namespace NEXUS_API.Models
     {
         [Key]
         public int EmployeeId { get; set; } // Primary key
-        [Required]
-        public int RetainShopId { get; set; } //retain shop ID
+     
         [Required(ErrorMessage = "Employee code is required.")]
         [StringLength(5, ErrorMessage = "Employee code cannot exceed 5 characters.")]
         public string EmployeeCode { get; set; } // Employee token (varchar(5))
@@ -22,7 +21,7 @@ namespace NEXUS_API.Models
         public string Gender { get; set; } // Employee’s gender (varchar(7))
 
         [Required(ErrorMessage = "Birthdate is required.")]
-        public DateTime Birthdate { get; set; } // Employee’s birthdate
+        public DateTime DateOfBirth { get; set; } // Employee’s birthdate
 
         [Required(ErrorMessage = "Address is required.")]
         [StringLength(200, ErrorMessage = "Address cannot exceed 200 characters.")]
@@ -46,13 +45,8 @@ namespace NEXUS_API.Models
         [StringLength(20, ErrorMessage = "Password cannot exceed 20 characters.")]
         public string Password { get; set; } // Password to login system (varchar(20))
 
-        [Required(ErrorMessage = "Role is required.")]
-        [StringLength(20, ErrorMessage = "Role cannot exceed 20 characters.")]
-        public string Role { get; set; } // Role of employee (varchar(20))
-
         [Required(ErrorMessage = "Status is required.")]
         public bool Status { get; set; } // Status work of employee (bool)
-
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpried { get; set; }
         public int FailedLoginAttempts { get; set; } = 0;
@@ -61,5 +55,15 @@ namespace NEXUS_API.Models
         public DateTime? ExpiredCode { get; set; }
         public int SendCodeAttempts { get; set; } = 0;
         public DateTime? LastSendCodeDate { get; set; }
+
+        //Relationship
+        [Required]
+        public int EmployeeRoleId { get; set; }
+        public EmployeeRole? EmployeeRole { get; set; }
+        [Required]
+        public int RetainShopId { get; set; }
+        public RetainShop? RetainShop { get; set; }
+        public ICollection<InStockOrder>? InStockOrders { get; set; }
+        public ICollection<OutStockOrder>? OutStockOrders { get; set; }
     }
 }

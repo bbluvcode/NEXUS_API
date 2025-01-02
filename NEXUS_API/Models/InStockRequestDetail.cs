@@ -15,5 +15,7 @@ namespace NEXUS_API.Models
 
         [Required]
         public int Quantity { get; set; }
+
+        //Relationship
     }
 }

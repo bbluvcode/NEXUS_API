@@ -22,4 +22,6 @@ public class News
 
     [Required(ErrorMessage = "Status is required")]
     public bool Status { get; set; } // News status
+
+    //Relationship
 }

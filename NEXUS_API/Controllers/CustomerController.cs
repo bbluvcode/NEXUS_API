@@ -73,7 +73,7 @@ namespace NEXUS_API.Controllers
 
                 customer.FullName = customerUpdate.FullName;
                 customer.Gender = customerUpdate.Gender;
-                customer.BirthDate = customerUpdate.BirthDate;
+                customer.DateOfBirth = customerUpdate.DateOfBirth;
                 customer.Address = customerUpdate.Address;
                 customer.Email = customerUpdate.Email;
                 customer.PhoneNumber = customerUpdate.PhoneNumber;

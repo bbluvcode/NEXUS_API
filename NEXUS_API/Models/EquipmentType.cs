@@ -12,6 +12,8 @@ namespace NEXUS_API.Models
         public string TypeName { get; set; }
         [Required]
         public string Provider { get; set; }
+
+        //Relationship
         public ICollection<Equipment>? Equipments { get; set; }
     }
 }

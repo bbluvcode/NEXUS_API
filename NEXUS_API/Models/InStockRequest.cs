@@ -16,5 +16,7 @@ namespace NEXUS_API.Models
 
         [Required]
         public int TotalNumber { get; set; }
+
+        //Relationship
     }
 }

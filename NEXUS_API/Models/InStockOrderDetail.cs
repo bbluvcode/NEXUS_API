@@ -19,6 +19,8 @@ namespace NEXUS_API.Models
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
-        public decimal Price { get; set; } 
+        public decimal Price { get; set; }
+
+        //Relationship
     }
 }

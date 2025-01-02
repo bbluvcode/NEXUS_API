@@ -26,5 +26,9 @@ namespace NEXUS_API.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal LocalCallCharge { get; set; }
 
+        //Relationship
+        [Required]
+        public int PlanId { get; set; }
+        public Plan? Plan { get; set; }
     }
 }

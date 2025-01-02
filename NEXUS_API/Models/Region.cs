@@ -15,5 +15,9 @@ namespace NEXUS_API.Models
         [Required(ErrorMessage = "Region name is required.")]
         [StringLength(20, ErrorMessage = "Region name cannot exceed 20 characters.")]
         public string RegionName { get; set; } // Name of region (varchar(20))
+
+        //Relationship
+        public ICollection<RetainShop>? RetainShops { get; set; }
+        public ICollection<Employee>? Employees { get; set; }
     }
 }

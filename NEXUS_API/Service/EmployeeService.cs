@@ -39,7 +39,7 @@ namespace NEXUS_API.Service
             var existingEmployee = _dbContext.Employees.FirstOrDefault(e => e.EmployeeId == employee.EmployeeId);
             if (existingEmployee != null)
             {
-                existingEmployee.Role = employee.Role;
+                existingEmployee.EmployeeRoleId = employee.EmployeeRoleId;
                 await _dbContext.SaveChangesAsync();
             }
         }

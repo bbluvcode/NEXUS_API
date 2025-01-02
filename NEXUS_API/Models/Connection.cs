@@ -6,12 +6,21 @@ namespace NEXUS_API.Models
     {
         [Key]
         public string ConnectionId { get; set; }
-        [Required]
-        public int OrderId { get; set; }
-        public int EquipmentId { get; set; }
         public int NumberOfConnections { get; set; }
         public DateTime DateCreate { get; set; }
         public bool IsActive { get; set; }
         public string? Description { get; set; }
+
+        //Relationship
+        [Required]
+        public int OrderId { get; set; }
+        public ServiceOrder? Order { get; set; }
+        [Required]
+        public int PlanId { get; set; }
+        public Plan? Plan { get; set; }
+        [Required]
+        public int? EquipmentId { get; set; }
+        public Equipment? Equipment { get; set; }
+        public ICollection<ConnectionDiary>? ConnectionDiaries { get; set; }
     }
 }

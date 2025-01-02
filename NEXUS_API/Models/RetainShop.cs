@@ -24,5 +24,11 @@ namespace NEXUS_API.Models
         [StringLength(15)]
         public string Fax { get; set; }
 
+        //Relationship
+        [Required]
+        public int RegionId { get; set; }
+        public Region? Region { get; set; }
+        public ICollection<Employee>? Employees { get; set; }
+        public Stock? Stock { get; set; }
     }
 }

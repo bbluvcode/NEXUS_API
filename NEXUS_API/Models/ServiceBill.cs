@@ -8,19 +8,22 @@ namespace NEXUS_API.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BillId { get; set; }
-        public string ConnectionId { get; set; }
         [Required]
         [StringLength(15)]
         public string Payer { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
-        public DateTime PayDate { get; set; }
+        public DateTime? PayDate { get; set; }
         [Column(TypeName = "decimal(10,2)")]
         public decimal Tax { get; set; }
         [Column(TypeName = "decimal(10,2)")]
         public decimal Total { get; set; }
         public bool IsPay { get; set; }
 
+        //Relationship
+        [Required]
+        public int OrderId { get; set; }
+        public ServiceOrder? ServiceOrder { get; set; }
     }
 }

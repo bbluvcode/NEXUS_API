@@ -45,6 +45,9 @@ namespace NEXUS_API.Models
         public string CurrencyUnit { get; set; } 
 
         [Required]
-        public bool isPay { get; set; } 
+        public bool isPay { get; set; }
+
+        //Relationship
+
     }
 }
