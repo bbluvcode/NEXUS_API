@@ -3,11 +3,11 @@
 public class FeedBack
 {
     [Key]
-    public int FBID { get; set; }
+    public int FeedBackId { get; set; }
 
     [Required(ErrorMessage = "Customer ID is required")]
     [StringLength(50, ErrorMessage = "Customer ID cannot be longer than 50 characters")]
-    public string CusID { get; set; } // Foreign Key to Customer
+    public string CustomerId { get; set; } // Foreign Key to Customer
 
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email format")]

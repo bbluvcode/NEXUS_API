@@ -6,10 +6,10 @@ namespace NEXUS_API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int RSId { get; set; }
+        public int RetainShopId { get; set; }
         [Required]
         [StringLength(15)]
-        public string RSName { get; set; }
+        public string RetainShopName { get; set; }
         [Required]
         [StringLength(50)]
         public string Address { get; set; }

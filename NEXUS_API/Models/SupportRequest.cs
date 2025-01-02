@@ -3,11 +3,11 @@
 public class SupportRequest
 {
     [Key]
-    public int SRID { get; set; }
+    public int SupportRequestId { get; set; }
 
     [Required(ErrorMessage = "Customer ID is required")]
     [StringLength(50, ErrorMessage = "Customer ID cannot be longer than 50 characters")]
-    public string CusID { get; set; } // Foreign Key to Customer
+    public int CustomerID { get; set; } // Foreign Key to Customer
 
     [Required(ErrorMessage = "Phone number is required")]
     [Phone(ErrorMessage = "Invalid phone number format")]

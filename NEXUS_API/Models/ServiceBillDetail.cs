@@ -7,7 +7,8 @@ namespace NEXUS_API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int BDId { get; set; }
+        public int BillDetailId { get; set; }
+        public int BillId { get; set; }
         [Column(TypeName = "decimal(10,2)")]
         public decimal Deposit { get; set; }
         [Column(TypeName = "decimal(10,2)")]

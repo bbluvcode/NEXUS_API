@@ -6,10 +6,10 @@ namespace NEXUS_API.Models
     public class InStockRequest
     {
         [Key]
-        public int ISRID { get; set; } 
+        public int InStockRequestId { get; set; } 
 
         [Required]
-        public int EmpID { get; set; } 
+        public int EmployeeId { get; set; } 
 
         [Required]
         public DateTime CreateDate { get; set; } 

@@ -7,13 +7,14 @@ namespace NEXUS_API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PlanID { get; set; }
+        public int PlanId { get; set; }
 
         [Required]
         [StringLength(50)]
         public string PlanName { get; set; }
 
         [Required]
+        [Column(TypeName = "decimal(10,2)")]
         public decimal SecurityDeposit { get; set; } 
 
         [Required]

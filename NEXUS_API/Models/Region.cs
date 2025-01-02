@@ -6,7 +6,7 @@ namespace NEXUS_API.Models
     public class Region
     {
         [Key]
-        public int RegionID { get; set; } // Primary key, Region ID
+        public int RegionId { get; set; } // Primary key, Region ID
 
         [Required(ErrorMessage = "Region code is required.")]
         [StringLength(20, ErrorMessage = "Region code cannot exceed 20 characters.")]

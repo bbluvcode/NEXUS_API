@@ -53,12 +53,12 @@ namespace NEXUS_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCustomer(string id, [FromBody] Customer customerUpdate)
+        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] Customer customerUpdate)
         {
             object response = null;
             try
             {
-                var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustID == id);
+                var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
                 if (customer == null)
                 {
                     response = new ApiResponse(StatusCodes.Status404NotFound, "customer not found", null);
@@ -73,10 +73,10 @@ namespace NEXUS_API.Controllers
 
                 customer.FullName = customerUpdate.FullName;
                 customer.Gender = customerUpdate.Gender;
-                customer.Birthdate = customerUpdate.Birthdate;
+                customer.BirthDate = customerUpdate.BirthDate;
                 customer.Address = customerUpdate.Address;
                 customer.Email = customerUpdate.Email;
-                customer.Phone = customerUpdate.Phone;
+                customer.PhoneNumber = customerUpdate.PhoneNumber;
                 customer.IdentificationNo = customerUpdate.IdentificationNo;
                 customer.Image = customerUpdate.Image;
 
@@ -92,12 +92,12 @@ namespace NEXUS_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer(string id)
+        public async Task<IActionResult> DeleteCustomer(int id)
         {
             object response = null;
             try
             {
-                var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustID == id);
+                var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
                 if (customer == null)
                 {
                     response = new ApiResponse(StatusCodes.Status404NotFound, "customer not found", null);

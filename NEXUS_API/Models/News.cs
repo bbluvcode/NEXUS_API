@@ -11,7 +11,7 @@ public class News
 
     [Required(ErrorMessage = "Employee ID is required")]
     [StringLength(50, ErrorMessage = "Employee ID cannot be longer than 50 characters")]
-    public string EmpID { get; set; } // Foreign Key to Employee
+    public int EmployeeId { get; set; } // Foreign Key to Employee
 
     [Required(ErrorMessage = "Content is required")]
     [StringLength(1000, ErrorMessage = "Content cannot be longer than 1000 characters")]

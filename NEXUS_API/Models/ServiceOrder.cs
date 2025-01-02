@@ -8,8 +8,8 @@ namespace NEXUS_API.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderId { get; set; }
-        public int AccID { get; set; }
-        public int PFID { get; set; }
+        public int CustomerId { get; set; }  //FK
+        public int PlanFeeId { get; set; }
         public DateTime DateCreate { get; set; }
         [Column(TypeName =("decimal(10,2)"))]
         public decimal Deposit { get; set; }

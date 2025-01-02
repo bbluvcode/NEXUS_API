@@ -6,12 +6,12 @@ namespace NEXUS_API.Models
     public class Employee
     {
         [Key]
-        public int EmpID { get; set; } // Primary key
+        public int EmployeeId { get; set; } // Primary key
         [Required]
-        public int RSID { get; set; } //retain shop ID
+        public int RetainShopId { get; set; } //retain shop ID
         [Required(ErrorMessage = "Employee code is required.")]
         [StringLength(5, ErrorMessage = "Employee code cannot exceed 5 characters.")]
-        public string EmpCode { get; set; } // Employee token (varchar(5))
+        public string EmployeeCode { get; set; } // Employee token (varchar(5))
 
         [Required(ErrorMessage = "Full name is required.")]
         [StringLength(50, ErrorMessage = "Full name cannot exceed 50 characters.")]
@@ -52,5 +52,14 @@ namespace NEXUS_API.Models
 
         [Required(ErrorMessage = "Status is required.")]
         public bool Status { get; set; } // Status work of employee (bool)
+
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpried { get; set; }
+        public int FailedLoginAttempts { get; set; } = 0;
+        public DateTime? ExpiredBan { get; set; }
+        public string? Code { get; set; }
+        public DateTime? ExpiredCode { get; set; }
+        public int SendCodeAttempts { get; set; } = 0;
+        public DateTime? LastSendCodeDate { get; set; }
     }
 }

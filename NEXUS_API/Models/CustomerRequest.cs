@@ -3,11 +3,11 @@
 public class CustomerRequest
 {
     [Key]
-    public int RequestID { get; set; }
+    public int RequestId { get; set; }
 
     [Required]
     [StringLength(15, ErrorMessage = "Customer ID must not exceed 15 characters.")]
-    public string CusID { get; set; } // Foreign Key to Customer table
+    public int CustomerId { get; set; } // Foreign Key to Customer table
 
     [Required]
     [StringLength(20, ErrorMessage = "Request Title must not exceed 20 characters.")]

@@ -6,10 +6,10 @@ namespace NEXUS_API.Models
     public class Stock
     {
         [Key]
-        public int StockID { get; set; } 
+        public int StockId { get; set; } 
 
         [Required]
-        public int RegionID { get; set; } 
+        public int RegionId { get; set; } 
 
         [Required]
         [MaxLength(100)]

@@ -8,7 +8,7 @@ namespace NEXUS_API.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BillId { get; set; }
-        public int ConnID { get; set; }
+        public string ConnectionId { get; set; }
         [Required]
         [StringLength(15)]
         public string Payer { get; set; }

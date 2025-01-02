@@ -7,10 +7,10 @@ namespace NEXUS_API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PFId { get; set; }
+        public int PlanFeeId { get; set; }
         [Required]
         [StringLength(50)]
-        public string PFName { get; set; }
+        public string PlanFeeName { get; set; }
         [Required]
         [StringLength(1000)]
         public string Description { get; set; }

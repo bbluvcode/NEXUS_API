@@ -4,7 +4,7 @@ namespace NEXUS_API.Models
 {
     public class EmployeeRole
     {
-        public int RoleID { get; set; }
+        public int RoleId { get; set; }
         [Required]
         public string RoleName { get; set; }
     }

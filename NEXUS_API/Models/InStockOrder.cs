@@ -6,19 +6,19 @@ namespace NEXUS_API.Models
     public class InStockOrder
     {
         [Key]
-        public int ISOID { get; set; } 
+        public int InStockOrderId { get; set; } 
 
         [Required]
-        public int ISRID { get; set; } 
+        public int InStockRequestId { get; set; } 
 
         [Required]
-        public int VendorID { get; set; } 
+        public int VendorId { get; set; } 
 
         [Required]
-        public int EmpID { get; set; } 
+        public int EmployeeId { get; set; } 
 
         [Required]
-        public int StockID { get; set; } 
+        public int StockId { get; set; } 
 
         [Required]
         public int Payer { get; set; } 
@@ -33,10 +33,12 @@ namespace NEXUS_API.Models
         public DateTime PayDate { get; set; } 
 
         [Required]
-        public float Tax { get; set; } 
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Tax { get; set; } 
 
         [Required]
-        public float Total { get; set; } 
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Total { get; set; } 
 
         [Required]
         [MaxLength(10)]
