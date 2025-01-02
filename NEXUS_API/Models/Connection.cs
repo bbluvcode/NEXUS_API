@@ -8,6 +8,7 @@ namespace NEXUS_API.Models
         public string ConnID { get; set; }
         [Required]
         public string OrderID { get; set; }
+        public string EquipmentID { get; set; }
         public int NumberOfConn { get; set; }
         public DateTime DateCreate { get; set; }
         public bool IsActive { get; set; }
