@@ -12,7 +12,7 @@ namespace NEXUS_API.Models
         public int StockId { get; set; } 
 
         [Required]
-        public int EmpployeeId { get; set; } 
+        public int EmployeeId { get; set; } 
 
         [Required]
         public DateTime CreateDate { get; set; } 
@@ -32,5 +32,8 @@ namespace NEXUS_API.Models
         public bool isPay { get; set; }
 
         //Relationship
+        public Stock? Stock { get; set; }
+        public Employee? Employee { get; set; }
+        public ICollection<OutStockOrderDetail>? OutStockOrderDetails { get; set; }
     }
 }

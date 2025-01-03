@@ -11,7 +11,7 @@ namespace NEXUS_API.Models
 
         //Relationship
         [Required]
-        public int ConnectionId { get; set; }
+        public string ConnectionId { get; set; }
         public Connection? Connection { get; set; }
     }
 }

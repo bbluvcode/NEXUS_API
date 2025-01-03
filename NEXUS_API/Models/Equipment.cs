@@ -19,7 +19,7 @@ namespace NEXUS_API.Models
 
         //Relationship
         [Required]
-        public int TypeId { get; set; }
+        public int EquipmentTypeId { get; set; }
         public EquipmentType? EquipmentType { get; set; }
         [Required]
         public int VendorId { get; set; }
@@ -27,5 +27,7 @@ namespace NEXUS_API.Models
         [Required]
         public int StockId { get; set; }
         public Stock? Stock { get; set; }
+        public ICollection<InStockOrderDetail>? InStockOrderDetails { get; set; }
+        public ICollection<OutStockOrderDetail>? OutStockOrderDetails { get; set; }
     }
 }

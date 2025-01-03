@@ -22,5 +22,7 @@ namespace NEXUS_API.Models
         public decimal Price { get; set; }
 
         //Relationship
+        public OutStockOrder? OutStockOrder { get; set; }
+        public Equipment? Equipment { get; set; }
     }
 }

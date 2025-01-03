@@ -21,7 +21,7 @@ namespace NEXUS_API.Models
         public int CustomerId { get; set; }
         public Customer? Customer { get; set; }
         public ServiceBill? ServiceBill { get; set; }
-        public ICollection<ServiceBillDetail>? ServiceBillDetails { get; set; }
         public ICollection<SupportRequest>? SupportRequests { get; set; }
+        public ICollection<Connection>? Connections { get; set; }
     }
 }

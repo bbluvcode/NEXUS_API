@@ -17,5 +17,7 @@ namespace NEXUS_API.Models
         public int Quantity { get; set; }
 
         //Relationship
+        public InStockRequest? InStockRequest { get; set; }
+        public Equipment? Equipment { get; set; }
     }
 }
