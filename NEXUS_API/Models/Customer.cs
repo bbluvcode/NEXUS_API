@@ -7,8 +7,7 @@ namespace NEXUS_API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [StringLength(15)]
-        public string CustID { get; set; }
+        public int CustomerId { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -16,10 +15,10 @@ namespace NEXUS_API.Models
 
         [Required]
         [StringLength(7)]
-        public string Gender { get; set; }
+        public string? Gender { get; set; }
 
         [Required]
-        public DateTime Birthdate { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -31,13 +30,22 @@ namespace NEXUS_API.Models
 
         [Required]
         [StringLength(20)]
-        public string Phone { get; set; }
+        public string PhoneNumber { get; set; }
 
         [Required]
         [StringLength(20)]
-        public string IdentificationNo { get; set; }
+        public string? IdentificationNo { get; set; }
 
         [StringLength(50)]
-        public string Image { get; set; }
+        public string? Image { get; set; }
+
+        public string? AccountId { get; set; }
+        public string? Password { get; set; }
+
+        //Relationship
+        public ICollection<CustomerRequest>? CustomerRequests { get; set; }
+        public ICollection<ServiceOrder>? ServiceOrders { get; set; }
+        public ICollection<ServiceBill>? ServiceBills { get; set; }
+        public ICollection<FeedBack>? FeedBacks { get; set; }
     }
 }

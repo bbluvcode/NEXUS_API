@@ -7,7 +7,8 @@ namespace NEXUS_API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int BDId { get; set; }
+        public int BillDetailId { get; set; }
+
         [Column(TypeName = "decimal(10,2)")]
         public decimal Deposit { get; set; }
         [Column(TypeName = "decimal(10,2)")]
@@ -34,5 +35,10 @@ namespace NEXUS_API.Models
         public decimal MessageMobileTime { get; set; }
         [Column(TypeName = "decimal(10,2)")]
         public decimal ServiceDiscount { get; set; }
+
+        //Relationship
+        [Required]
+        public int BillId { get; set; }
+        public ServiceBill? ServiceBill { get; set; }
     }
 }

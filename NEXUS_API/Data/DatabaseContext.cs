@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NEXUS_API.Models;
-using NEXUS_API.Models.Man;
-
 namespace NEXUS_API.Data
 {
     public class DatabaseContext:DbContext
@@ -27,12 +25,11 @@ namespace NEXUS_API.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<CustomerRequest> CustomerRequests { get; set; }
         public DbSet<Discount> Discounts { get; set; }
-public DbSet<EmployeeRole> EmployeeRoles { get; set; }
-public DbSet<Employee> Employees { get; set; }
-public DbSet<Equipment> Equipments { get; set; }
-public DbSet<EquipmentType> EquipmentTypes { get; set; }
-
-public DbSet<FeedBack> FeedBacks { get; set; }
+        public DbSet<EmployeeRole> EmployeeRoles { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<EquipmentType> EquipmentTypes { get; set; }
+        public DbSet<FeedBack> FeedBacks { get; set; }
         public DbSet<InStockOrder> InStockOrders { get; set; }
         public DbSet<InStockOrderDetail> InStockOrderDetails { get; set; }
         public DbSet<InStockRequest> InStockRequests { get; set; }
@@ -42,16 +39,15 @@ public DbSet<FeedBack> FeedBacks { get; set; }
         public DbSet<OutStockOrderDetail> OutStockOrderDetails { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<PlanFee> PlanFees { get; set; }
-public DbSet<Region> Regions { get; set; }
-
-public DbSet<RetainShop> RetainShops { get; set; }
+        public DbSet<Region> Regions { get; set; }
+        public DbSet<RetainShop> RetainShops { get; set; }
         public DbSet<ServiceBill> ServiceBills { get; set; }
         public DbSet<ServiceBillDetail> ServiceBillDetails { get; set; }
         public DbSet<ServiceOrder> ServiceOrders { get; set; }
         public DbSet<Stock> Stocks { get; set; }
         public DbSet<SupportRequest> SupportRequests { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
-protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Equipment>()
