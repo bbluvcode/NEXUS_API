@@ -18,5 +18,8 @@ namespace NEXUS_API.Models
         public int TotalNumber { get; set; }
 
         //Relationship
+        public Employee? Employee { get; set; }
+        public ICollection<InStockRequestDetail>? InStockRequestDetails { get; set; }
+        public ICollection<InStockOrder>? InStockOrders { get; set; }
     }
 }
