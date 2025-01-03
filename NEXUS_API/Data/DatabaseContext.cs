@@ -11,7 +11,6 @@ namespace NEXUS_API.Data
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Region> Regions { get; set; }
-        //
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Plan> Plans { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
