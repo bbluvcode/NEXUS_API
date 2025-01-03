@@ -6,6 +6,7 @@ namespace NEXUS_API.Data
 {
     public class DatabaseContext:DbContext
     {
+        //huy ne
         public DatabaseContext(DbContextOptions options) : base(options) { }
         
         
