@@ -5,6 +5,8 @@ namespace NEXUS_API.Data
     public class DatabaseContext:DbContext
     {
         public DatabaseContext(DbContextOptions options) : base(options) { }     
+      
+        //
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiarys { get; set; }
         public DbSet<Customer> Customers { get; set; }
