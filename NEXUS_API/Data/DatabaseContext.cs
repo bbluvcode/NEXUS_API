@@ -4,22 +4,23 @@ namespace NEXUS_API.Data
 {
     public class DatabaseContext:DbContext
     {
-        //huy ne
+
         public DatabaseContext(DbContextOptions options) : base(options) { }
-<<<<<<< HEAD
+
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<Customer> Customers { get; set; }
-=======
+
         
         
-        //
->>>>>>> 868ffc0a99e3134aaa0650ebf8d093be3d539d77
+
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Account> Accounts { get; set; }
+
+
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiarys { get; set; }
         public DbSet<Customer> Customers { get; set; }
