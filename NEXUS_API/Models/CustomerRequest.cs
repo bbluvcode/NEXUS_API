@@ -1,13 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NEXUS_API.Models;
+using System.ComponentModel.DataAnnotations;
 
 public class CustomerRequest
 {
     [Key]
-    public int RequestID { get; set; }
-
-    [Required]
-    [StringLength(15, ErrorMessage = "Customer ID must not exceed 15 characters.")]
-    public string CusID { get; set; } // Foreign Key to Customer table
+    public int RequestId { get; set; }
 
     [Required]
     [StringLength(20, ErrorMessage = "Request Title must not exceed 20 characters.")]
@@ -22,4 +19,9 @@ public class CustomerRequest
 
     [Required]
     public bool IsResponse { get; set; } // Indicates if the request has been responded to
+
+    //Relationship
+    [Required]
+    public int CustomerId { get; set; }
+    public Customer? Customer { get; set; }
 }

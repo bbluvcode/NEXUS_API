@@ -27,5 +27,7 @@ namespace NEXUS_API.Models
         [StringLength(1000)]
         public string Description { get; set; }
 
+        //Relationship
+        public ICollection<Equipment>? Equipments { get; set; }
     }
 }

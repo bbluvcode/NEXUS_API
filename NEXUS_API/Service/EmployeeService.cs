@@ -23,7 +23,7 @@ namespace NEXUS_API.Service
         // Get employee by ID
         public async Task<Employee> GetEmployeeByIdAsync(int id)
         {
-            return await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmpID == id);
+            return await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
         }
 
         // Add new employee
@@ -36,10 +36,10 @@ namespace NEXUS_API.Service
         // Edit employee role
         public async Task EditRoleEmployeeAsync(Employee employee)
         {
-            var existingEmployee = _dbContext.Employees.FirstOrDefault(e => e.EmpID == employee.EmpID);
+            var existingEmployee = _dbContext.Employees.FirstOrDefault(e => e.EmployeeId == employee.EmployeeId);
             if (existingEmployee != null)
             {
-                existingEmployee.Role = employee.Role;
+                existingEmployee.EmployeeRoleId = employee.EmployeeRoleId;
                 await _dbContext.SaveChangesAsync();
             }
         }
@@ -47,7 +47,7 @@ namespace NEXUS_API.Service
         // Edit employee status
         public async Task EditStatusEmployeeAsync(Employee employee)
         {
-            var existingEmployee = _dbContext.Employees.FirstOrDefault(e => e.EmpID == employee.EmpID);
+            var existingEmployee = _dbContext.Employees.FirstOrDefault(e => e.EmployeeId == employee.EmployeeId);
             if (existingEmployee != null)
             {
                 // Toggle the Status value

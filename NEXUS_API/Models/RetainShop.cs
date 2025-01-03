@@ -6,10 +6,10 @@ namespace NEXUS_API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int RSId { get; set; }
+        public int RetainShopId { get; set; }
         [Required]
         [StringLength(15)]
-        public string RSName { get; set; }
+        public string RetainShopName { get; set; }
         [Required]
         [StringLength(50)]
         public string Address { get; set; }
@@ -24,5 +24,11 @@ namespace NEXUS_API.Models
         [StringLength(15)]
         public string Fax { get; set; }
 
+        //Relationship
+        [Required]
+        public int RegionId { get; set; }
+        public Region? Region { get; set; }
+        public ICollection<Employee>? Employees { get; set; }
+        public Stock? Stock { get; set; }
     }
 }
