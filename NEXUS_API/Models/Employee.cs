@@ -63,7 +63,9 @@ namespace NEXUS_API.Models
         [Required]
         public int RetainShopId { get; set; }
         public RetainShop? RetainShop { get; set; }
+        public ICollection<News>? NewsList { get; set; }
         public ICollection<InStockOrder>? InStockOrders { get; set; }
         public ICollection<OutStockOrder>? OutStockOrders { get; set; }
+        public ICollection<SupportRequest>? SupportRequests { get; set; }
     }
 }

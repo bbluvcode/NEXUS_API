@@ -45,7 +45,6 @@ namespace NEXUS_API.Models
         //Relationship
         public ICollection<CustomerRequest>? CustomerRequests { get; set; }
         public ICollection<ServiceOrder>? ServiceOrders { get; set; }
-        public ICollection<ServiceBill>? ServiceBills { get; set; }
         public ICollection<FeedBack>? FeedBacks { get; set; }
     }
 }

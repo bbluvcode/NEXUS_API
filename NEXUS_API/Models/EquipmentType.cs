@@ -7,7 +7,7 @@ namespace NEXUS_API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int TypeId { get; set; }
+        public int EquipmentTypeId { get; set; }
         [Required]
         public string TypeName { get; set; }
         [Required]

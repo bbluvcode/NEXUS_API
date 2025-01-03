@@ -22,5 +22,7 @@ namespace NEXUS_API.Models
         [Required]
         public int ServiceOrderId { get; set; }
         public ServiceOrder? ServiceOrder { get; set; }
+        public int? EmployeeId { get; set; }
+        public Employee? Employee { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace NEXUS_API.Models
 
         //Relationship
         public ICollection<RetainShop>? RetainShops { get; set; }
-        public ICollection<Employee>? Employees { get; set; }
+        public ICollection<Stock>? Stocks { get; set; }
+        public ICollection<Vendor>? Vendors { get; set; }
     }
 }

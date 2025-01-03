@@ -48,6 +48,10 @@ namespace NEXUS_API.Models
         public bool isPay { get; set; }
 
         //Relationship
-
+        public InStockRequest? InStockRequest { get; set; }
+        public Vendor? Vendor { get; set; }
+        public Employee? Employee { get; set; }
+        public Stock? Stock { get; set; }
+        public ICollection<InStockOrderDetail>? InStockOrderDetails { get; set; }
     }
 }
