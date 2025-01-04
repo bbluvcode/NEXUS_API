@@ -54,13 +54,13 @@ namespace NEXUS_API.Controllers
             object response = null;
             try
             {
-                var typeExisting = await _dbContext.EquipmentTypes.FirstOrDefaultAsync(ep => ep.TypeId == id);
+                var typeExisting = await _dbContext.EquipmentTypes.FirstOrDefaultAsync(ep => ep.EquipmentTypeId == id);
                 if (typeExisting == null)
                 {
                     response = new ApiResponse(StatusCodes.Status404NotFound, "EquipmentType not found", null);
                     return NotFound(response);
                 }
-                typeExisting.TypeId = id;
+                typeExisting.EquipmentTypeId = id;
                 typeExisting.TypeName = equipmentType.TypeName;
                 typeExisting.Provider = equipmentType.Provider;
                 await _dbContext.SaveChangesAsync();

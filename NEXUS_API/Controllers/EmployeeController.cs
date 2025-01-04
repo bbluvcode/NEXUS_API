@@ -88,7 +88,7 @@ namespace NEXUS_API.Controllers
                     });
 
                 await _employeeRepository.AddEmployeeAsync(employee);
-                return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.EmpID }, new
+                return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.EmployeeId }, new
                 {
                     data = employee,
                     message = "Employee created successfully",
@@ -111,7 +111,7 @@ namespace NEXUS_API.Controllers
         {
             try
             {
-                if (id != employee.EmpID)
+                if (id != employee.EmployeeId)
                     return BadRequest(new
                     {
                         message = "Employee ID mismatch.",

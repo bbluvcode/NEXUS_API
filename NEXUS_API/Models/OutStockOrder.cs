@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NEXUS_API.Models
 {
     public class OutStockOrder
     {
         [Key]
-        public int OSID { get; set; } 
+        public int OutStockId { get; set; } 
 
         [Required]
-        public int StockID { get; set; } 
+        public int StockId { get; set; } 
 
         [Required]
-        public int EmpID { get; set; } 
+        public int EmployeeId { get; set; } 
 
         [Required]
         public DateTime CreateDate { get; set; } 
@@ -20,12 +21,19 @@ namespace NEXUS_API.Models
         public DateTime PayDate { get; set; } 
 
         [Required]
-        public float Tax { get; set; } 
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Tax { get; set; } 
 
         [Required]
-        public float Total { get; set; } 
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Total { get; set; } 
 
         [Required]
-        public bool isPay { get; set; } 
+        public bool isPay { get; set; }
+
+        //Relationship
+        public Stock? Stock { get; set; }
+        public Employee? Employee { get; set; }
+        public ICollection<OutStockOrderDetail>? OutStockOrderDetails { get; set; }
     }
 }
