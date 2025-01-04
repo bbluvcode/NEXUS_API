@@ -5,7 +5,6 @@ namespace NEXUS_API.Data
     public class DatabaseContext:DbContext
     {
 
-<<<<<<< HEAD
         public DatabaseContext(DbContextOptions options) : base(options) { }
 
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
@@ -13,15 +12,7 @@ namespace NEXUS_API.Data
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Region> Regions { get; set; }
-        public DbSet<Customer> Customers { get; set; }       
-        
-
-        public DbSet<Plan> Plans { get; set; }
-        //public DbSet<Account> Accounts { get; set; }
-=======
-        public DatabaseContext(DbContextOptions options) : base(options) { }       
-        //
->>>>>>> fdb95fbd69b947aed79d0c0a220206b507a5914a
+        public DbSet<Customer> Customers { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiarys { get; set; }
         public DbSet<CustomerRequest> CustomerRequests { get; set; }
@@ -33,9 +24,8 @@ namespace NEXUS_API.Data
         public DbSet<News> NewsTB { get; set; }
         public DbSet<OutStockOrder> OutStockOrders { get; set; }
         public DbSet<OutStockOrderDetail> OutStockOrderDetails { get; set; }
-        //public DbSet<Plan> Plans { get; set; }
         public DbSet<PlanFee> PlanFees { get; set; }
-        //public DbSet<Region> Regions { get; set; }
+        public DbSet<Plan> Plans { get; set; }    
         public DbSet<RetainShop> RetainShops { get; set; }
         public DbSet<ServiceBill> ServiceBills { get; set; }
         public DbSet<ServiceBillDetail> ServiceBillDetails { get; set; }
