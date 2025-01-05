@@ -11,6 +11,7 @@ namespace NEXUS_API.Data
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<EmployeeRole> EmployeeRoles { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Connection> Connections { get; set; }

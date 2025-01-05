@@ -19,6 +19,10 @@ namespace NEXUS_API.Service
         {
             return await _dbContext.Employees.ToListAsync();
         }
+        public async Task<IEnumerable<EmployeeRole>> GetAllEmployeeRolesAsync()
+        {
+            return await _dbContext.EmployeeRoles.ToListAsync();
+        }
 
         // Get employee by ID
         public async Task<Employee> GetEmployeeByIdAsync(int id)
@@ -29,9 +33,19 @@ namespace NEXUS_API.Service
         // Add new employee
         public async Task AddEmployeeAsync(Employee employee)
         {
-            _dbContext.Employees.Add(employee);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Employees.Add(employee);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi để kiểm tra
+                Console.WriteLine(ex.InnerException?.Message);
+                throw;
+            }
         }
+
 
         // Edit employee role
         public async Task EditRoleEmployeeAsync(Employee employee)
@@ -39,7 +53,10 @@ namespace NEXUS_API.Service
             var existingEmployee = _dbContext.Employees.FirstOrDefault(e => e.EmployeeId == employee.EmployeeId);
             if (existingEmployee != null)
             {
+                // Cập nhật EmployeeRoleId
                 existingEmployee.EmployeeRoleId = employee.EmployeeRoleId;
+
+                // Lưu thay đổi vào cơ sở dữ liệu
                 await _dbContext.SaveChangesAsync();
             }
         }
@@ -54,6 +71,14 @@ namespace NEXUS_API.Service
                 existingEmployee.Status = !existingEmployee.Status;
                 await _dbContext.SaveChangesAsync();
             }
+        }
+        public async Task<RetainShop> GetRetainShopByIdAsync(int id)
+        {
+            return await _dbContext.RetainShops.FirstOrDefaultAsync(r => r.RetainShopId == id);
+        }
+        public async Task<EmployeeRole> GetEmployeeRoleByIdAsync(int id)
+        {
+            return await _dbContext.EmployeeRoles.FirstOrDefaultAsync(r => r.RoleId == id);
         }
     }
 }
