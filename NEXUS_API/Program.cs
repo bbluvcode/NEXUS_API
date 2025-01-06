@@ -71,8 +71,8 @@ namespace NEXUS_API
             app.UseAuthorization();
 
             app.MapControllers();
-            //var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
-            //SeedData.SeedingData(context);
+            var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
+            SeedData.SeedingData(context);
             app.Run();
         }
     }
