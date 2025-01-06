@@ -18,8 +18,8 @@ namespace NEXUS_API.Models
 
         //Relationship
         [Required]
-        public int CustomerId { get; set; }
-        public Customer? Customer { get; set; }
+        public string AccountId { get; set; }
+        public Account? Account { get; set; }
         public ServiceBill? ServiceBill { get; set; }
         public ICollection<SupportRequest>? SupportRequests { get; set; }
         public ICollection<Connection>? Connections { get; set; }

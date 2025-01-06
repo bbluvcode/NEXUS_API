@@ -17,7 +17,7 @@ namespace NEXUS_API.Models
         public string RegionName { get; set; } // Name of region (varchar(20))
 
         //Relationship
-        public ICollection<RetainShop>? RetainShops { get; set; }
+        public ICollection<RetailShop>? RetailShops { get; set; }
         public ICollection<Stock>? Stocks { get; set; }
         public ICollection<Vendor>? Vendors { get; set; }
     }
