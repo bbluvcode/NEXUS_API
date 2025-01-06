@@ -11,12 +11,14 @@ namespace NEXUS_API.Data
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiaries { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<CustomerRequest> CustomerRequests { get; set; }
-        public DbSet<Discount> Discounts { get; set; }
-        public DbSet<EmployeeRole> EmployeeRoles { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Equipment> Equipments { get; set; }
+
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
+        public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Region> Regions { get; set; }
+        public DbSet<ConnectionDiary> ConnectionDiarys { get; set; }
+        public DbSet<CustomerRequest> CustomerRequests { get; set; }
         public DbSet<FeedBack> FeedBacks { get; set; }
         public DbSet<InStockOrder> InStockOrders { get; set; }
         public DbSet<InStockOrderDetail> InStockOrderDetails { get; set; }
@@ -25,10 +27,9 @@ namespace NEXUS_API.Data
         public DbSet<News> NewsTB { get; set; }
         public DbSet<OutStockOrder> OutStockOrders { get; set; }
         public DbSet<OutStockOrderDetail> OutStockOrderDetails { get; set; }
-        public DbSet<Plan> Plans { get; set; }
         public DbSet<PlanFee> PlanFees { get; set; }
-        public DbSet<Region> Regions { get; set; }
         public DbSet<RetailShop> RetailShops { get; set; }
+        public DbSet<Plan> Plans { get; set; }    
         public DbSet<ServiceBill> ServiceBills { get; set; }
         public DbSet<ServiceBillDetail> ServiceBillDetails { get; set; }
         public DbSet<ServiceOrder> ServiceOrders { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NEXUS_API.Models;
 
 namespace NEXUS_API.Data
 {
@@ -7,6 +8,52 @@ namespace NEXUS_API.Data
         public static void SeedingData(DatabaseContext _dbContext)
         {
             _dbContext.Database.Migrate();
+
+            // Seed dữ liệu Customers
+            if (!_dbContext.Customers.Any())
+            {
+                _dbContext.Customers.AddRange(
+                    new Customer
+                    {
+                        FullName = "Nguyen Van A",
+                        Gender = "Male",
+                        DateOfBirth = new DateTime(1990, 5, 20),
+                        Address = "123 Nguyen Trai, Quan 1, TP.HCM",
+                        Email = "nguyenvana@gmail.com",
+                        PhoneNumber = "0901234567",
+                        IdentificationNo = "123456789",
+                        Image = "string",
+                        Password = "password123"
+                    },
+                    new Customer
+                    {
+                        FullName = "Tran Thi B",
+                        Gender = "Female",
+                        DateOfBirth = new DateTime(1995, 8, 15),
+                        Address = "456 Le Loi, Quan 3, TP.HCM",
+                        Email = "tranthib@gmail.com",
+                        PhoneNumber = "0912345678",
+                        IdentificationNo = "987654321",
+                        Image = "string",
+                        Password = "password456"
+                    },
+                    new Customer
+                    {
+                        FullName = "Le Van C",
+                        Gender = "Male",
+                        DateOfBirth = new DateTime(1988, 12, 10),
+                        Address = "789 Cach Mang Thang 8, Tan Binh, TP.HCM",
+                        Email = "levanc@gmail.com",
+                        PhoneNumber = "0923456789",
+                        IdentificationNo = "1122334455",
+                        Image = "string",
+                        Password = "password789"
+                    }
+                );
+
+                _dbContext.SaveChanges();
+            }
+
 
             //// Seed dữ liệu Categories
             //if (!_dbContext.Categories.Any())
@@ -57,17 +104,17 @@ namespace NEXUS_API.Data
             //    _dbContext.ProductImages.AddRange(
             //        new ProductImage
             //        {
-            //            ImageUrl = "http://localhost:5031/Uploads/productImages/iPhone-16-Proi.png",
+            //            ImageUrl = "http://localhost:5185/Uploads/productImages/iPhone-16-Proi.png",
             //            ProductId = 1
             //        },
             //        new ProductImage
             //        {
-            //            ImageUrl = "http://localhost:5031/Uploads/productImages/Tshirt.jpg",
+            //            ImageUrl = "http://localhost:5185/Uploads/productImages/Tshirt.jpg",
             //            ProductId = 2
             //        },
             //        new ProductImage
             //        {
-            //            ImageUrl = "http://localhost:5031/Uploads/productImages/book.jpg",
+            //            ImageUrl = "http://localhost:5185/Uploads/productImages/book.jpg",
             //            ProductId = 3
             //        }
             //    );
