@@ -2,11 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 namespace NEXUS_API.Models
 {
-    public class RetainShop
+    public class RetailShop
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int RetainShopId { get; set; }
+        public int RetailShopId { get; set; }
         [Required]
         [StringLength(15)]
         public string RetainShopName { get; set; }
