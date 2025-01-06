@@ -117,17 +117,17 @@ namespace NEXUS_API.Controllers
                     });
                 }
 
-                // Kiểm tra RetainShopId có tồn tại trong bảng RetainShops
-                var retainShopExists = await _employeeRepository.GetRetainShopByIdAsync(employee.RetainShopId);
-                if (retainShopExists == null)
+                // Kiểm tra RetailShopId có tồn tại trong bảng RetailShops
+                var retailShopExists = await _employeeRepository.GetRetailShopByIdAsync(employee.RetailShopId);
+                if (retailShopExists == null)
                 {
                     return NotFound(new
                     {
-                        message = $"RetainShop with ID {employee.RetainShopId} does not exist.",
+                        message = $"RetailShop with ID {employee.RetailShopId} does not exist.",
                         status = HttpStatusCode.NotFound
                     });
                 }
-                // Kiểm tra RoleID có tồn tại trong bảng RetainShops
+                // Kiểm tra RoleID có tồn tại trong bảng RetailShops
                 var roleExists = await _employeeRepository.GetEmployeeRoleByIdAsync(employee.EmployeeRoleId);
                 if (roleExists == null)
                 {

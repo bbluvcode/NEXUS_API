@@ -72,9 +72,9 @@ namespace NEXUS_API.Service
                 await _dbContext.SaveChangesAsync();
             }
         }
-        public async Task<RetainShop> GetRetainShopByIdAsync(int id)
+        public async Task<RetailShop> GetRetailShopByIdAsync(int id)
         {
-            return await _dbContext.RetainShops.FirstOrDefaultAsync(r => r.RetainShopId == id);
+            return await _dbContext.RetailShops.FirstOrDefaultAsync(r => r.RetailShopId == id);
         }
         public async Task<EmployeeRole> GetEmployeeRoleByIdAsync(int id)
         {

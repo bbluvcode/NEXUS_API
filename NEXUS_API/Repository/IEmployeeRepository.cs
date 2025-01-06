@@ -9,7 +9,7 @@ namespace NEXUS_API.Repository
         Task AddEmployeeAsync(Employee employee);
         Task EditRoleEmployeeByIdAsync(Employee employee);
         Task EditStatusEmployeeAsync(Employee employee);
-        Task<RetainShop> GetRetainShopByIdAsync(int id);
+        Task<RetailShop> GetRetailShopByIdAsync(int id);
         Task<EmployeeRole> GetEmployeeRoleByIdAsync(int id);
         Task<IEnumerable<EmployeeRole>> GetAllEmployeeRolesAsync();
         Task EditRoleEmployeeAsync(EmployeeRole employeeRole);

@@ -8,26 +8,26 @@ namespace NEXUS_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RetainShopController : ControllerBase
+    public class RetailShopController : ControllerBase
     {
-        private readonly IRetainShopRepository _retainShopRepository;
+        private readonly IRetailShopRepository _retailShopRepository;
 
-        public RetainShopController(IRetainShopRepository retainShopRepository)
+        public RetailShopController(IRetailShopRepository retailShopRepository)
         {
-            _retainShopRepository = retainShopRepository;
+            _retailShopRepository = retailShopRepository;
         }
 
-        // Lấy danh sách tất cả RetainShops
+        // Lấy danh sách tất cả RetailShops
         [HttpGet]
-        public async Task<IActionResult> GetAllRetainShops()
+        public async Task<IActionResult> GetAllRetailShops()
         {
             try
             {
-                var retainShops = await _retainShopRepository.GetAllRetainShopsAsync();
+                var retailShops = await _retailShopRepository.GetAllRetailShopsAsync();
                 return Ok(new
                 {
-                    data = retainShops,
-                    message = "Get retain shops successfully",
+                    data = retailShops,
+                    message = "Get retail shops successfully",
                     status = HttpStatusCode.OK
                 });
             }
@@ -41,24 +41,24 @@ namespace NEXUS_API.Controllers
             }
         }
 
-        // Lấy thông tin RetainShop theo ID
+        // Lấy thông tin RetailShop theo ID
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetRetainShopById(int id)
+        public async Task<IActionResult> GetRetailShopById(int id)
         {
             try
             {
-                var retainShop = await _retainShopRepository.GetRetainShopByIdAsync(id);
-                if (retainShop == null)
+                var retailShop = await _retailShopRepository.GetRetailShopByIdAsync(id);
+                if (retailShop == null)
                     return NotFound(new
                     {
-                        message = $"RetainShop with ID {id} not found.",
+                        message = $"RetailShop with ID {id} not found.",
                         status = HttpStatusCode.NotFound
                     });
 
                 return Ok(new
                 {
-                    data = retainShop,
-                    message = "RetainShop retrieved successfully",
+                    data = retailShop,
+                    message = "RetailShop retrieved successfully",
                     status = HttpStatusCode.OK
                 });
             }
@@ -72,9 +72,9 @@ namespace NEXUS_API.Controllers
             }
         }
 
-        // Thêm mới RetainShop
+        // Thêm mới RetailShop
         [HttpPost]
-        public async Task<IActionResult> AddRetainShop([FromBody] RetainShop retainShop)
+        public async Task<IActionResult> AddRetailShop([FromBody] RetailShop retailShop)
         {
             try
             {
@@ -85,11 +85,11 @@ namespace NEXUS_API.Controllers
                         status = HttpStatusCode.BadRequest
                     });
 
-                await _retainShopRepository.AddRetainShopAsync(retainShop);
-                return CreatedAtAction(nameof(GetRetainShopById), new { id = retainShop.RetainShopId }, new
+                await _retailShopRepository.AddRetailShopAsync(retailShop);
+                return CreatedAtAction(nameof(GetRetailShopById), new { id = retailShop.RetailShopId }, new
                 {
-                    data = retainShop,
-                    message = "RetainShop created successfully",
+                    data = retailShop,
+                    message = "RetailShop created successfully",
                     status = HttpStatusCode.Created
                 });
             }
@@ -103,24 +103,24 @@ namespace NEXUS_API.Controllers
             }
         }
 
-        // Cập nhật thông tin RetainShop
+        // Cập nhật thông tin RetailShop
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRetainShop(int id, [FromBody] RetainShop retainShop)
+        public async Task<IActionResult> UpdateRetailShop(int id, [FromBody] RetailShop retailShop)
         {
             try
             {
-                if (id != retainShop.RetainShopId)
+                if (id != retailShop.RetailShopId)
                     return BadRequest(new
                     {
-                        message = "RetainShop ID mismatch.",
+                        message = "RetailShop ID mismatch.",
                         status = HttpStatusCode.BadRequest
                     });
 
-                await _retainShopRepository.UpdateRetainShopAsync(retainShop);
+                await _retailShopRepository.UpdateRetailShopAsync(retailShop);
                 return Ok(new
                 {
-                    data = retainShop,
-                    message = "RetainShop updated successfully",
+                    data = retailShop,
+                    message = "RetailShop updated successfully",
                     status = HttpStatusCode.OK
                 });
             }

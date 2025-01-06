@@ -32,7 +32,7 @@ namespace NEXUS_API
             });
             builder.Services.AddScoped<IEmployeeRepository, EmployeeService>();
             builder.Services.AddScoped<IRegionRepository, RegionService>();
-            builder.Services.AddScoped<IRetainShopRepository, RetainShopService>();
+            builder.Services.AddScoped<IRetailShopRepository, RetailShopService>();
             builder.Services.AddControllersWithViews().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             var key = Encoding.ASCII.GetBytes(builder.Configuration.GetSection("Jwt")["Key"]);

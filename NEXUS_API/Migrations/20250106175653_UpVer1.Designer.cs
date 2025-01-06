@@ -827,7 +827,7 @@ namespace NEXUS_API.Migrations
                     b.Property<int>("RegionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RetainShopName")
+                    b.Property<string>("RetailShopName")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
