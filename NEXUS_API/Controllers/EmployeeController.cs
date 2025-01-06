@@ -160,10 +160,6 @@ namespace NEXUS_API.Controllers
             }
         }
 
-
-
-
-
         [HttpPut("{id}/role")]
         public async Task<IActionResult> UpdateEmployeeRole(int id, [FromBody] UpdateEmployeeRoleDto updateRoleDto)
         {
@@ -178,7 +174,7 @@ namespace NEXUS_API.Controllers
 
             try
             {
-                await _employeeRepository.EditRoleEmployeeAsync(new Employee
+                await _employeeRepository.EditRoleEmployeeByIdAsync(new Employee
                 {
                     EmployeeId = updateRoleDto.EmployeeId,
                     EmployeeRoleId = updateRoleDto.EmployeeRoleId
@@ -234,5 +230,57 @@ namespace NEXUS_API.Controllers
             }
         }
 
+        [HttpPut("{id}/employeeRole")]
+        public async Task<IActionResult> UpdateRole(int id, [FromBody] EmployeeRole employeeRole)
+        {
+            if (id != employeeRole.RoleId)
+            {
+                return BadRequest(new
+                {
+                    message = "Role ID mismatch.",
+                    status = HttpStatusCode.BadRequest
+                });
+            }
+
+            try
+            {
+                // Call the repository method to update the role
+                await _employeeRepository.EditRoleEmployeeAsync(employeeRole);
+
+                return Ok(new
+                {
+                    roleId = employeeRole.RoleId,
+                    roleName = employeeRole.RoleName,
+                    message = "Role updated successfully",
+                    status = HttpStatusCode.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = ex.Message,
+                    status = HttpStatusCode.InternalServerError
+                });
+            }
+        }
+        [HttpPost("addRole")]
+        public async Task<IActionResult> AddRole([FromBody] EmployeeRole employeeRole)
+        {
+            if (employeeRole == null)
+            {
+                return BadRequest("Invalid role data.");
+            }
+
+            try
+            {
+                await _employeeRepository.AddEmployeeRoleAsync(employeeRole);
+                return Ok(new { message = "Role added successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace NEXUS_API.Service
 
 
         // Edit employee role
-        public async Task EditRoleEmployeeAsync(Employee employee)
+        public async Task EditRoleEmployeeByIdAsync(Employee employee)
         {
             var existingEmployee = _dbContext.Employees.FirstOrDefault(e => e.EmployeeId == employee.EmployeeId);
             if (existingEmployee != null)
@@ -79,6 +79,28 @@ namespace NEXUS_API.Service
         public async Task<EmployeeRole> GetEmployeeRoleByIdAsync(int id)
         {
             return await _dbContext.EmployeeRoles.FirstOrDefaultAsync(r => r.RoleId == id);
+        }
+
+        public async Task EditRoleEmployeeAsync(EmployeeRole employeeRole)
+        {
+            var existingRole = await _dbContext.EmployeeRoles
+                .FirstOrDefaultAsync(r => r.RoleId == employeeRole.RoleId);
+
+            if (existingRole == null)
+            {
+                throw new Exception("Role not found");
+            }
+
+            existingRole.RoleName = employeeRole.RoleName;
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task AddEmployeeRoleAsync(EmployeeRole employeeRole)
+        {
+            // You can include any additional logic here before adding the role
+            await _dbContext.EmployeeRoles.AddAsync(employeeRole);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
