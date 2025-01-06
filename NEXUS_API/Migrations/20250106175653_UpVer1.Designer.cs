@@ -12,7 +12,7 @@ using NEXUS_API.Data;
 namespace NEXUS_API.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250103171327_UpVer1")]
+    [Migration("20250106175653_UpVer1")]
     partial class UpVer1
     {
         /// <inheritdoc />
@@ -24,6 +24,28 @@ namespace NEXUS_API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("NEXUS_API.Models.Account", b =>
+                {
+                    b.Property<string>("AccountId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AccountId");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique();
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Accounts");
+                });
 
             modelBuilder.Entity("NEXUS_API.Models.Connection", b =>
                 {
@@ -85,7 +107,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("ConnectionId");
 
-                    b.ToTable("ConnectionDiarys");
+                    b.ToTable("ConnectionDiaries");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Customer", b =>
@@ -95,9 +117,6 @@ namespace NEXUS_API.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"));
-
-                    b.Property<string>("AccountId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -141,6 +160,12 @@ namespace NEXUS_API.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("CustomerId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique();
 
                     b.ToTable("Customers");
                 });
@@ -283,7 +308,7 @@ namespace NEXUS_API.Migrations
                     b.Property<DateTime?>("RefreshTokenExpried")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RetainShopId")
+                    b.Property<int>("RetailShopId")
                         .HasColumnType("int");
 
                     b.Property<int>("SendCodeAttempts")
@@ -296,7 +321,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("EmployeeRoleId");
 
-                    b.HasIndex("RetainShopId");
+                    b.HasIndex("RetailShopId");
 
                     b.ToTable("Employees");
                 });
@@ -694,6 +719,9 @@ namespace NEXUS_API.Migrations
 
                     b.HasKey("PlanId");
 
+                    b.HasIndex("PlanName")
+                        .IsUnique();
+
                     b.ToTable("Plans");
                 });
 
@@ -766,13 +794,13 @@ namespace NEXUS_API.Migrations
                     b.ToTable("Regions");
                 });
 
-            modelBuilder.Entity("NEXUS_API.Models.RetainShop", b =>
+            modelBuilder.Entity("NEXUS_API.Models.RetailShop", b =>
                 {
-                    b.Property<int>("RetainShopId")
+                    b.Property<int>("RetailShopId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RetainShopId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RetailShopId"));
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -804,11 +832,11 @@ namespace NEXUS_API.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.HasKey("RetainShopId");
+                    b.HasKey("RetailShopId");
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("RetainShops");
+                    b.ToTable("RetailShops");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.ServiceBill", b =>
@@ -849,6 +877,8 @@ namespace NEXUS_API.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("BillId");
+
+                    b.HasIndex("CreateDate");
 
                     b.HasIndex("ServiceOrderId")
                         .IsUnique();
@@ -921,8 +951,9 @@ namespace NEXUS_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
+                    b.Property<string>("AccountId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreate")
                         .HasColumnType("datetime2");
@@ -946,7 +977,9 @@ namespace NEXUS_API.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("DateCreate");
 
                     b.ToTable("ServiceOrders");
                 });
@@ -982,7 +1015,7 @@ namespace NEXUS_API.Migrations
                     b.Property<int?>("RegionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RetainShopId")
+                    b.Property<int>("RetailShopId")
                         .HasColumnType("int");
 
                     b.Property<string>("StockName")
@@ -994,7 +1027,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.HasIndex("RetainShopId")
+                    b.HasIndex("RetailShopId")
                         .IsUnique();
 
                     b.ToTable("Stocks");
@@ -1086,6 +1119,17 @@ namespace NEXUS_API.Migrations
                     b.ToTable("Vendors");
                 });
 
+            modelBuilder.Entity("NEXUS_API.Models.Account", b =>
+                {
+                    b.HasOne("NEXUS_API.Models.Customer", "Customer")
+                        .WithMany("Accounts")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("NEXUS_API.Models.Connection", b =>
                 {
                     b.HasOne("NEXUS_API.Models.Equipment", "Equipment")
@@ -1143,15 +1187,15 @@ namespace NEXUS_API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NEXUS_API.Models.RetainShop", "RetainShop")
+                    b.HasOne("NEXUS_API.Models.RetailShop", "RetailShop")
                         .WithMany("Employees")
-                        .HasForeignKey("RetainShopId")
+                        .HasForeignKey("RetailShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("EmployeeRole");
 
-                    b.Navigation("RetainShop");
+                    b.Navigation("RetailShop");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Equipment", b =>
@@ -1342,10 +1386,10 @@ namespace NEXUS_API.Migrations
                     b.Navigation("Plan");
                 });
 
-            modelBuilder.Entity("NEXUS_API.Models.RetainShop", b =>
+            modelBuilder.Entity("NEXUS_API.Models.RetailShop", b =>
                 {
                     b.HasOne("NEXUS_API.Models.Region", "Region")
-                        .WithMany("RetainShops")
+                        .WithMany("RetailShops")
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1377,13 +1421,13 @@ namespace NEXUS_API.Migrations
 
             modelBuilder.Entity("NEXUS_API.Models.ServiceOrder", b =>
                 {
-                    b.HasOne("NEXUS_API.Models.Customer", "Customer")
+                    b.HasOne("NEXUS_API.Models.Account", "Account")
                         .WithMany("ServiceOrders")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Customer");
+                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Stock", b =>
@@ -1392,15 +1436,15 @@ namespace NEXUS_API.Migrations
                         .WithMany("Stocks")
                         .HasForeignKey("RegionId");
 
-                    b.HasOne("NEXUS_API.Models.RetainShop", "RetainShop")
+                    b.HasOne("NEXUS_API.Models.RetailShop", "RetailShop")
                         .WithOne("Stock")
-                        .HasForeignKey("NEXUS_API.Models.Stock", "RetainShopId")
+                        .HasForeignKey("NEXUS_API.Models.Stock", "RetailShopId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Region");
 
-                    b.Navigation("RetainShop");
+                    b.Navigation("RetailShop");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.SupportRequest", b =>
@@ -1429,6 +1473,11 @@ namespace NEXUS_API.Migrations
                     b.Navigation("Region");
                 });
 
+            modelBuilder.Entity("NEXUS_API.Models.Account", b =>
+                {
+                    b.Navigation("ServiceOrders");
+                });
+
             modelBuilder.Entity("NEXUS_API.Models.Connection", b =>
                 {
                     b.Navigation("ConnectionDiaries");
@@ -1436,11 +1485,11 @@ namespace NEXUS_API.Migrations
 
             modelBuilder.Entity("NEXUS_API.Models.Customer", b =>
                 {
+                    b.Navigation("Accounts");
+
                     b.Navigation("CustomerRequests");
 
                     b.Navigation("FeedBacks");
-
-                    b.Navigation("ServiceOrders");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Discount", b =>
@@ -1502,14 +1551,14 @@ namespace NEXUS_API.Migrations
 
             modelBuilder.Entity("NEXUS_API.Models.Region", b =>
                 {
-                    b.Navigation("RetainShops");
+                    b.Navigation("RetailShops");
 
                     b.Navigation("Stocks");
 
                     b.Navigation("Vendors");
                 });
 
-            modelBuilder.Entity("NEXUS_API.Models.RetainShop", b =>
+            modelBuilder.Entity("NEXUS_API.Models.RetailShop", b =>
                 {
                     b.Navigation("Employees");
 

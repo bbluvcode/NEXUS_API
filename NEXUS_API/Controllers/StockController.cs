@@ -24,7 +24,7 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetStocks()
         {
             var stocks = await _dbContext.Stocks
-                .Include(s => s.RetainShop)
+                .Include(s => s.RetailShop)
                 .Include(s => s.Region)
                 .Include(s => s.Equipments)
                 .Include(s => s.InStockOrders)
@@ -83,7 +83,7 @@ namespace NEXUS_API.Controllers
                 stock.Email = stockUpdate.Email;
                 stock.Phone = stockUpdate.Phone;
                 stock.Fax = stockUpdate.Fax;
-                stock.RetainShopId = stockUpdate.RetainShopId;
+                stock.RetailShopId = stockUpdate.RetailShopId;
                 stock.RegionId = stockUpdate.RegionId;
 
                 await _dbContext.SaveChangesAsync();

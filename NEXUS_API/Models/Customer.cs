@@ -38,13 +38,11 @@ namespace NEXUS_API.Models
 
         [StringLength(50)]
         public string? Image { get; set; }
-
-        public string? AccountId { get; set; }
         public string? Password { get; set; }
 
         //Relationship
         public ICollection<CustomerRequest>? CustomerRequests { get; set; }
-        public ICollection<ServiceOrder>? ServiceOrders { get; set; }
+        public ICollection<Account>? Accounts { get; set; }
         public ICollection<FeedBack>? FeedBacks { get; set; }
     }
 }

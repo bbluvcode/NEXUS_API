@@ -23,7 +23,6 @@ namespace NEXUS_API.Data
                         PhoneNumber = "0901234567",
                         IdentificationNo = "123456789",
                         Image = "string",
-                        AccountId = "nguyenvana",
                         Password = "password123"
                     },
                     new Customer
@@ -36,7 +35,6 @@ namespace NEXUS_API.Data
                         PhoneNumber = "0912345678",
                         IdentificationNo = "987654321",
                         Image = "string",
-                        AccountId = "tranthib",
                         Password = "password456"
                     },
                     new Customer
@@ -49,7 +47,6 @@ namespace NEXUS_API.Data
                         PhoneNumber = "0923456789",
                         IdentificationNo = "1122334455",
                         Image = "string",
-                        AccountId = "levanc",
                         Password = "password789"
                     }
                 );

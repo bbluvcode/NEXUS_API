@@ -61,8 +61,8 @@ namespace NEXUS_API.Models
         public int EmployeeRoleId { get; set; }
         public EmployeeRole? EmployeeRole { get; set; }
         [Required]
-        public int RetainShopId { get; set; }
-        public RetainShop? RetainShop { get; set; }
+        public int RetailShopId { get; set; }
+        public RetailShop? RetailShop { get; set; }
         public ICollection<News>? NewsList { get; set; }
         public ICollection<InStockOrder>? InStockOrders { get; set; }
         public ICollection<OutStockOrder>? OutStockOrders { get; set; }

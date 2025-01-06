@@ -87,18 +87,5 @@ namespace NEXUS_API.Controllers
                 return new ObjectResult(response);
             }
         }
-        [HttpGet("get-by-customer/{customerId}")]
-        public async Task<ActionResult> GetServiceOrdersByCustomer(int customerId)
-        {
-            object response = null;
-            var data = await _dbContext.ServiceOrders.Where(o => o.CustomerId == customerId).ToListAsync();
-            if (data == null || data.Count == 0)
-            {
-                response = new ApiResponse(StatusCodes.Status404NotFound, "No orders found for this customer", null);
-                return NotFound(response);
-            }
-            response = new ApiResponse(StatusCodes.Status200OK, "Get orders successfully", data);
-            return Ok(response);
-        }
     }
 }

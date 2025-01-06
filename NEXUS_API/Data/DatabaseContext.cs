@@ -5,15 +5,18 @@ namespace NEXUS_API.Data
     public class DatabaseContext:DbContext
     {
 
-        public DatabaseContext(DbContextOptions options) : base(options) { }
+        public DatabaseContext(DbContextOptions options) : base(options) { }       
+        //
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Connection> Connections { get; set; }
+        public DbSet<ConnectionDiary> ConnectionDiaries { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Region> Regions { get; set; }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiarys { get; set; }
         public DbSet<CustomerRequest> CustomerRequests { get; set; }
         public DbSet<FeedBack> FeedBacks { get; set; }
@@ -25,8 +28,8 @@ namespace NEXUS_API.Data
         public DbSet<OutStockOrder> OutStockOrders { get; set; }
         public DbSet<OutStockOrderDetail> OutStockOrderDetails { get; set; }
         public DbSet<PlanFee> PlanFees { get; set; }
+        public DbSet<RetailShop> RetailShops { get; set; }
         public DbSet<Plan> Plans { get; set; }    
-        public DbSet<RetainShop> RetainShops { get; set; }
         public DbSet<ServiceBill> ServiceBills { get; set; }
         public DbSet<ServiceBillDetail> ServiceBillDetails { get; set; }
         public DbSet<ServiceOrder> ServiceOrders { get; set; }
@@ -42,13 +45,16 @@ namespace NEXUS_API.Data
                 .WithOne(cr => cr.Customer)
                 .HasForeignKey(cr => cr.CustomerId);
             modelBuilder.Entity<Customer>()
-                .HasMany(c => c.ServiceOrders)
-                .WithOne(so => so.Customer)
-                .HasForeignKey(so => so.CustomerId);
-            modelBuilder.Entity<Customer>()
                 .HasMany(c => c.FeedBacks)
                 .WithOne(fb => fb.Customer)
                 .HasForeignKey(fb => fb.CustomerId);
+
+            //Account
+            modelBuilder.Entity<Account>()
+                .HasOne(a => a.Customer)
+                .WithMany(c => c.Accounts)
+                .HasForeignKey(a => a.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Employee
             modelBuilder.Entity<Employee>()
@@ -56,9 +62,9 @@ namespace NEXUS_API.Data
                 .WithMany(er => er.Employees)
                 .HasForeignKey(e => e.EmployeeRoleId);
             modelBuilder.Entity<Employee>()
-                .HasOne(e => e.RetainShop)
+                .HasOne(e => e.RetailShop)
                 .WithMany(rs => rs.Employees)
-                .HasForeignKey(e => e.RetainShopId);
+                .HasForeignKey(e => e.RetailShopId);
             modelBuilder.Entity<Employee>()
                 .HasMany(e => e.InStockOrders)
                 .WithOne(iso => iso.Employee)
@@ -72,11 +78,11 @@ namespace NEXUS_API.Data
                 .WithOne(n => n.Employee)
                 .HasForeignKey(n => n.EmployeeId);
 
-            // RetainShop
-            modelBuilder.Entity<RetainShop>()
+            // RetailShop
+            modelBuilder.Entity<RetailShop>()
                 .HasOne(rs => rs.Stock)
-                .WithOne(s => s.RetainShop)
-                .HasForeignKey<Stock>(s => s.RetainShopId);
+                .WithOne(s => s.RetailShop)
+                .HasForeignKey<Stock>(s => s.RetailShopId);
 
             // Connection
             modelBuilder.Entity<Connection>()
@@ -200,6 +206,11 @@ namespace NEXUS_API.Data
                 .HasMany(so => so.SupportRequests)
                 .WithOne(sr => sr.ServiceOrder)
                 .HasForeignKey(sr => sr.ServiceOrderId);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(so => so.Account)
+                .WithMany(a => a.ServiceOrders)
+                .HasForeignKey(so => so.AccountId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //ServiceBill
             modelBuilder.Entity<ServiceBill>()
@@ -221,7 +232,7 @@ namespace NEXUS_API.Data
 
             //Region
             modelBuilder.Entity<Region>()
-                .HasMany(r => r.RetainShops)
+                .HasMany(r => r.RetailShops)
                 .WithOne(rs => rs.Region) 
                 .HasForeignKey(rs => rs.RegionId);
 
@@ -237,14 +248,56 @@ namespace NEXUS_API.Data
                 .WithMany(r => r.Vendors)
                 .HasForeignKey(v => v.RegionId);
 
-            //EquipmentType
+            //Index
             modelBuilder.Entity<EquipmentType>(entity =>
             {
-                entity.HasIndex(e => e.TypeName).IsUnique(true);
+                entity.HasIndex(e => e.TypeName).IsUnique();
             });
             modelBuilder.Entity<Equipment>(entity =>
             {
-                entity.HasIndex(d => d.EquipmentName).IsUnique(true);
+                entity.HasIndex(d => d.EquipmentName).IsUnique();
+            });
+            modelBuilder.Entity<Customer>(entity =>
+            {
+                entity.HasIndex(c => c.Email).IsUnique(); 
+                entity.HasIndex(c => c.PhoneNumber).IsUnique();
+            });
+            modelBuilder.Entity<Account>(entity =>
+            {
+                entity.HasIndex(a => a.AccountId).IsUnique();          
+            });
+            modelBuilder.Entity<ServiceOrder>(entity =>
+            {
+                entity.HasIndex(so => so.AccountId);
+                entity.HasIndex(so => so.DateCreate);
+            });
+            modelBuilder.Entity<ServiceBill>(entity =>
+            {
+                entity.HasIndex(sb => sb.ServiceOrderId).IsUnique();
+                entity.HasIndex(sb => sb.CreateDate);             
+            });
+            modelBuilder.Entity<Plan>(entity =>
+            {
+                entity.HasIndex(p => p.PlanName).IsUnique();
+            });
+            modelBuilder.Entity<Equipment>(entity =>
+            {
+                entity.HasIndex(e => e.EquipmentName).IsUnique(); 
+                entity.HasIndex(e => e.VendorId);               
+            });
+            modelBuilder.Entity<Stock>(entity =>
+            {
+                entity.HasIndex(s => s.RegionId);       
+                entity.HasIndex(s => s.RetailShopId);  
+            });
+            modelBuilder.Entity<SupportRequest>(entity =>
+            {
+                entity.HasIndex(sr => sr.ServiceOrderId); 
+                entity.HasIndex(sr => sr.EmployeeId);   
+            });
+            modelBuilder.Entity<FeedBack>(entity =>
+            {
+                entity.HasIndex(fb => fb.CustomerId); 
             });
         }
     }
