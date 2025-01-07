@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NEXUS_API.Helpers;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NEXUS_API.Models
 {
-    public class Customer
+    public class Customer:IUserAuth
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -39,6 +40,15 @@ namespace NEXUS_API.Models
         [StringLength(50)]
         public string? Image { get; set; }
         public string? Password { get; set; }
+
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpried { get; set; }
+        public int FailedLoginAttempts { get; set; } = 0;
+        public DateTime? ExpiredBan { get; set; }
+        public string? Code { get; set; }
+        public DateTime? ExpiredCode { get; set; }
+        public int SendCodeAttempts { get; set; } = 0;
+        public DateTime? LastSendCodeDate { get; set; }
 
         //Relationship
         public ICollection<SupportRequest>? SupportRequests { get; set; }
