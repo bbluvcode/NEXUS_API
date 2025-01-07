@@ -7,11 +7,6 @@ namespace NEXUS_API.Models
         [Key]
         public int FeedBackId { get; set; }
 
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        [StringLength(50, ErrorMessage = "Email cannot be longer than 50 characters")]
-        public string Email { get; set; }
-
         [Required(ErrorMessage = "Title is required")]
         [StringLength(200, ErrorMessage = "Title cannot be longer than 200 characters")]
         public string Title { get; set; }
