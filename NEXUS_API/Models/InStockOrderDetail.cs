@@ -7,10 +7,11 @@ namespace NEXUS_API.Models
     {
         [Key]
         public int InStockOrderDetailId { get; set; } 
-
         [Required]
-        public int Quantity { get; set; } 
-
+        public int Quantity { get; set; }
+        [Required]
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Price { get; set; }
         //Relationship
         [Required]
         public int InStockOrderId { get; set; }

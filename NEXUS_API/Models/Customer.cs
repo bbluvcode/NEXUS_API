@@ -41,6 +41,7 @@ namespace NEXUS_API.Models
         public string? Password { get; set; }
 
         //Relationship
+        public ICollection<SupportRequest>? SupportRequests { get; set; }
         public ICollection<CustomerRequest>? CustomerRequests { get; set; }
         public ICollection<Account>? Accounts { get; set; }
         public ICollection<FeedBack>? FeedBacks { get; set; }
