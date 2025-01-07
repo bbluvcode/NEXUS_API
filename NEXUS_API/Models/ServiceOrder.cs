@@ -15,8 +15,10 @@ namespace NEXUS_API.Models
         public DateTime SurveyDate { get; set; }
         public string SurveyStatus { get; set; } //not yet, invalid, valid
         public string SurveyDescribe { get; set; }
+        public int EmpIDCreater { get; set; }
 
         //Relationship
+        public Employee? EmployeeCreater { get; set; }
         [Required]
         public string AccountId { get; set; }
         public Account? Account { get; set; }

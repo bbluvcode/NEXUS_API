@@ -11,7 +11,6 @@ namespace NEXUS_API.Data
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiaries { get; set; }
         public DbSet<Customer> Customers { get; set; }
-
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
         public DbSet<Discount> Discounts { get; set; }
@@ -196,6 +195,7 @@ namespace NEXUS_API.Data
                 .WithMany(s => s.OutStockOrders)
                 .HasForeignKey(oso => oso.StockId)
                 .OnDelete(DeleteBehavior.Restrict);
+
             // OutStockOrderDetail
             modelBuilder.Entity<OutStockOrderDetail>()
                 .HasOne(osod => osod.Equipment)
@@ -204,9 +204,10 @@ namespace NEXUS_API.Data
 
             // ServiceOrder
             modelBuilder.Entity<ServiceOrder>()
-                .HasMany(so => so.SupportRequests)
-                .WithOne(sr => sr.ServiceOrder)
-                .HasForeignKey(sr => sr.ServiceOrderId);
+                .HasOne(so => so.EmployeeCreater)
+                .WithMany(e => e.CreatedOrders)
+                .HasForeignKey(so => so.EmpIDCreater)
+                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ServiceOrder>()
                 .HasOne(so => so.Account)
                 .WithMany(a => a.ServiceOrders)
@@ -241,7 +242,11 @@ namespace NEXUS_API.Data
             modelBuilder.Entity<SupportRequest>()
                 .HasOne(sr => sr.Employee)
                 .WithMany(e => e.SupportRequests)
-                .HasForeignKey(sr => sr.EmployeeId);
+                .HasForeignKey(sr => sr.EmpIdResolver);
+            modelBuilder.Entity<SupportRequest>()
+                .HasOne(sr => sr.Customer)
+                .WithMany(c => c.SupportRequests)
+                .HasForeignKey(sr => sr.CustomerId);
 
             //Vendor
             modelBuilder.Entity<Vendor>()
@@ -292,9 +297,8 @@ namespace NEXUS_API.Data
                 entity.HasIndex(s => s.RetailShopId);  
             });
             modelBuilder.Entity<SupportRequest>(entity =>
-            {
-                entity.HasIndex(sr => sr.ServiceOrderId); 
-                entity.HasIndex(sr => sr.EmployeeId);   
+            { 
+                entity.HasIndex(sr => sr.SupportRequestId);   
             });
             modelBuilder.Entity<FeedBack>(entity =>
             {

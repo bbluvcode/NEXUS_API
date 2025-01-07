@@ -16,13 +16,14 @@ namespace NEXUS_API.Models
         [Required(ErrorMessage = "Detail content is required")]
         [StringLength(1000, ErrorMessage = "Content cannot be longer than 1000 characters")]
         public string DetailContent { get; set; }
+        public DateTime? DateResolved { get; set; }
         public bool IsResolved { get; set; }
 
         //Relationship
         [Required]
-        public int ServiceOrderId { get; set; }
-        public ServiceOrder? ServiceOrder { get; set; }
-        public int? EmployeeId { get; set; }
+        public int CustomerId { get; set; }
+        public Customer? Customer { get; set; }
+        public int? EmpIdResolver { get; set; }
         public Employee? Employee { get; set; }
     }
 }
