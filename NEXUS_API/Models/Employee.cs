@@ -1,9 +1,10 @@
-﻿using System;
+﻿using NEXUS_API.Helpers;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace NEXUS_API.Models
 {
-    public class Employee
+    public class Employee : IUserAuth
     {
         [Key]
         public int EmployeeId { get; set; } // Primary key

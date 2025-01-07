@@ -4,7 +4,7 @@ namespace NEXUS_API.DTOs
 {
     public class AuthUpdatePassword
     {
-        public int UserId { get; set; }
+        public string Email { get; set; }
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
