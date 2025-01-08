@@ -28,7 +28,7 @@ namespace NEXUS_API.Service
             {
                 Subject = emailRequest.Subject,
                 Body = emailRequest.HtmlContent,
-                IsBodyHtml = false
+                IsBodyHtml = true
             };
             await smtp.SendMailAsync(message);
         }
