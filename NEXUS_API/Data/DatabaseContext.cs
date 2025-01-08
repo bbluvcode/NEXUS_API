@@ -77,12 +77,6 @@ namespace NEXUS_API.Data
                 .WithOne(n => n.Employee)
                 .HasForeignKey(n => n.EmployeeId);
 
-            // RetailShop
-            modelBuilder.Entity<RetailShop>()
-                .HasOne(rs => rs.Stock)
-                .WithOne(s => s.RetailShop)
-                .HasForeignKey<Stock>(s => s.RetailShopId);
-
             // Connection
             modelBuilder.Entity<Connection>()
                 .HasOne(c => c.ServiceOrder)
@@ -292,8 +286,7 @@ namespace NEXUS_API.Data
             });
             modelBuilder.Entity<Stock>(entity =>
             {
-                entity.HasIndex(s => s.RegionId);       
-                entity.HasIndex(s => s.RetailShopId);  
+                entity.HasIndex(s => s.RegionId);        
             });
             modelBuilder.Entity<SupportRequest>(entity =>
             { 

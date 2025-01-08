@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NEXUS_API.Migrations
 {
     /// <inheritdoc />
-    public partial class ver5b : Migration
+    public partial class UpVer1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -140,7 +140,7 @@ namespace NEXUS_API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RequestTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ServiceRequest = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    EquipmentRequest = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    EquipmentRequest = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsResponse = table.Column<bool>(type: "bit", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -230,6 +230,30 @@ namespace NEXUS_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Stocks",
+                columns: table => new
+                {
+                    StockId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StockName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Fax = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    RegionId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stocks", x => x.StockId);
+                    table.ForeignKey(
+                        name: "FK_Stocks_Regions_RegionId",
+                        column: x => x.RegionId,
+                        principalTable: "Regions",
+                        principalColumn: "RegionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Vendors",
                 columns: table => new
                 {
@@ -298,32 +322,46 @@ namespace NEXUS_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stocks",
+                name: "Equipments",
                 columns: table => new
                 {
-                    StockId = table.Column<int>(type: "int", nullable: false)
+                    EquipmentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StockName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Fax = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    RetailShopId = table.Column<int>(type: "int", nullable: false),
-                    RegionId = table.Column<int>(type: "int", nullable: true)
+                    EquipmentName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    StockQuantity = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    DiscountId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    EquipmentTypeId = table.Column<int>(type: "int", nullable: false),
+                    VendorId = table.Column<int>(type: "int", nullable: false),
+                    StockId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stocks", x => x.StockId);
+                    table.PrimaryKey("PK_Equipments", x => x.EquipmentId);
                     table.ForeignKey(
-                        name: "FK_Stocks_Regions_RegionId",
-                        column: x => x.RegionId,
-                        principalTable: "Regions",
-                        principalColumn: "RegionId");
+                        name: "FK_Equipments_Discounts_DiscountId",
+                        column: x => x.DiscountId,
+                        principalTable: "Discounts",
+                        principalColumn: "DiscountId");
                     table.ForeignKey(
-                        name: "FK_Stocks_RetailShops_RetailShopId",
-                        column: x => x.RetailShopId,
-                        principalTable: "RetailShops",
-                        principalColumn: "RetailShopId",
+                        name: "FK_Equipments_EquipmentTypes_EquipmentTypeId",
+                        column: x => x.EquipmentTypeId,
+                        principalTable: "EquipmentTypes",
+                        principalColumn: "EquipmentTypeId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Equipments_Stocks_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Stocks",
+                        principalColumn: "StockId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Equipments_Vendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendors",
+                        principalColumn: "VendorId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -372,6 +410,37 @@ namespace NEXUS_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OutStockOrders",
+                columns: table => new
+                {
+                    OutStockId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StockId = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PayDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Tax = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    isPay = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutStockOrders", x => x.OutStockId);
+                    table.ForeignKey(
+                        name: "FK_OutStockOrders_Employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_OutStockOrders_Stocks_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Stocks",
+                        principalColumn: "StockId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ServiceOrders",
                 columns: table => new
                 {
@@ -400,81 +469,6 @@ namespace NEXUS_API.Migrations
                         column: x => x.EmpIDCreater,
                         principalTable: "Employees",
                         principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Equipments",
-                columns: table => new
-                {
-                    EquipmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EquipmentName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    StockQuantity = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<bool>(type: "bit", nullable: false),
-                    DiscountId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    EquipmentTypeId = table.Column<int>(type: "int", nullable: false),
-                    VendorId = table.Column<int>(type: "int", nullable: false),
-                    StockId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Equipments", x => x.EquipmentId);
-                    table.ForeignKey(
-                        name: "FK_Equipments_Discounts_DiscountId",
-                        column: x => x.DiscountId,
-                        principalTable: "Discounts",
-                        principalColumn: "DiscountId");
-                    table.ForeignKey(
-                        name: "FK_Equipments_EquipmentTypes_EquipmentTypeId",
-                        column: x => x.EquipmentTypeId,
-                        principalTable: "EquipmentTypes",
-                        principalColumn: "EquipmentTypeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Equipments_Stocks_StockId",
-                        column: x => x.StockId,
-                        principalTable: "Stocks",
-                        principalColumn: "StockId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Equipments_Vendors_VendorId",
-                        column: x => x.VendorId,
-                        principalTable: "Vendors",
-                        principalColumn: "VendorId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OutStockOrders",
-                columns: table => new
-                {
-                    OutStockId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StockId = table.Column<int>(type: "int", nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PayDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Tax = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    isPay = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OutStockOrders", x => x.OutStockId);
-                    table.ForeignKey(
-                        name: "FK_OutStockOrders_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Employees",
-                        principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_OutStockOrders_Stocks_StockId",
-                        column: x => x.StockId,
-                        principalTable: "Stocks",
-                        principalColumn: "StockId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -524,6 +518,97 @@ namespace NEXUS_API.Migrations
                         principalTable: "Vendors",
                         principalColumn: "VendorId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InStockRequestDetails",
+                columns: table => new
+                {
+                    InStockRequestDetailId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InStockRequestId = table.Column<int>(type: "int", nullable: false),
+                    EquipmentId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InStockRequestDetails", x => x.InStockRequestDetailId);
+                    table.ForeignKey(
+                        name: "FK_InStockRequestDetails_Equipments_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "Equipments",
+                        principalColumn: "EquipmentId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_InStockRequestDetails_InStockRequests_InStockRequestId",
+                        column: x => x.InStockRequestId,
+                        principalTable: "InStockRequests",
+                        principalColumn: "InStockRequestId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OutStockOrderDetails",
+                columns: table => new
+                {
+                    OutStockDetailId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OutStockId = table.Column<int>(type: "int", nullable: false),
+                    EquipmentId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutStockOrderDetails", x => x.OutStockDetailId);
+                    table.ForeignKey(
+                        name: "FK_OutStockOrderDetails_Equipments_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "Equipments",
+                        principalColumn: "EquipmentId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OutStockOrderDetails_OutStockOrders_OutStockId",
+                        column: x => x.OutStockId,
+                        principalTable: "OutStockOrders",
+                        principalColumn: "OutStockId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Connections",
+                columns: table => new
+                {
+                    ConnectionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    NumberOfConnections = table.Column<int>(type: "int", nullable: false),
+                    DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServiceOrderId = table.Column<int>(type: "int", nullable: false),
+                    PlanId = table.Column<int>(type: "int", nullable: false),
+                    EquipmentId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Connections", x => x.ConnectionId);
+                    table.ForeignKey(
+                        name: "FK_Connections_Equipments_EquipmentId",
+                        column: x => x.EquipmentId,
+                        principalTable: "Equipments",
+                        principalColumn: "EquipmentId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Connections_Plans_PlanId",
+                        column: x => x.PlanId,
+                        principalTable: "Plans",
+                        principalColumn: "PlanId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Connections_ServiceOrders_ServiceOrderId",
+                        column: x => x.ServiceOrderId,
+                        principalTable: "ServiceOrders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -590,97 +675,6 @@ namespace NEXUS_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Connections",
-                columns: table => new
-                {
-                    ConnectionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    NumberOfConnections = table.Column<int>(type: "int", nullable: false),
-                    DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ServiceOrderId = table.Column<int>(type: "int", nullable: false),
-                    PlanId = table.Column<int>(type: "int", nullable: false),
-                    EquipmentId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Connections", x => x.ConnectionId);
-                    table.ForeignKey(
-                        name: "FK_Connections_Equipments_EquipmentId",
-                        column: x => x.EquipmentId,
-                        principalTable: "Equipments",
-                        principalColumn: "EquipmentId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Connections_Plans_PlanId",
-                        column: x => x.PlanId,
-                        principalTable: "Plans",
-                        principalColumn: "PlanId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Connections_ServiceOrders_ServiceOrderId",
-                        column: x => x.ServiceOrderId,
-                        principalTable: "ServiceOrders",
-                        principalColumn: "OrderId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "InStockRequestDetails",
-                columns: table => new
-                {
-                    InStockRequestDetailId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    InStockRequestId = table.Column<int>(type: "int", nullable: false),
-                    EquipmentId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InStockRequestDetails", x => x.InStockRequestDetailId);
-                    table.ForeignKey(
-                        name: "FK_InStockRequestDetails_Equipments_EquipmentId",
-                        column: x => x.EquipmentId,
-                        principalTable: "Equipments",
-                        principalColumn: "EquipmentId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_InStockRequestDetails_InStockRequests_InStockRequestId",
-                        column: x => x.InStockRequestId,
-                        principalTable: "InStockRequests",
-                        principalColumn: "InStockRequestId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OutStockOrderDetails",
-                columns: table => new
-                {
-                    OutStockDetailId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    OutStockId = table.Column<int>(type: "int", nullable: false),
-                    EquipmentId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OutStockOrderDetails", x => x.OutStockDetailId);
-                    table.ForeignKey(
-                        name: "FK_OutStockOrderDetails_Equipments_EquipmentId",
-                        column: x => x.EquipmentId,
-                        principalTable: "Equipments",
-                        principalColumn: "EquipmentId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OutStockOrderDetails_OutStockOrders_OutStockId",
-                        column: x => x.OutStockId,
-                        principalTable: "OutStockOrders",
-                        principalColumn: "OutStockId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "InStockOrderDetails",
                 columns: table => new
                 {
@@ -705,6 +699,27 @@ namespace NEXUS_API.Migrations
                         column: x => x.InStockOrderId,
                         principalTable: "InStockOrders",
                         principalColumn: "InStockOrderId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConnectionDiary",
+                columns: table => new
+                {
+                    DiaryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ConnectionId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConnectionDiary", x => x.DiaryId);
+                    table.ForeignKey(
+                        name: "FK_ConnectionDiary_Connections_ConnectionId",
+                        column: x => x.ConnectionId,
+                        principalTable: "Connections",
+                        principalColumn: "ConnectionId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -737,27 +752,6 @@ namespace NEXUS_API.Migrations
                         column: x => x.BillId,
                         principalTable: "ServiceBills",
                         principalColumn: "BillId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ConnectionDiary",
-                columns: table => new
-                {
-                    DiaryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ConnectionId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConnectionDiary", x => x.DiaryId);
-                    table.ForeignKey(
-                        name: "FK_ConnectionDiary_Connections_ConnectionId",
-                        column: x => x.ConnectionId,
-                        principalTable: "Connections",
-                        principalColumn: "ConnectionId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -977,12 +971,6 @@ namespace NEXUS_API.Migrations
                 name: "IX_Stocks_RegionId",
                 table: "Stocks",
                 column: "RegionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Stocks_RetailShopId",
-                table: "Stocks",
-                column: "RetailShopId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SupportRequests_CustomerId",

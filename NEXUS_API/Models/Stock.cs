@@ -30,9 +30,7 @@ namespace NEXUS_API.Models
 
         //Relationship
         [Required]
-        public int RetailShopId { get; set; }
-        public RetailShop? RetailShop { get; set; }
-        public int? RegionId { get; set; }
+        public int RegionId { get; set; }
         public Region? Region { get; set; }
         public ICollection<Equipment>? Equipments { get; set; }
         public ICollection<InStockOrder>? InStockOrders { get; set; }
