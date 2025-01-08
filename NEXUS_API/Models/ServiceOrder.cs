@@ -16,7 +16,6 @@ namespace NEXUS_API.Models
         public string SurveyStatus { get; set; } //not yet, invalid, valid
         public string SurveyDescribe { get; set; }
         public int EmpIDCreater { get; set; }
-
         //Relationship
         public Employee? EmployeeCreater { get; set; }
         [Required]
@@ -25,5 +24,6 @@ namespace NEXUS_API.Models
         public ServiceBill? ServiceBill { get; set; }
         public ICollection<SupportRequest>? SupportRequests { get; set; }
         public ICollection<Connection>? Connections { get; set; }
+
     }
 }
