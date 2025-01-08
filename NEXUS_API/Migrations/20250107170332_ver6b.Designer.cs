@@ -12,8 +12,8 @@ using NEXUS_API.Data;
 namespace NEXUS_API.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250106175653_UpVer1")]
-    partial class UpVer1
+    [Migration("20250107170332_ver6b")]
+    partial class ver6b
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -107,7 +107,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("ConnectionId");
 
-                    b.ToTable("ConnectionDiaries");
+                    b.ToTable("ConnectionDiary");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Customer", b =>
@@ -123,6 +123,9 @@ namespace NEXUS_API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateOfBirth")
                         .IsRequired()
                         .HasColumnType("datetime2");
@@ -131,6 +134,15 @@ namespace NEXUS_API.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("ExpiredBan")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpiredCode")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("int");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -151,6 +163,9 @@ namespace NEXUS_API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime?>("LastSendCodeDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
@@ -158,6 +173,15 @@ namespace NEXUS_API.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpried")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SendCodeAttempts")
+                        .HasColumnType("int");
 
                     b.HasKey("CustomerId");
 
@@ -182,17 +206,15 @@ namespace NEXUS_API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("EquipmentRequest")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsResponse")
                         .HasColumnType("bit");
 
                     b.Property<string>("RequestTitle")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ServiceRequest")
                         .IsRequired()
@@ -340,7 +362,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("EmployeeRoles");
+                    b.ToTable("EmployeeRole");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Equipment", b =>
@@ -430,11 +452,6 @@ namespace NEXUS_API.Migrations
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("FeedBbackContent")
                         .IsRequired()
@@ -528,6 +545,9 @@ namespace NEXUS_API.Migrations
 
                     b.Property<int>("InStockOrderId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -827,7 +847,7 @@ namespace NEXUS_API.Migrations
                     b.Property<int>("RegionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RetainShopName")
+                    b.Property<string>("RetailShopName")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
@@ -961,6 +981,9 @@ namespace NEXUS_API.Migrations
                     b.Property<decimal>("Deposit")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<int>("EmpIDCreater")
+                        .HasColumnType("int");
+
                     b.Property<int>("EmpIDSurveyor")
                         .HasColumnType("int");
 
@@ -980,6 +1003,8 @@ namespace NEXUS_API.Migrations
                     b.HasIndex("AccountId");
 
                     b.HasIndex("DateCreate");
+
+                    b.HasIndex("EmpIDCreater");
 
                     b.ToTable("ServiceOrders");
                 });
@@ -1041,7 +1066,13 @@ namespace NEXUS_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupportRequestId"));
 
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateRequest")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateResolved")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DetailContent")
@@ -1049,13 +1080,13 @@ namespace NEXUS_API.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<int?>("EmployeeId")
+                    b.Property<int?>("EmpIdResolver")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsResolved")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ServiceOrderId")
+                    b.Property<int?>("ServiceOrderOrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -1065,9 +1096,13 @@ namespace NEXUS_API.Migrations
 
                     b.HasKey("SupportRequestId");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("CustomerId");
 
-                    b.HasIndex("ServiceOrderId");
+                    b.HasIndex("EmpIdResolver");
+
+                    b.HasIndex("ServiceOrderOrderId");
+
+                    b.HasIndex("SupportRequestId");
 
                     b.ToTable("SupportRequests");
                 });
@@ -1427,7 +1462,15 @@ namespace NEXUS_API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("NEXUS_API.Models.Employee", "EmployeeCreater")
+                        .WithMany("CreatedOrders")
+                        .HasForeignKey("EmpIDCreater")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Account");
+
+                    b.Navigation("EmployeeCreater");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Stock", b =>
@@ -1449,19 +1492,23 @@ namespace NEXUS_API.Migrations
 
             modelBuilder.Entity("NEXUS_API.Models.SupportRequest", b =>
                 {
-                    b.HasOne("NEXUS_API.Models.Employee", "Employee")
+                    b.HasOne("NEXUS_API.Models.Customer", "Customer")
                         .WithMany("SupportRequests")
-                        .HasForeignKey("EmployeeId");
-
-                    b.HasOne("NEXUS_API.Models.ServiceOrder", "ServiceOrder")
-                        .WithMany("SupportRequests")
-                        .HasForeignKey("ServiceOrderId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Employee");
+                    b.HasOne("NEXUS_API.Models.Employee", "Employee")
+                        .WithMany("SupportRequests")
+                        .HasForeignKey("EmpIdResolver");
 
-                    b.Navigation("ServiceOrder");
+                    b.HasOne("NEXUS_API.Models.ServiceOrder", null)
+                        .WithMany("SupportRequests")
+                        .HasForeignKey("ServiceOrderOrderId");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Vendor", b =>
@@ -1490,6 +1537,8 @@ namespace NEXUS_API.Migrations
                     b.Navigation("CustomerRequests");
 
                     b.Navigation("FeedBacks");
+
+                    b.Navigation("SupportRequests");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Discount", b =>
@@ -1499,6 +1548,8 @@ namespace NEXUS_API.Migrations
 
             modelBuilder.Entity("NEXUS_API.Models.Employee", b =>
                 {
+                    b.Navigation("CreatedOrders");
+
                     b.Navigation("InStockOrders");
 
                     b.Navigation("NewsList");

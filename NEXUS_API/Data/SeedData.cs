@@ -23,7 +23,15 @@ namespace NEXUS_API.Data
                         PhoneNumber = "0901234567",
                         IdentificationNo = "123456789",
                         Image = "string",
-                        Password = "password123"
+                        Password = "password123",
+                        RefreshToken = null,
+                        RefreshTokenExpried = null,
+                        FailedLoginAttempts = 0,
+                        ExpiredBan = null,
+                        Code = null,
+                        ExpiredCode = null,
+                        SendCodeAttempts = 0,
+                        LastSendCodeDate = null
                     },
                     new Customer
                     {
@@ -35,7 +43,15 @@ namespace NEXUS_API.Data
                         PhoneNumber = "0912345678",
                         IdentificationNo = "987654321",
                         Image = "string",
-                        Password = "password456"
+                        Password = "password456",
+                        RefreshToken = null,
+                        RefreshTokenExpried = null,
+                        FailedLoginAttempts = 0,
+                        ExpiredBan = null,
+                        Code = null,
+                        ExpiredCode = null,
+                        SendCodeAttempts = 0,
+                        LastSendCodeDate = null
                     },
                     new Customer
                     {
@@ -47,150 +63,102 @@ namespace NEXUS_API.Data
                         PhoneNumber = "0923456789",
                         IdentificationNo = "1122334455",
                         Image = "string",
-                        Password = "password789"
+                        Password = "password789",
+                        RefreshToken = null,
+                        RefreshTokenExpried = null,
+                        FailedLoginAttempts = 0,
+                        ExpiredBan = null,
+                        Code = null,
+                        ExpiredCode = null,
+                        SendCodeAttempts = 0,
+                        LastSendCodeDate = null
                     }
                 );
 
                 _dbContext.SaveChanges();
             }
+            if (!_dbContext.CustomerRequests.Any())
+            {
+                var customerRequests = new List<CustomerRequest>
+                {
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Broadband Installation",
+                        ServiceRequest = "Request to install a broadband internet connection.",
+                        EquipmentRequest = "Broadband Router Model BR123",
+                        IsResponse = false,
+                        CustomerId = 1
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Land-line Issue",
+                        ServiceRequest = "The land-line phone has no dial tone.",
+                        EquipmentRequest = "Replacement Handset Model LH456",
+                        IsResponse = false,
+                        CustomerId = 1
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Dial-up Assistance",
+                        ServiceRequest = "Unable to connect to the internet using dial-up.",
+                        EquipmentRequest = "Dial-up Modem Model DM789",
+                        IsResponse = true,
+                        CustomerId = 1
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Broadband Speed Issue",
+                        ServiceRequest = "Broadband connection is slower than expected.",
+                        EquipmentRequest = null,
+                        IsResponse = false,
+                        CustomerId = 2
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Land-line Installation",
+                        ServiceRequest = "Request to install a new land-line phone.",
+                        EquipmentRequest = "Land-line Phone Model LL321",
+                        IsResponse = true,
+                        CustomerId = 2
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Dial-up Account Setup",
+                        ServiceRequest = "Need help setting up a new dial-up account.",
+                        EquipmentRequest = null,
+                        IsResponse = false,
+                        CustomerId = 2
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Broadband Router Replacement",
+                        ServiceRequest = "The broadband router is not working and needs replacement.",
+                        EquipmentRequest = "New Router Model BR999",
+                        IsResponse = true,
+                        CustomerId = 3
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Land-line Noise Issue",
+                        ServiceRequest = "There is excessive noise on the land-line during calls.",
+                        EquipmentRequest = null,
+                        IsResponse = false,
+                        CustomerId = 3
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "Dial-up Connection Issue",
+                        ServiceRequest = "Frequent disconnections while using dial-up internet.",
+                        EquipmentRequest = "Replacement Modem Model DM111",
+                        IsResponse = true,
+                        CustomerId = 3
+                    }
+                };
 
-
-            //// Seed dữ liệu Categories
-            //if (!_dbContext.Categories.Any())
-            //{
-            //    _dbContext.Categories.AddRange(
-            //        new Category { Name = "Electronics", Status = true },
-            //        new Category { Name = "Clothing", Status = true },
-            //        new Category { Name = "Books", Status = true }
-            //    );
-            //    _dbContext.SaveChanges();  // Lưu sản phẩm vào cơ sở dữ liệu trước khi thêm ảnh
-            //}
-
-            //// Seed dữ liệu Products
-            //if (!_dbContext.Products.Any())
-            //{
-            //    _dbContext.Products.AddRange(
-            //        new Product
-            //        {
-            //            Name = "IPHONE 16",
-            //            Price = 35000000.00m,
-            //            Quantity = 10,
-            //            Status = true,
-            //            CategoryId = 1
-            //        },
-            //        new Product
-            //        {
-            //            Name = "Áo sơ mi",
-            //            Price = 12000.00m,
-            //            Quantity = 10,
-            //            Status = true,
-            //            CategoryId = 2
-            //        },
-            //        new Product
-            //        {
-            //            Name = "Nhắm mắt mở cửa sổ",
-            //            Price = 200000.00m,
-            //            Quantity = 10,
-            //            Status = true,
-            //            CategoryId = 3
-            //        }
-            //    );
-            //    _dbContext.SaveChanges();  // Lưu sản phẩm vào cơ sở dữ liệu trước khi thêm ảnh
-            //}
-
-            //// Seed dữ liệu ProductImages
-            //if (!_dbContext.ProductImages.Any())
-            //{
-            //    _dbContext.ProductImages.AddRange(
-            //        new ProductImage
-            //        {
-            //            ImageUrl = "http://localhost:5185/Uploads/productImages/iPhone-16-Proi.png",
-            //            ProductId = 1
-            //        },
-            //        new ProductImage
-            //        {
-            //            ImageUrl = "http://localhost:5185/Uploads/productImages/Tshirt.jpg",
-            //            ProductId = 2
-            //        },
-            //        new ProductImage
-            //        {
-            //            ImageUrl = "http://localhost:5185/Uploads/productImages/book.jpg",
-            //            ProductId = 3
-            //        }
-            //    );
-            //    _dbContext.SaveChanges();
-            //}
-
-            //// Seed dữ liệu Users
-            //if (!_dbContext.Users.Any())
-            //{
-            //    _dbContext.Users.AddRange(
-            //         new User
-            //         {
-            //             FullName = "Admin User",
-            //             Email = "admin@gmail.com",
-            //             Password = "123",
-            //             Phones = "123456789",
-            //             DOB = null,
-            //             Role = "ADMIN",
-            //             ImageUrl = null,
-            //             Status = true,
-            //             FailedLoginAttempts = 0,
-            //             Expired = null,
-            //             TOKEN = null,
-            //             TokenIsUsed = null,
-            //             ExpiredTOKEN = null
-            //         },
-            //         new User
-            //         {
-            //             FullName = "Regular User",
-            //             Email = "user@gmail.com",
-            //             Password = "123",
-            //             Phones = "987654321",
-            //             DOB = null,
-            //             Role = "USER",
-            //             ImageUrl = null,
-            //             Status = true,
-            //             FailedLoginAttempts = 0,
-            //             Expired = null,
-            //             TOKEN = null,
-            //             TokenIsUsed = null,
-            //             ExpiredTOKEN = null
-            //         }
-            //     );
-            //    _dbContext.SaveChanges();
-            //}
-
-            //// Seed dữ liệu UserProducts (mối quan hệ giữa User và Product)
-            //if (!_dbContext.UserProducts.Any())
-            //{
-            //    var admin = _dbContext.Users.FirstOrDefault(u => u.Email == "admin@gmail.com");
-            //    var regularUser = _dbContext.Users.FirstOrDefault(u => u.Email == "user@gmail.com");
-            //    var iphone16 = _dbContext.Products.FirstOrDefault(p => p.Name == "IPHONE 16");
-            //    var tshirt = _dbContext.Products.FirstOrDefault(p => p.Name == "Áo sơ mi");
-
-            //    if (admin != null && iphone16 != null)
-            //    {
-            //        _dbContext.UserProducts.Add(new UserProduct
-            //        {
-            //            UserId = admin.Id,
-            //            ProductId = iphone16.Id,
-            //            Quantity = 2
-            //        });
-            //    }
-
-            //    if (regularUser != null && tshirt != null)
-            //    {
-            //        _dbContext.UserProducts.Add(new UserProduct
-            //        {
-            //            UserId = regularUser.Id,
-            //            ProductId = tshirt.Id,
-            //            Quantity = 3
-            //        });
-            //    }
-            //}
-
-            //_dbContext.SaveChanges();
+                _dbContext.CustomerRequests.AddRange(customerRequests);
+                _dbContext.SaveChanges();
+            }
+                     
         }
 
     }

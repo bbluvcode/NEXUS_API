@@ -12,8 +12,8 @@ using NEXUS_API.Data;
 namespace NEXUS_API.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250107053111_UpVer2")]
-    partial class UpVer2
+    [Migration("20250107165841_ver5b")]
+    partial class ver5b
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -123,6 +123,9 @@ namespace NEXUS_API.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("DateOfBirth")
                         .IsRequired()
                         .HasColumnType("datetime2");
@@ -131,6 +134,15 @@ namespace NEXUS_API.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("ExpiredBan")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpiredCode")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("int");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -151,6 +163,9 @@ namespace NEXUS_API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime?>("LastSendCodeDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
@@ -158,6 +173,15 @@ namespace NEXUS_API.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpried")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SendCodeAttempts")
+                        .HasColumnType("int");
 
                     b.HasKey("CustomerId");
 
@@ -191,8 +215,8 @@ namespace NEXUS_API.Migrations
 
                     b.Property<string>("RequestTitle")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ServiceRequest")
                         .IsRequired()

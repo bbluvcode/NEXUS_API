@@ -203,17 +203,15 @@ namespace NEXUS_API.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("EquipmentRequest")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsResponse")
                         .HasColumnType("bit");
 
                     b.Property<string>("RequestTitle")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ServiceRequest")
                         .IsRequired()
