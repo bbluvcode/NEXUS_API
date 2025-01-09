@@ -8,6 +8,124 @@ namespace NEXUS_API.Data
         public static void SeedingData(DatabaseContext _dbContext)
         {
             _dbContext.Database.Migrate();
+            // Seed Regions
+            if (!_dbContext.Regions.Any())
+            {
+                var regions = new List<Region>
+                {
+                    new Region
+                    {
+                        RegionCode = "HCMC-001",
+                        RegionName = "Ho Chi Minh City"
+                    },
+                    new Region
+                    {
+                        RegionCode = "HN-002",
+                        RegionName = "Ha Noi"
+                    },
+                    new Region
+                    {
+                        RegionCode = "DN-003",
+                        RegionName = "Da Nang"
+                    }
+                };
+                _dbContext.Regions.AddRange(regions);
+                _dbContext.SaveChanges();
+            }
+            // Seed EmployeeRoles
+            if (!_dbContext.EmployeeRoles.Any())
+            {
+                var roles = new List<EmployeeRole>
+                {
+                    new EmployeeRole { RoleName = "Admin" },
+                    new EmployeeRole { RoleName = "Technical" },
+                    new EmployeeRole { RoleName = "Accountant" }
+                };
+                _dbContext.EmployeeRoles.AddRange(roles);
+                _dbContext.SaveChanges();
+            }
+
+            // Seed RetailShops
+            if (!_dbContext.RetailShops.Any())
+            {
+                var retailShops = new List<RetailShop>
+                {
+                    new RetailShop
+                    {
+                        RetailShopName = "Main Office",
+                        Address = "123 Main St, District 1, HCMC",
+                        Email = "mainoffice@nexus.com",
+                        Phone = "0123456789",
+                        IsMainOffice = true,
+                        Fax = "012345678",
+                        RegionId = 1 // Replace with a valid RegionId in your database
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Branch A",
+                        Address = "456 Branch St, District 3, HCMC",
+                        Email = "brancha@nexus.com",
+                        Phone = "0987654321",
+                        IsMainOffice = false,
+                        Fax = "987654321",
+                        RegionId = 1 // Replace with a valid RegionId in your database
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Branch B",
+                        Address = "789 Second Ave, District 7, HCMC",
+                        Email = "branchb@nexus.com",
+                        Phone = "0912345678",
+                        IsMainOffice = false,
+                        Fax = "091234567",
+                        RegionId = 2 // Replace with a valid RegionId in your database
+                    }
+                };
+                _dbContext.RetailShops.AddRange(retailShops);
+                _dbContext.SaveChanges();
+            }
+
+            // Seed Employees
+            if (!_dbContext.Employees.Any())
+            {
+                var employees = new List<Employee>
+                {
+                    new Employee
+                    {
+                        EmployeeCode = "E001",
+                        FullName = "Nguyen Van A",
+                        Gender = "Male",
+                        DateOfBirth = new DateTime(1985, 3, 15),
+                        Address = "12 Nguyen Trai, District 1, HCMC",
+                        Email = "nva@nexus.com",
+                        Phone = "0901234567",
+                        IdentificationNo = "123456789",
+                        Password = "password123",
+                        Status = true,
+                        EmployeeRoleId = 1, // Replace with valid RoleId
+                        RetailShopId = 1 // Replace with valid RetailShopId
+                    },
+                    new Employee
+                    {
+                        EmployeeCode = "E002",
+                        FullName = "Tran Thi B",
+                        Gender = "Female",
+                        DateOfBirth = new DateTime(1990, 7, 10),
+                        Address = "45 Le Loi, District 3, HCMC",
+                        Email = "ttb@nexus.com",
+                        Phone = "0909876543",
+                        IdentificationNo = "987654321",
+                        Password = "password456",
+                        Status = true,
+                        EmployeeRoleId = 2, // Replace with valid RoleId
+                        RetailShopId = 2 // Replace with valid RetailShopId
+                    },
+                    // Add more employees as needed
+                };
+
+                _dbContext.Employees.AddRange(employees);
+                _dbContext.SaveChanges();
+            }
 
             // Seed dữ liệu Customers
             if (!_dbContext.Customers.Any())
@@ -158,7 +276,80 @@ namespace NEXUS_API.Data
                 _dbContext.CustomerRequests.AddRange(customerRequests);
                 _dbContext.SaveChanges();
             }
-                     
+
+            // Seed SupportRequests
+            if (!_dbContext.SupportRequests.Any())
+            {
+                var supportRequests = new List<SupportRequest>
+            {
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 5),
+                    Title = "Request for Broadband Repair",
+                    DetailContent = "The broadband connection is not working since yesterday evening.",
+                    DateResolved = null,
+                    IsResolved = false,
+                    CustomerId = 1, // Replace with valid CustomerId
+                    EmpIdResolver = null // No resolver yet
+                },
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 10),
+                    Title = "Request for Land-line Repair",
+                    DetailContent = "Land-line phone is not working properly; there is a lot of static noise.",
+                    DateResolved = new DateTime(2024, 1, 12),
+                    IsResolved = true,
+                    CustomerId = 2, // Replace with valid CustomerId
+                    EmpIdResolver = 1 // EmployeeId of resolver
+                },
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 15),
+                    Title = "Help with Dial-up Internet Configuration",
+                    DetailContent = "Need assistance in configuring the dial-up connection for better speed.",
+                    DateResolved = null,
+                    IsResolved = false,
+                    CustomerId = 3, // Replace with valid CustomerId
+                    EmpIdResolver = null // No resolver yet
+                }
+            };
+
+                        _dbContext.SupportRequests.AddRange(supportRequests);
+                        _dbContext.SaveChanges();
+                    }
+
+                    // Seed FeedBacks
+                    if (!_dbContext.FeedBacks.Any())
+                    {
+                        var feedbacks = new List<FeedBack>
+            {
+                new FeedBack
+                {
+                    Title = "Excellent Service",
+                    FeedBackContent = "The technician was very helpful and resolved my issue quickly.",
+                    Status = true, // Feedback has been read
+                    CustomerId = 1 // Replace with valid CustomerId
+                },
+                new FeedBack
+                {
+                    Title = "Need Faster Response",
+                    FeedBackContent = "The service team took longer than expected to respond to my request.",
+                    Status = false, // Feedback not yet read
+                    CustomerId = 2 // Replace with valid CustomerId
+                },
+                new FeedBack
+                {
+                    Title = "Great Support",
+                    FeedBackContent = "I appreciate the support I received for setting up my new broadband connection.",
+                    Status = true, // Feedback has been read
+                    CustomerId = 3 // Replace with valid CustomerId
+                }
+            };
+
+                _dbContext.FeedBacks.AddRange(feedbacks);
+                _dbContext.SaveChanges();
+            }
+
         }
 
     }

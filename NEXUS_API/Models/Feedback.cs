@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NEXUS_API.Models
 {
     public class FeedBack
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FeedBackId { get; set; }
 
         [Required(ErrorMessage = "Title is required")]
@@ -13,7 +15,7 @@ namespace NEXUS_API.Models
 
         [Required(ErrorMessage = "Feedback content is required")]
         [StringLength(1000, ErrorMessage = "Content cannot be longer than 1000 characters")]
-        public string FeedBbackContent { get; set; }
+        public string FeedBackContent { get; set; }
 
         [Required(ErrorMessage = "Status is required")]
         public bool Status { get; set; } // Indicates whether feedback has been read

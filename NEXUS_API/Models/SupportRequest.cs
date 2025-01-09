@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace NEXUS_API.Models
 {
     public class SupportRequest
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SupportRequestId { get; set; }
 
         [Required(ErrorMessage = "Date of request is required")]
@@ -17,7 +19,7 @@ namespace NEXUS_API.Models
         [StringLength(1000, ErrorMessage = "Content cannot be longer than 1000 characters")]
         public string DetailContent { get; set; }
         public DateTime? DateResolved { get; set; }
-        public bool IsResolved { get; set; }
+        public bool IsResolved { get; set; } = false;
 
         //Relationship
         [Required]
