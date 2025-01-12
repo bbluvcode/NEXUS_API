@@ -11,6 +11,8 @@ namespace NEXUS_API.DTOs
         public string ServiceRequest { get; set; }
 
         public string EquipmentRequest { get; set; }
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateResolve { get; set; }
 
         public bool IsResponse { get; set; } // Indicates if the request has been responded to
         public int CustomerId { get; set; }

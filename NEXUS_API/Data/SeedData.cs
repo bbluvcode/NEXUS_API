@@ -89,7 +89,7 @@ namespace NEXUS_API.Data
                         Phone = "0987654321",
                         IsMainOffice = false,
                         Fax = "987654321",
-                        RegionId = 1 // Replace with a valid RegionId in your database
+                        RegionId = 2 // Replace with a valid RegionId in your database
                     },
                     new RetailShop
                     {
@@ -99,7 +99,7 @@ namespace NEXUS_API.Data
                         Phone = "0912345678",
                         IsMainOffice = false,
                         Fax = "091234567",
-                        RegionId = 2 // Replace with a valid RegionId in your database
+                        RegionId = 3 // Replace with a valid RegionId in your database
                     },
                     new RetailShop
                     {
@@ -209,6 +209,26 @@ namespace NEXUS_API.Data
                 _dbContext.Customers.AddRange(
                     new Customer
                     {
+                        FullName = "test",
+                        Gender = "Male",
+                        DateOfBirth = new DateTime(1990, 5, 20),
+                        Address = "test",
+                        Email = "test@gmail.com",
+                        PhoneNumber = "0901234567",
+                        IdentificationNo = "123456789",
+                        Image = "test",
+                        Password = "password123",
+                        RefreshToken = null,
+                        RefreshTokenExpried = null,
+                        FailedLoginAttempts = 0,
+                        ExpiredBan = null,
+                        Code = null,
+                        ExpiredCode = null,
+                        SendCodeAttempts = 0,
+                        LastSendCodeDate = null
+                    },
+                    new Customer
+                    {
                         FullName = "Nguyen Van A",
                         Gender = "Male",
                         DateOfBirth = new DateTime(1990, 5, 20),
@@ -277,9 +297,19 @@ namespace NEXUS_API.Data
                 {
                     new CustomerRequest
                     {
+                        RequestTitle = "test",
+                        ServiceRequest = "test",
+                        EquipmentRequest = "test",
+                        DateCreate = new DateTime(2024,1,10),
+                        IsResponse = false,
+                        CustomerId = 1
+                    },
+                    new CustomerRequest
+                    {
                         RequestTitle = "Broadband Installation",
                         ServiceRequest = "Request to install a broadband internet connection.",
                         EquipmentRequest = "Broadband Router Model BR123",
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
                         CustomerId = 1
                     },
@@ -288,6 +318,7 @@ namespace NEXUS_API.Data
                         RequestTitle = "Land-line Issue",
                         ServiceRequest = "The land-line phone has no dial tone.",
                         EquipmentRequest = "Replacement Handset Model LH456",
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
                         CustomerId = 1
                     },
@@ -296,6 +327,7 @@ namespace NEXUS_API.Data
                         RequestTitle = "Dial-up Assistance",
                         ServiceRequest = "Unable to connect to the internet using dial-up.",
                         EquipmentRequest = "Dial-up Modem Model DM789",
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
                         CustomerId = 1
                     },
@@ -304,6 +336,7 @@ namespace NEXUS_API.Data
                         RequestTitle = "Broadband Speed Issue",
                         ServiceRequest = "Broadband connection is slower than expected.",
                         EquipmentRequest = null,
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
                         CustomerId = 2
                     },
@@ -312,6 +345,7 @@ namespace NEXUS_API.Data
                         RequestTitle = "Land-line Installation",
                         ServiceRequest = "Request to install a new land-line phone.",
                         EquipmentRequest = "Land-line Phone Model LL321",
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
                         CustomerId = 2
                     },
@@ -320,6 +354,7 @@ namespace NEXUS_API.Data
                         RequestTitle = "Dial-up Account Setup",
                         ServiceRequest = "Need help setting up a new dial-up account.",
                         EquipmentRequest = null,
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
                         CustomerId = 2
                     },
@@ -328,6 +363,7 @@ namespace NEXUS_API.Data
                         RequestTitle = "Broadband Router Replacement",
                         ServiceRequest = "The broadband router is not working and needs replacement.",
                         EquipmentRequest = "New Router Model BR999",
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
                         CustomerId = 3
                     },
@@ -336,6 +372,7 @@ namespace NEXUS_API.Data
                         RequestTitle = "Land-line Noise Issue",
                         ServiceRequest = "There is excessive noise on the land-line during calls.",
                         EquipmentRequest = null,
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
                         CustomerId = 3
                     },
@@ -344,6 +381,16 @@ namespace NEXUS_API.Data
                         RequestTitle = "Dial-up Connection Issue",
                         ServiceRequest = "Frequent disconnections while using dial-up internet.",
                         EquipmentRequest = "Replacement Modem Model DM111",
+                        DateCreate = new DateTime(2024,1,10),
+                        IsResponse = true,
+                        CustomerId = 3
+                    },
+                    new CustomerRequest
+                    {
+                        RequestTitle = "test",
+                        ServiceRequest = "test",
+                        EquipmentRequest = "test",
+                        DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
                         CustomerId = 3
                     }
@@ -387,7 +434,17 @@ namespace NEXUS_API.Data
                         IsResolved = false,
                         CustomerId = 3, // Replace with valid CustomerId
                         EmpIdResolver = null // No resolver yet
-                    }
+                    },
+                    new SupportRequest
+                    {
+                        DateRequest = new DateTime(2024, 1, 5),
+                        Title = "test",
+                        DetailContent = "test",
+                        DateResolved = null,
+                        IsResolved = false,
+                        CustomerId = 1, // Replace with valid CustomerId
+                        EmpIdResolver = null // No resolver yet
+                    },
                 };
             _dbContext.SupportRequests.AddRange(supportRequests);
             _dbContext.SaveChanges();

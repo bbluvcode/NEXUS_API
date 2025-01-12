@@ -19,6 +19,9 @@ namespace NEXUS_API.Models
         public string ServiceRequest { get; set; }
 
         public string? EquipmentRequest { get; set; }
+        [Required]
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateResolve { get; set; }
 
         [Required]
         public bool IsResponse { get; set; } // Indicates if the request has been responded to

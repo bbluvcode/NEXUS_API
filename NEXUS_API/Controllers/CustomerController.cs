@@ -136,6 +136,8 @@ namespace NEXUS_API.Controllers
                 Address = x.Customer.Address,
                 Email = x.Customer.Email,
                 PhoneNumber = x.Customer.PhoneNumber,
+                DateCreate = x.DateCreate,
+                DateResolve = x.DateResolve,
             }).ToList();
             var response = new ApiResponse(StatusCodes.Status200OK, "Get list of customer request successfully", customerRequestList);
             return Ok(response);
@@ -162,6 +164,8 @@ namespace NEXUS_API.Controllers
                 Address = x.Customer.Address,
                 Email = x.Customer.Email,
                 PhoneNumber = x.Customer.PhoneNumber,
+                DateCreate = x.DateCreate,
+                DateResolve = x.DateResolve,
             }).ToList();
             var response = new ApiResponse(StatusCodes.Status200OK, "Get Requests of CustomerID: successfully", customerRequestList);
             return Ok(response);
