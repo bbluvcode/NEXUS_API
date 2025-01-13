@@ -262,6 +262,7 @@ namespace NEXUS_API.Controllers
             {
                 SupportRequestId = sr.SupportRequestId,
                 DateRequest = sr.DateRequest,
+                CustomerId = sr.CustomerId,
                 Title = sr.Title,
                 DetailContent = sr.DetailContent,
                 DateResolved = sr.DateResolved,
@@ -349,6 +350,7 @@ namespace NEXUS_API.Controllers
             var feedbackDTOs = feedbacks.Select(fb => new FeedbackDTO
             {
                 FeedBackId = fb.FeedBackId,
+                Date = fb.Date,
                 Title = fb.Title,
                 FeedBackContent = fb.FeedBackContent,
                 Status = fb.Status,
@@ -364,7 +366,6 @@ namespace NEXUS_API.Controllers
             var response = new ApiResponse(StatusCodes.Status200OK, "Get feedbacks successfully", feedbackDTOs);
             return Ok(response);
         }
-
 
         [HttpPost("create-feedback")]
         public async Task<IActionResult> CreateFeedback([FromForm] FeedBack feedback)

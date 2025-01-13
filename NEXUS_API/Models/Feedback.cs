@@ -8,6 +8,8 @@ namespace NEXUS_API.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FeedBackId { get; set; }
+        [Required]
+        public DateTime Date { get; set; }
 
         [Required(ErrorMessage = "Title is required")]
         [StringLength(200, ErrorMessage = "Title cannot be longer than 200 characters")]

@@ -8,6 +8,7 @@ namespace NEXUS_API.DTOs
     {
 
         public int FeedBackId { get; set; }
+        public DateTime Date { get; set; }
 
         public string Title { get; set; }
 

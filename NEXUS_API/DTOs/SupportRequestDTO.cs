@@ -7,6 +7,7 @@ namespace NEXUS_API.DTOs
         public int SupportRequestId { get; set; }
 
         public DateTime DateRequest { get; set; }
+        public int CustomerId { get; set; }
 
         public string Title { get; set; }
 

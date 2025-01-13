@@ -12,44 +12,57 @@ namespace NEXUS_API.Data
             if (!_dbContext.Regions.Any())
             {
                 var regions = new List<Region>
+            {
+                new Region
                 {
-                   new Region
-                    {
-                        RegionCode = "HCMC-001",
-                        RegionName = "Ho Chi Minh City"
-                    },
-                    new Region
-                    {
-                        RegionCode = "HN-002",
-                        RegionName = "Ha Noi"
-                    },
-                    new Region
-                    {
-                        RegionCode = "DN-003",
-                        RegionName = "Da Nang"
-                    },
-                    new Region
-                    {
-                        RegionCode = "ASIA-004",
-                        RegionName = "Asia Headquarters"
-                    },
-                    new Region
-                    {
-                        RegionCode = "SG-005",
-                        RegionName = "Singapore"
-                    },
-                    new Region
-                    {
-                        RegionCode = "KL-006",
-                        RegionName = "Kuala Lumpur"
-                    },
-                    new Region
-                    {
-                        RegionCode = "BKK-007",
-                        RegionName = "Bangkok"
-                    }
-
-                };
+                    RegionCode = "HCMC-001",
+                    RegionName = "Ho Chi Minh City",
+                    Latitude = 10.8231,
+                    Longitude = 106.6297
+                },
+                new Region
+                {
+                    RegionCode = "HN-002",
+                    RegionName = "Ha Noi",
+                    Latitude = 21.0285,
+                    Longitude = 105.8542
+                },
+                new Region
+                {
+                    RegionCode = "DN-003",
+                    RegionName = "Da Nang",
+                    Latitude = 16.0471,
+                    Longitude = 108.2068
+                },
+                new Region
+                {
+                    RegionCode = "ASIA-004",
+                    RegionName = "Asia Headquarters",
+                    Latitude = 0.0,  // Use an appropriate location or a central location
+                    Longitude = 0.0
+                },
+                new Region
+                {
+                    RegionCode = "SG-005",
+                    RegionName = "Singapore",
+                    Latitude = 1.3521,
+                    Longitude = 103.8198
+                },
+                new Region
+                {
+                    RegionCode = "KL-006",
+                    RegionName = "Kuala Lumpur",
+                    Latitude = 3.1390,
+                    Longitude = 101.6869
+                },
+                new Region
+                {
+                    RegionCode = "BKK-007",
+                    RegionName = "Bangkok",
+                    Latitude = 13.7563,
+                    Longitude = 100.5018
+                }
+            };
                 _dbContext.Regions.AddRange(regions);
                 _dbContext.SaveChanges();
             }
@@ -214,7 +227,7 @@ namespace NEXUS_API.Data
                         DateOfBirth = new DateTime(1990, 5, 20),
                         Address = "test",
                         Email = "test@gmail.com",
-                        PhoneNumber = "0901234567",
+                        PhoneNumber = "09012345675",
                         IdentificationNo = "123456789",
                         Image = "test",
                         Password = "password123",
@@ -408,6 +421,16 @@ namespace NEXUS_API.Data
                     new SupportRequest
                     {
                         DateRequest = new DateTime(2024, 1, 5),
+                        Title = "test",
+                        DetailContent = "test",
+                        DateResolved = null,
+                        IsResolved = false,
+                        CustomerId = 1, // Replace with valid CustomerId
+                        EmpIdResolver = null // No resolver yet
+                    },
+                    new SupportRequest
+                    {
+                        DateRequest = new DateTime(2024, 1, 5),
                         Title = "Request for Broadband Repair",
                         DetailContent = "The broadband connection is not working since yesterday evening.",
                         DateResolved = null,
@@ -434,22 +457,11 @@ namespace NEXUS_API.Data
                         IsResolved = false,
                         CustomerId = 3, // Replace with valid CustomerId
                         EmpIdResolver = null // No resolver yet
-                    },
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 5),
-                        Title = "test",
-                        DetailContent = "test",
-                        DateResolved = null,
-                        IsResolved = false,
-                        CustomerId = 1, // Replace with valid CustomerId
-                        EmpIdResolver = null // No resolver yet
-                    },
+                    },                    
                 };
             _dbContext.SupportRequests.AddRange(supportRequests);
             _dbContext.SaveChanges();
             }
-
         // Seed FeedBacks
             if (!_dbContext.FeedBacks.Any())
             {
@@ -457,6 +469,15 @@ namespace NEXUS_API.Data
                 {
                     new FeedBack
                     {
+                        Date = new DateTime(2024, 1, 5),
+                        Title = "test",
+                        FeedBackContent = "test",
+                        Status = true, // Feedback has been read
+                        CustomerId = 1 // Replace with valid CustomerId
+                    },
+                    new FeedBack
+                    {
+                        Date = new DateTime(2024, 1, 6),
                         Title = "Excellent Service",
                         FeedBackContent = "The technician was very helpful and resolved my issue quickly.",
                         Status = true, // Feedback has been read
@@ -464,6 +485,7 @@ namespace NEXUS_API.Data
                     },
                     new FeedBack
                     {
+                        Date = new DateTime(2024, 1, 6),
                         Title = "Need Faster Response",
                         FeedBackContent = "The service team took longer than expected to respond to my request.",
                         Status = false, // Feedback not yet read
@@ -471,6 +493,7 @@ namespace NEXUS_API.Data
                     },
                     new FeedBack
                     {
+                        Date = new DateTime(2024, 1, 7),
                         Title = "Great Support",
                         FeedBackContent = "I appreciate the support I received for setting up my new broadband connection.",
                         Status = true, // Feedback has been read
