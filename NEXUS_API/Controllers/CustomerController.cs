@@ -30,7 +30,7 @@ namespace NEXUS_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
+        public async Task<IActionResult> CreateCustomer([FromForm] Customer customer)
         {
             object response = null;
             try
@@ -54,7 +54,7 @@ namespace NEXUS_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] Customer customerUpdate)
+        public async Task<IActionResult> UpdateCustomer(int id, [FromForm] Customer customerUpdate)
         {
             object response = null;
             try

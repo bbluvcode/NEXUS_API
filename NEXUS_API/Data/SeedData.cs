@@ -304,6 +304,8 @@ namespace NEXUS_API.Data
 
                 _dbContext.SaveChanges();
             }
+            
+            // Seed dữ liệu Customers Request
             if (!_dbContext.CustomerRequests.Any())
             {
                 var customerRequests = new List<CustomerRequest>
