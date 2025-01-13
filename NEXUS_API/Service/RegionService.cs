@@ -25,7 +25,7 @@ namespace NEXUS_API.Service
 
         public async Task AddRegionAsync(Region region)
         {
-            _dbContext.Regions.Add(region);
+            await _dbContext.Regions.AddAsync(region);
             await _dbContext.SaveChangesAsync();
         }
 

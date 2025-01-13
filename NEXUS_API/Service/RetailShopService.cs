@@ -14,7 +14,7 @@
             }
             public async Task AddRetailShopAsync(RetailShop retailShop)
             {
-                _dbContext.RetailShops.Add(retailShop);
+                await _dbContext.RetailShops.AddAsync(retailShop);
                 await _dbContext.SaveChangesAsync();
             }
 
