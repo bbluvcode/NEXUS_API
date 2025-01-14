@@ -121,14 +121,14 @@ namespace NEXUS_API.Controllers
         [HttpGet("all-customer-request")]
         public async Task<IActionResult> GetAllCustomerRequest()
         {
-            var list = await _dbContext.CustomerRequests.Include(x=>x.Customer).ToListAsync();
-            var customerRequestList = list.Select(x=>new CustomerRequestDTO
+            var list = await _dbContext.CustomerRequests.Include(x => x.Customer).ToListAsync();
+            var customerRequestList = list.Select(x => new CustomerRequestDTO
             {
                 CustomerId = x.CustomerId,
                 RequestId = x.RequestId,
                 RequestTitle = x.RequestTitle,
-                ServiceRequest =x.ServiceRequest,
-                EquipmentRequest =x.EquipmentRequest,
+                ServiceRequest = x.ServiceRequest,
+                EquipmentRequest = x.EquipmentRequest,
                 IsResponse = x.IsResponse,
                 FullName = x.Customer.FullName,
                 Gender = x.Customer.Gender,
@@ -147,7 +147,7 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetCustomerRequestByCusID(int cusID)
         {
             var list = await _dbContext.CustomerRequests
-                .Where(x=>x.CustomerId == cusID)
+                .Where(x => x.CustomerId == cusID)
                 .Include(x => x.Customer)
                 .ToListAsync();
             var customerRequestList = list.Select(x => new CustomerRequestDTO
@@ -204,7 +204,7 @@ namespace NEXUS_API.Controllers
                 if (ModelState.IsValid)
                 {
                     var existingReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(x => x.RequestId == cusReq.RequestId);
-                    if(existingReq != null)
+                    if (existingReq != null)
                     {
                         _dbContext.Entry(existingReq).CurrentValues.SetValues(cusReq);
                         await _dbContext.SaveChangesAsync();
@@ -214,9 +214,9 @@ namespace NEXUS_API.Controllers
                     }
                     response = new ApiResponse(StatusCodes.Status404NotFound, "customer request not found", null);
                     return NotFound(response);
-            }
+                }
                 response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null);
-            return BadRequest(response);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -231,7 +231,7 @@ namespace NEXUS_API.Controllers
             try
             {
                 var existingCusReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(x => x.RequestId == cusReqID);
-                if(existingCusReq != null)
+                if (existingCusReq != null)
                 {
                     _dbContext.CustomerRequests.Remove(existingCusReq);
                     await _dbContext.SaveChangesAsync();
@@ -247,6 +247,40 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, response);
             }
         }
+
+        [HttpPut("change-status-customer-request/{reqID}")]
+        public async Task<IActionResult> ChangeStatusCustomerRequest(int reqID)
+        {
+            object response = null;
+            try
+            {
+                var existingReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(x => x.RequestId == reqID);
+                if (existingReq != null)
+                {
+                    existingReq.IsResponse = !existingReq.IsResponse;
+                    if (existingReq.IsResponse)
+                    {
+                        existingReq.DateResolve = DateTime.Now; // Fixed the DateTime.Now() to DateTime.Now
+                    }
+                    else
+                    {
+                        existingReq.DateResolve = null;
+                    }
+                    await _dbContext.SaveChangesAsync();
+                    response = new ApiResponse(StatusCodes.Status200OK, "Change status customer request successfully!", existingReq);
+                    return Ok(response);
+                }
+                response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null);
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error: " + ex.Message, null);
+                return StatusCode(500, response);
+            }
+        }
+
+
         //=====================END - CUSMER REQUEST======================
         //===============================================================
         //=====================SUPPORT REQUEST===========================
@@ -419,5 +453,28 @@ namespace NEXUS_API.Controllers
             }
         }
 
+        [HttpPut("change-status-feedback-status/{fbID}")]
+        public async Task<IActionResult> ChangeStatusFeedback(int fbID)
+        {
+            object response = null;
+            try
+            {
+                var existingfb = await _dbContext.FeedBacks.FirstOrDefaultAsync(x => x.FeedBackId == fbID);
+                if (existingfb != null)
+                {
+                    existingfb.Status = !existingfb.Status;
+                    await _dbContext.SaveChangesAsync();
+                    response = new ApiResponse(StatusCodes.Status200OK, "Change status feedback successfully!", existingfb);
+                    return Ok(response);
+                }
+                response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null);
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error: " + ex.Message, null);
+                return StatusCode(500, response);
+            }
+        }
     }
 }
