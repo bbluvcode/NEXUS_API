@@ -15,6 +15,7 @@ namespace NEXUS_API.Controllers
         public RetailShopController(IRetailShopRepository retailShopRepository)
         {
             _retailShopRepository = retailShopRepository;
+            //man da ghe
         }
 
         // Lấy danh sách tất cả RetailShops
