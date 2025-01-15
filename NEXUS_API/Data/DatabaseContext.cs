@@ -38,7 +38,7 @@ namespace NEXUS_API.Data
         public DbSet<Vendor> Vendors { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<EmployeeRole>().ToTable("EmployeeRole"); // Sửa tên bảng thành EmployeeRole
+            modelBuilder.Entity<EmployeeRole>().ToTable("EmployeeRoles"); // Sửa tên bảng thành EmployeeRole
             base.OnModelCreating(modelBuilder);
             base.OnModelCreating(modelBuilder);
             //Customer
