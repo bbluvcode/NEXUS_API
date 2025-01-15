@@ -87,7 +87,7 @@ namespace NEXUS_API.Controllers
                     });
 
                 await _regionRepository.AddRegionAsync(region);
-                return CreatedAtAction(nameof(GetRegionById), new { id = region.RegionID }, new
+                return CreatedAtAction(nameof(GetRegionById), new { id = region.RegionId }, new
                 {
                     data = region,
                     message = "Region created successfully",
@@ -110,7 +110,7 @@ namespace NEXUS_API.Controllers
         {
             try
             {
-                if (id != region.RegionID)
+                if (id != region.RegionId)
                     return BadRequest(new
                     {
                         message = "Region ID mismatch.",

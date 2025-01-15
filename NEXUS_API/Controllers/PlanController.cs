@@ -58,7 +58,7 @@ namespace NEXUS_API.Controllers
             object response = null;
             try
             {
-                var plan = await _dbContext.Plans.FirstOrDefaultAsync(p => p.PlanID == id);
+                var plan = await _dbContext.Plans.FirstOrDefaultAsync(p => p.PlanId == id);
                 if (plan == null)
                 {
                     response = new ApiResponse(StatusCodes.Status404NotFound, "plan not found", null);
@@ -93,7 +93,7 @@ namespace NEXUS_API.Controllers
             object response = null;
             try
             {
-                var plan = await _dbContext.Plans.FirstOrDefaultAsync(p => p.PlanID == id);
+                var plan = await _dbContext.Plans.FirstOrDefaultAsync(p => p.PlanId == id);
                 if (plan == null)
                 {
                     response = new ApiResponse(StatusCodes.Status404NotFound, "plan not found", null);

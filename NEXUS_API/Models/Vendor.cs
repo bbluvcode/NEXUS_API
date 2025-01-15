@@ -27,5 +27,10 @@ namespace NEXUS_API.Models
         [StringLength(1000)]
         public string Description { get; set; }
 
+        //Relationship
+        public int? RegionId { get; set; }
+        public Region? Region { get; set; }
+        public ICollection<Equipment>? Equipments { get; set; }
+        public ICollection<InStockOrder>? InStockOrders { get; set; }
     }
 }

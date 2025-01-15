@@ -1,11 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NEXUS_API.Models
 {
+    [Table("employeeRole")]
     public class EmployeeRole
     {
-        public int RoleID { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int RoleId { get; set; }
         [Required]
         public string RoleName { get; set; }
+
+        //Relationship
+        public ICollection<Employee>? Employees { get; set; }
     }
 }

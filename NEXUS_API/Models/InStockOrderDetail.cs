@@ -1,22 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NEXUS_API.Models
 {
     public class InStockOrderDetail
     {
         [Key]
-        public int ISODID { get; set; } 
-
+        public int InStockOrderDetailId { get; set; } 
         [Required]
-        public int ISOID { get; set; } 
-
+        public int Quantity { get; set; }
         [Required]
-        public int EquipmentID { get; set; } 
-
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Price { get; set; }
+        //Relationship
         [Required]
-        public int Quantity { get; set; } 
-
+        public int InStockOrderId { get; set; }
+        public InStockOrder? InStockOrder { get; set; }
         [Required]
-        public float Price { get; set; } 
+        public int EquipmentId { get; set; }
+        public Equipment? Equipment { get; set; }
     }
 }
