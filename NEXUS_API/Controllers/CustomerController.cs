@@ -30,7 +30,7 @@ namespace NEXUS_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
+        public async Task<IActionResult> CreateCustomer([FromForm] Customer customer)
         {
             object response = null;
             try
@@ -54,7 +54,7 @@ namespace NEXUS_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] Customer customerUpdate)
+        public async Task<IActionResult> UpdateCustomer(int id, [FromForm] Customer customerUpdate)
         {
             object response = null;
             try
@@ -121,14 +121,14 @@ namespace NEXUS_API.Controllers
         [HttpGet("all-customer-request")]
         public async Task<IActionResult> GetAllCustomerRequest()
         {
-            var list = await _dbContext.CustomerRequests.Include(x=>x.Customer).ToListAsync();
-            var customerRequestList = list.Select(x=>new CustomerRequestDTO
+            var list = await _dbContext.CustomerRequests.Include(x => x.Customer).ToListAsync();
+            var customerRequestList = list.Select(x => new CustomerRequestDTO
             {
                 CustomerId = x.CustomerId,
                 RequestId = x.RequestId,
                 RequestTitle = x.RequestTitle,
-                ServiceRequest =x.ServiceRequest,
-                EquipmentRequest =x.EquipmentRequest,
+                ServiceRequest = x.ServiceRequest,
+                EquipmentRequest = x.EquipmentRequest,
                 IsResponse = x.IsResponse,
                 FullName = x.Customer.FullName,
                 Gender = x.Customer.Gender,
@@ -136,6 +136,8 @@ namespace NEXUS_API.Controllers
                 Address = x.Customer.Address,
                 Email = x.Customer.Email,
                 PhoneNumber = x.Customer.PhoneNumber,
+                DateCreate = x.DateCreate,
+                DateResolve = x.DateResolve,
             }).ToList();
             var response = new ApiResponse(StatusCodes.Status200OK, "Get list of customer request successfully", customerRequestList);
             return Ok(response);
@@ -145,7 +147,7 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetCustomerRequestByCusID(int cusID)
         {
             var list = await _dbContext.CustomerRequests
-                .Where(x=>x.CustomerId == cusID)
+                .Where(x => x.CustomerId == cusID)
                 .Include(x => x.Customer)
                 .ToListAsync();
             var customerRequestList = list.Select(x => new CustomerRequestDTO
@@ -162,6 +164,8 @@ namespace NEXUS_API.Controllers
                 Address = x.Customer.Address,
                 Email = x.Customer.Email,
                 PhoneNumber = x.Customer.PhoneNumber,
+                DateCreate = x.DateCreate,
+                DateResolve = x.DateResolve,
             }).ToList();
             var response = new ApiResponse(StatusCodes.Status200OK, "Get Requests of CustomerID: successfully", customerRequestList);
             return Ok(response);
@@ -200,7 +204,7 @@ namespace NEXUS_API.Controllers
                 if (ModelState.IsValid)
                 {
                     var existingReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(x => x.RequestId == cusReq.RequestId);
-                    if(existingReq != null)
+                    if (existingReq != null)
                     {
                         _dbContext.Entry(existingReq).CurrentValues.SetValues(cusReq);
                         await _dbContext.SaveChangesAsync();
@@ -210,9 +214,9 @@ namespace NEXUS_API.Controllers
                     }
                     response = new ApiResponse(StatusCodes.Status404NotFound, "customer request not found", null);
                     return NotFound(response);
-            }
+                }
                 response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null);
-            return BadRequest(response);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -227,7 +231,7 @@ namespace NEXUS_API.Controllers
             try
             {
                 var existingCusReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(x => x.RequestId == cusReqID);
-                if(existingCusReq != null)
+                if (existingCusReq != null)
                 {
                     _dbContext.CustomerRequests.Remove(existingCusReq);
                     await _dbContext.SaveChangesAsync();
@@ -244,5 +248,233 @@ namespace NEXUS_API.Controllers
             }
         }
 
+        [HttpPut("change-status-customer-request/{reqID}")]
+        public async Task<IActionResult> ChangeStatusCustomerRequest(int reqID)
+        {
+            object response = null;
+            try
+            {
+                var existingReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(x => x.RequestId == reqID);
+                if (existingReq != null)
+                {
+                    existingReq.IsResponse = !existingReq.IsResponse;
+                    if (existingReq.IsResponse)
+                    {
+                        existingReq.DateResolve = DateTime.Now; // Fixed the DateTime.Now() to DateTime.Now
+                    }
+                    else
+                    {
+                        existingReq.DateResolve = null;
+                    }
+                    await _dbContext.SaveChangesAsync();
+                    response = new ApiResponse(StatusCodes.Status200OK, "Change status customer request successfully!", existingReq);
+                    return Ok(response);
+                }
+                response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null);
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error: " + ex.Message, null);
+                return StatusCode(500, response);
+            }
+        }
+
+
+        //=====================END - CUSMER REQUEST======================
+        //===============================================================
+        //=====================SUPPORT REQUEST===========================
+        [HttpGet("support-requests")]
+        public async Task<IActionResult> GetSupportRequests()
+        {
+            var supportRequests = await _dbContext.SupportRequests
+                .Include(x => x.Customer)
+                .Include(x => x.Employee)
+                .ToListAsync();
+
+            var supportRequestDTOs = supportRequests.Select(sr => new SupportRequestDTO
+            {
+                SupportRequestId = sr.SupportRequestId,
+                DateRequest = sr.DateRequest,
+                CustomerId = sr.CustomerId,
+                Title = sr.Title,
+                DetailContent = sr.DetailContent,
+                DateResolved = sr.DateResolved,
+                IsResolved = sr.IsResolved,
+                FullName = sr.Customer.FullName,
+                Gender = sr.Customer.Gender,
+                DateOfBirth = sr.Customer.DateOfBirth,
+                Address = sr.Customer.Address,
+                Email = sr.Customer.Email,
+                PhoneNumber = sr.Customer.PhoneNumber
+            }).ToList();
+
+            var response = new ApiResponse(StatusCodes.Status200OK, "Get support requests successfully", supportRequestDTOs);
+            return Ok(response);
+        }
+
+
+        [HttpPost("create-support-request")]
+        public async Task<IActionResult> CreateSupportRequest([FromForm] SupportRequest supportRequest)
+        {
+            object response = null;
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    supportRequest.IsResolved = false;
+                    supportRequest.DateRequest = DateTime.Now;
+                    supportRequest.DateResolved = null;
+
+                    await _dbContext.SupportRequests.AddAsync(supportRequest);
+                    await _dbContext.SaveChangesAsync();
+
+                    response = new ApiResponse(StatusCodes.Status201Created, "Create support request successfully", supportRequest);
+                    return Created("success", response);
+                }
+
+                response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid support request data", null);
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, $"Server error: {ex.Message}", null);
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("resolve-support-request/{id}")]
+        public async Task<IActionResult> ResolveSupportRequest(int id, [FromForm] int empIdResolver)
+        {
+            object response = null;
+            try
+            {
+                var supportRequest = await _dbContext.SupportRequests.FirstOrDefaultAsync(sr => sr.SupportRequestId == id);
+                if (supportRequest == null)
+                {
+                    response = new ApiResponse(StatusCodes.Status404NotFound, "Support request not found", null);
+                    return NotFound(response);
+                }
+
+                supportRequest.IsResolved = true;
+                supportRequest.DateResolved = DateTime.Now;
+                supportRequest.EmpIdResolver = empIdResolver;
+
+                await _dbContext.SaveChangesAsync();
+
+                response = new ApiResponse(StatusCodes.Status200OK, "Resolve support request successfully", supportRequest);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, $"Server error: {ex.Message}", null);
+                return StatusCode(500, response);
+            }
+        }
+        //=====================END - SUPPORT REQUEST======================
+        //================================================================
+        //=====================FEED BACKS=================================
+        [HttpGet("feedbacks")]
+        public async Task<IActionResult> GetFeedbacks()
+        {
+            var feedbacks = await _dbContext.FeedBacks
+                .Include(x => x.Customer)
+                .ToListAsync();
+
+            var feedbackDTOs = feedbacks.Select(fb => new FeedbackDTO
+            {
+                FeedBackId = fb.FeedBackId,
+                Date = fb.Date,
+                Title = fb.Title,
+                FeedBackContent = fb.FeedBackContent,
+                Status = fb.Status,
+                CustomerId = fb.Customer.CustomerId,
+                FullName = fb.Customer.FullName,
+                Gender = fb.Customer.Gender,
+                DateOfBirth = fb.Customer.DateOfBirth,
+                Address = fb.Customer.Address,
+                Email = fb.Customer.Email,
+                PhoneNumber = fb.Customer.PhoneNumber
+            }).ToList();
+
+            var response = new ApiResponse(StatusCodes.Status200OK, "Get feedbacks successfully", feedbackDTOs);
+            return Ok(response);
+        }
+
+        [HttpPost("create-feedback")]
+        public async Task<IActionResult> CreateFeedback([FromForm] FeedBack feedback)
+        {
+            object response = null;
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _dbContext.FeedBacks.AddAsync(feedback);
+                    await _dbContext.SaveChangesAsync();
+
+                    response = new ApiResponse(StatusCodes.Status201Created, "Create feedback successfully", feedback);
+                    return Created("success", response);
+                }
+
+                response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid feedback data", null);
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, $"Server error: {ex.Message}", null);
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("update-feedback-status/{id}")]
+        public async Task<IActionResult> UpdateFeedbackStatus(int id, [FromForm] bool status)
+        {
+            object response = null;
+            try
+            {
+                var feedback = await _dbContext.FeedBacks.FirstOrDefaultAsync(fb => fb.FeedBackId == id);
+                if (feedback == null)
+                {
+                    response = new ApiResponse(StatusCodes.Status404NotFound, "Feedback not found", null);
+                    return NotFound(response);
+                }
+
+                feedback.Status = status;
+
+                await _dbContext.SaveChangesAsync();
+
+                response = new ApiResponse(StatusCodes.Status200OK, "Update feedback status successfully", feedback);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, $"Server error: {ex.Message}", null);
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPut("change-status-feedback-status/{fbID}")]
+        public async Task<IActionResult> ChangeStatusFeedback(int fbID)
+        {
+            object response = null;
+            try
+            {
+                var existingfb = await _dbContext.FeedBacks.FirstOrDefaultAsync(x => x.FeedBackId == fbID);
+                if (existingfb != null)
+                {
+                    existingfb.Status = !existingfb.Status;
+                    await _dbContext.SaveChangesAsync();
+                    response = new ApiResponse(StatusCodes.Status200OK, "Change status feedback successfully!", existingfb);
+                    return Ok(response);
+                }
+                response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null);
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error: " + ex.Message, null);
+                return StatusCode(500, response);
+            }
+        }
     }
 }

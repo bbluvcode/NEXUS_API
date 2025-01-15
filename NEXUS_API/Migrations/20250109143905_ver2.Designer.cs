@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NEXUS_API.Data;
 
@@ -11,9 +12,11 @@ using NEXUS_API.Data;
 namespace NEXUS_API.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250109143905_ver2")]
+    partial class ver2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,13 +204,6 @@ namespace NEXUS_API.Migrations
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime?>("DateCreate")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateResolve")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("EquipmentRequest")
                         .HasColumnType("nvarchar(max)");
@@ -457,10 +453,7 @@ namespace NEXUS_API.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FeedBackContent")
+                    b.Property<string>("FeedBbackContent")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -806,12 +799,6 @@ namespace NEXUS_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RegionId"));
 
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(10,5)");
-
-                    b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(10,5)");
-
                     b.Property<string>("RegionCode")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -862,8 +849,8 @@ namespace NEXUS_API.Migrations
 
                     b.Property<string>("RetailShopName")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
 
                     b.HasKey("RetailShopId");
 

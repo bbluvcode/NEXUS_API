@@ -8,7 +8,7 @@ namespace NEXUS_API.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RetailShopId { get; set; }
         [Required]
-        [StringLength(15)]
+        [StringLength(30)]
         public string RetailShopName { get; set; }
         [Required]
         [StringLength(50)]
@@ -29,6 +29,5 @@ namespace NEXUS_API.Models
         public int RegionId { get; set; }
         public Region? Region { get; set; }
         public ICollection<Employee>? Employees { get; set; }
-        public Stock? Stock { get; set; }
     }
 }

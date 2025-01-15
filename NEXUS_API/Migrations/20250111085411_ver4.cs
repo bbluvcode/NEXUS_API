@@ -5,34 +5,34 @@
 namespace NEXUS_API.Migrations
 {
     /// <inheritdoc />
-    public partial class ver6b : Migration
+    public partial class ver4 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "EquipmentRequest",
-                table: "CustomerRequests",
-                type: "nvarchar(max)",
-                nullable: true,
+                name: "RetailShopName",
+                table: "RetailShops",
+                type: "nvarchar(30)",
+                maxLength: 30,
+                nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(1000)",
-                oldMaxLength: 1000);
+                oldType: "nvarchar(15)",
+                oldMaxLength: 15);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "EquipmentRequest",
-                table: "CustomerRequests",
-                type: "nvarchar(1000)",
-                maxLength: 1000,
+                name: "RetailShopName",
+                table: "RetailShops",
+                type: "nvarchar(15)",
+                maxLength: 15,
                 nullable: false,
-                defaultValue: "",
                 oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
+                oldType: "nvarchar(30)",
+                oldMaxLength: 30);
         }
     }
 }

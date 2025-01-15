@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NEXUS_API.Models
 {
-    public class Customer:IUserAuth
+    public class Customer : IUserAuth
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

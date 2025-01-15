@@ -12,8 +12,8 @@ using NEXUS_API.Data;
 namespace NEXUS_API.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250107170332_ver6b")]
-    partial class ver6b
+    [Migration("20250108083752_UpVer1")]
+    partial class UpVer1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1037,10 +1037,7 @@ namespace NEXUS_API.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int?>("RegionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RetailShopId")
+                    b.Property<int>("RegionId")
                         .HasColumnType("int");
 
                     b.Property<string>("StockName")
@@ -1051,9 +1048,6 @@ namespace NEXUS_API.Migrations
                     b.HasKey("StockId");
 
                     b.HasIndex("RegionId");
-
-                    b.HasIndex("RetailShopId")
-                        .IsUnique();
 
                     b.ToTable("Stocks");
                 });
@@ -1477,17 +1471,11 @@ namespace NEXUS_API.Migrations
                 {
                     b.HasOne("NEXUS_API.Models.Region", "Region")
                         .WithMany("Stocks")
-                        .HasForeignKey("RegionId");
-
-                    b.HasOne("NEXUS_API.Models.RetailShop", "RetailShop")
-                        .WithOne("Stock")
-                        .HasForeignKey("NEXUS_API.Models.Stock", "RetailShopId")
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Region");
-
-                    b.Navigation("RetailShop");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.SupportRequest", b =>
@@ -1612,8 +1600,6 @@ namespace NEXUS_API.Migrations
             modelBuilder.Entity("NEXUS_API.Models.RetailShop", b =>
                 {
                     b.Navigation("Employees");
-
-                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.ServiceBill", b =>

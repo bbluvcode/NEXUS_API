@@ -4,6 +4,17 @@ namespace NEXUS_API.DTOs
 {
     public class CustomerRequestDTO
     {
+        public int RequestId { get; set; }
+
+        public string RequestTitle { get; set; }
+
+        public string ServiceRequest { get; set; }
+
+        public string EquipmentRequest { get; set; }
+        public DateTime? DateCreate { get; set; }
+        public DateTime? DateResolve { get; set; }
+
+        public bool IsResponse { get; set; } // Indicates if the request has been responded to
         public int CustomerId { get; set; }
 
         public string FullName { get; set; }
@@ -16,14 +27,6 @@ namespace NEXUS_API.DTOs
         public string Email { get; set; }
 
         public string PhoneNumber { get; set; }
-        public int RequestId { get; set; }
-
-        public string RequestTitle { get; set; }
-
-        public string ServiceRequest { get; set; }
-
-        public string EquipmentRequest { get; set; }
-
-        public bool IsResponse { get; set; } // Indicates if the request has been responded to
+      
     }
 }

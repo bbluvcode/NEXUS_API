@@ -4,6 +4,7 @@
     {
         string Email { get; set; }
         string Password { get; set; }
+        string FullName { get; set; }
         string? RefreshToken { get; set; }
         DateTime? RefreshTokenExpried { get; set; }
         int FailedLoginAttempts { get; set; }

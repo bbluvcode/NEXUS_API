@@ -226,7 +226,100 @@ namespace NEXUS_API.Controllers
             {
                 ToMail = authSendCode.Email,
                 Subject = isResend ? "Reset Password - Resend Code" : "Reset Password",
-                HtmlContent = $"Your verification code is {user.Code}. It will expire in {expiryCodeTime} minutes."
+                HtmlContent = $@"
+                <html>
+                <head>
+                      <style>
+                        .email-container {{
+                            font-family: 'Arial', sans-serif;
+                            line-height: 1.6;
+                            color: #333333;
+                            background-color: #f4f4f4;
+                            width: 50%;
+                            margin: 0 auto;
+                            padding: 20px;
+                            border: 1px solid #dddddd;
+                            border-radius: 5px;
+                            text-align: center;
+                        }}
+                        .header {{
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background-color: #2c3e50;
+                            color: #ffffff;
+                            padding: 15px;
+                            border-radius: 5px 5px 0 0;
+                        }}
+                        .header img {{
+                            width: 80px;
+                            height: 80px;
+                            border-radius: 50%;
+                        }}
+                        .header h1 {{
+                            text-align: center;
+                            font-size: 36px;
+                            font-weight: bold;
+                            margin-top: 5px;
+                            margin-left: 60px;
+                            color: #e74c3c;
+                        }}
+                        .content {{
+                            padding: 15px;
+                            background-color: #f6d365;
+                            text-align: left;
+                            margin-bottom: 0;
+                        }}
+                        .content p {{
+                            font-size: 16px;
+                            color: #666666;
+                            margin: 15px 0;
+                            margin-top: 0;
+                        }}
+                        .content strong {{
+                            color: #e74c3c;
+                            font-size: 18px;
+                        }}
+                        .footer {{
+                            font-size: 16px;
+                            color: #999999;
+                            text-align: center;
+                            padding: 10px 0;
+                            background-color: #2c3e50;
+                            border-radius: 0 0 5px 5px;
+                        }}
+                        .footer a {{
+                            color: #3498db;
+                            text-decoration: none;
+                        }}
+                        .footer a:hover {{
+                            text-decoration: underline;
+                        }}
+                    </style>    
+                </head>
+                <body>
+                    <div class='email-container'>
+                        <div class='header'>                            
+                            <img src='https://cdn-imddh.nitrocdn.com/BgpVdYdrOyYzGZDHCldtezOehOYupTPa/assets/images/optimized/rev-f05fc79/www.technoserve.org/files/images/content/our-work_how-we-work_market-system_graphic.png' alt='Company Logo'>
+                            <h1>Reset Password</h1>                        
+                        </div>
+                        <div class='content'>
+                            <p>Hi {user.FullName},</p>                    
+                            <p>There was a request to change your password!</p>                                 
+                            <p>No changes have been made to your account yet.</p>                                            
+                            <p>You can reset your password. Your verification code is <strong>{user.Code}</strong>.</p>
+                            <p>This code will expire in <strong>{expiryCodeTime}</strong> minutes.</p>
+                            <p>If you did not request a password reset, please ignore this email.</p>                   
+                            <p>Yours,</p>
+                            <p>The NEXUS team</p>
+                        </div>
+                        <div class='footer'>
+                            <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
+                            <p><a href='https://youtube.com'>Visit our website</a></p>
+                        </div>
+                    </div>
+                </body>
+                </html>"
             };
             try
             {
