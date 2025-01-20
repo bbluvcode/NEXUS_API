@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NEXUS_API.Data;
+using NEXUS_API.DTOs;
 using NEXUS_API.Models;
 using NEXUS_API.Repository;
 using NEXUS_API.Service;
@@ -7,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace NEXUS_API.Controllers
 {
+    //man
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeeController : Controller
@@ -29,6 +33,30 @@ namespace NEXUS_API.Controllers
                 {
                     data = employees,
                     message = "get employees successfully",
+                    status = HttpStatusCode.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = ex.Message,
+                    status = HttpStatusCode.InternalServerError
+                });
+            }
+        }
+
+        // Lấy danh sách tất cả nhân viên
+        [HttpGet("role")]
+        public async Task<IActionResult> GetAllEmployeeRole()
+        {
+            try
+            {
+                var employeeRoles = await _employeeRepository.GetAllEmployeeRolesAsync();
+                return Ok(new
+                {
+                    data = employeeRoles,
+                    message = "get employeeRoles successfully",
                     status = HttpStatusCode.OK
                 });
             }
@@ -79,15 +107,42 @@ namespace NEXUS_API.Controllers
         {
             try
             {
+                // Kiểm tra model state
                 if (!ModelState.IsValid)
+                {
                     return BadRequest(new
                     {
                         message = "Invalid model state",
                         status = HttpStatusCode.BadRequest
                     });
+                }
 
+                // Kiểm tra RetailShopId có tồn tại trong bảng RetailShops
+                var retailShopExists = await _employeeRepository.GetRetailShopByIdAsync(employee.RetailShopId);
+                if (retailShopExists == null)
+                {
+                    return NotFound(new
+                    {
+                        message = $"RetailShop with ID {employee.RetailShopId} does not exist.",
+                        status = HttpStatusCode.NotFound
+                    });
+                }
+                // Kiểm tra RoleID có tồn tại trong bảng RetailShops
+                var roleExists = await _employeeRepository.GetEmployeeRoleByIdAsync(employee.EmployeeRoleId);
+                if (roleExists == null)
+                {
+                    return NotFound(new
+                    {
+                        message = $"EmployeeRole with ID {employee.EmployeeRoleId} does not exist.",
+                        status = HttpStatusCode.NotFound
+                    });
+                }
+
+                // Thêm nhân viên
                 await _employeeRepository.AddEmployeeAsync(employee);
-                return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.EmpID }, new
+
+                // Trả về thông tin nhân viên vừa thêm
+                return CreatedAtAction(nameof(GetEmployeeById), new { id = employee.EmployeeId }, new
                 {
                     data = employee,
                     message = "Employee created successfully",
@@ -96,6 +151,7 @@ namespace NEXUS_API.Controllers
             }
             catch (Exception ex)
             {
+                // Xử lý ngoại lệ
                 return StatusCode(500, new
                 {
                     message = ex.Message,
@@ -104,21 +160,31 @@ namespace NEXUS_API.Controllers
             }
         }
 
-        // Cập nhật vai trò của nhân viên
         [HttpPut("{id}/role")]
-        public async Task<IActionResult> UpdateEmployeeRole(int id, [FromBody] Employee employee)
+        public async Task<IActionResult> UpdateEmployeeRole(int id, [FromBody] UpdateEmployeeRoleDto updateRoleDto)
         {
+            if (id != updateRoleDto.EmployeeId)
+            {
+                return BadRequest(new
+                {
+                    message = "Employee ID mismatch.",
+                    status = HttpStatusCode.BadRequest
+                });
+            }
+
             try
             {
-                if (id != employee.EmpID)
-                    return BadRequest(new
-                    {
-                        message = "Employee ID mismatch.",
-                        status = HttpStatusCode.BadRequest
-                    });
+                await _employeeRepository.EditRoleEmployeeByIdAsync(new Employee
+                {
+                    EmployeeId = updateRoleDto.EmployeeId,
+                    EmployeeRoleId = updateRoleDto.EmployeeRoleId
+                });
 
-                await _employeeRepository.EditRoleEmployeeAsync(employee);
-                return NoContent(); // Status 204
+                return Ok(new
+                {
+                    employeeId = updateRoleDto.EmployeeId,
+                    roleId = updateRoleDto.EmployeeRoleId
+                });
             }
             catch (Exception ex)
             {
@@ -129,6 +195,8 @@ namespace NEXUS_API.Controllers
                 });
             }
         }
+
+
 
         // Chuyển đổi trạng thái công việc của nhân viên (toggle)
         [HttpPut("{id}/status")]
@@ -145,7 +213,12 @@ namespace NEXUS_API.Controllers
                     });
 
                 await _employeeRepository.EditStatusEmployeeAsync(employee);
-                return NoContent(); // Status 204
+
+                return Ok(new
+                {
+                    employeeId = employee.EmployeeId,
+                    status = employee.Status
+                });
             }
             catch (Exception ex)
             {
@@ -154,6 +227,59 @@ namespace NEXUS_API.Controllers
                     message = ex.Message,
                     status = HttpStatusCode.InternalServerError
                 });
+            }
+        }
+
+        [HttpPut("{id}/employeeRole")]
+        public async Task<IActionResult> UpdateRole(int id, [FromBody] EmployeeRole employeeRole)
+        {
+            if (id != employeeRole.RoleId)
+            {
+                return BadRequest(new
+                {
+                    message = "Role ID mismatch.",
+                    status = HttpStatusCode.BadRequest
+                });
+            }
+
+            try
+            {
+                // Call the repository method to update the role
+                await _employeeRepository.EditRoleEmployeeAsync(employeeRole);
+
+                return Ok(new
+                {
+                    roleId = employeeRole.RoleId,
+                    roleName = employeeRole.RoleName,
+                    message = "Role updated successfully",
+                    status = HttpStatusCode.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = ex.Message,
+                    status = HttpStatusCode.InternalServerError
+                });
+            }
+        }
+        [HttpPost("addRole")]
+        public async Task<IActionResult> AddRole([FromBody] EmployeeRole employeeRole)
+        {
+            if (employeeRole == null)
+            {
+                return BadRequest("Invalid role data.");
+            }
+
+            try
+            {
+                await _employeeRepository.AddEmployeeRoleAsync(employeeRole);
+                return Ok(new { message = "Role added successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
             }
         }
     }

@@ -1,18 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace NEXUS_API.Models.Man
+namespace NEXUS_API.Models
 {
     public class Account
     {
         [Key]
-        [StringLength(16, MinimumLength = 16, ErrorMessage = "Account ID must be exactly 16 characters.")]
-        [RegularExpression(@"^\d{16}$", ErrorMessage = "Account ID must contain only digits.")]
-        public string AccID { get; set; }
-
+        public string AccountId { get; set; } 
         [Required]
-        public int CusID { get; set; } // Foreign Key to Customer table
-
+        public int CustomerId { get; set; }
+        public Customer? Customer { get; set; } 
         [Required]
-        public int DiscountID { get; set; } // Foreign Key to Discount table        
+        public string? Type { get; set; }
+        public ICollection<ServiceOrder>? ServiceOrders { get; set; }
     }
 }

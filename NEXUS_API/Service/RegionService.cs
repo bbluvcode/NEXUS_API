@@ -20,18 +20,18 @@ namespace NEXUS_API.Service
 
         public async Task<Region> GetRegionByIdAsync(int id)
         {
-            return await _dbContext.Regions.FirstOrDefaultAsync(r => r.RegionID == id);
+            return await _dbContext.Regions.FirstOrDefaultAsync(r => r.RegionId == id);
         }
 
         public async Task AddRegionAsync(Region region)
         {
-            _dbContext.Regions.Add(region);
+            await _dbContext.Regions.AddAsync(region);
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateRegionAsync(Region region)
         {
-            var existingRegion = await _dbContext.Regions.FindAsync(region.RegionID);
+            var existingRegion = await _dbContext.Regions.FindAsync(region.RegionId);
             if (existingRegion != null)
             {
                 existingRegion.RegionCode = region.RegionCode;

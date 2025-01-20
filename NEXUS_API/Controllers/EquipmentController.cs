@@ -40,7 +40,7 @@ namespace NEXUS_API.Controllers
             try
             {
                 var equipments = await _dbContext.Equipments
-                    .Where(e=>e.TypeId == type)
+                    .Where(e=>e.EquipmentTypeId == type)
                     .ToListAsync();
                 var response = new ApiResponse(StatusCodes.Status200OK, "Get Equipments By Type successfully", equipments);
                 return Ok(response);

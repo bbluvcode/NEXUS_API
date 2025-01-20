@@ -6,14 +6,18 @@ namespace NEXUS_API.Models
     public class InStockRequestDetail
     {
         [Key]
-        public int ISRDID { get; set; } 
+        public int InStockRequestDetailId { get; set; } 
         [Required]
-        public int ISRID { get; set; } 
+        public int InStockRequestId { get; set; } 
 
         [Required]
-        public int EquipmentID { get; set; } 
+        public int EquipmentId { get; set; } 
 
         [Required]
         public int Quantity { get; set; }
+
+        //Relationship
+        public InStockRequest? InStockRequest { get; set; }
+        public Equipment? Equipment { get; set; }
     }
 }

@@ -1,14 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NEXUS_API.Helpers;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NEXUS_API.Models
 {
-    public class Customer
+    public class Customer : IUserAuth
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [StringLength(15)]
-        public string CustID { get; set; }
+        public int CustomerId { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -16,10 +16,10 @@ namespace NEXUS_API.Models
 
         [Required]
         [StringLength(7)]
-        public string Gender { get; set; }
+        public string? Gender { get; set; }
 
         [Required]
-        public DateTime Birthdate { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -31,13 +31,29 @@ namespace NEXUS_API.Models
 
         [Required]
         [StringLength(20)]
-        public string Phone { get; set; }
+        public string PhoneNumber { get; set; }
 
         [Required]
         [StringLength(20)]
-        public string IdentificationNo { get; set; }
+        public string? IdentificationNo { get; set; }
 
         [StringLength(50)]
-        public string Image { get; set; }
+        public string? Image { get; set; }
+        public string? Password { get; set; }
+
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpried { get; set; }
+        public int FailedLoginAttempts { get; set; } = 0;
+        public DateTime? ExpiredBan { get; set; }
+        public string? Code { get; set; }
+        public DateTime? ExpiredCode { get; set; }
+        public int SendCodeAttempts { get; set; } = 0;
+        public DateTime? LastSendCodeDate { get; set; }
+
+        //Relationship
+        public ICollection<SupportRequest>? SupportRequests { get; set; }
+        public ICollection<CustomerRequest>? CustomerRequests { get; set; }
+        public ICollection<Account>? Accounts { get; set; }
+        public ICollection<FeedBack>? FeedBacks { get; set; }
     }
 }

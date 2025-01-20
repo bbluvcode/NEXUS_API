@@ -2,14 +2,14 @@
 using System.ComponentModel.DataAnnotations;
 namespace NEXUS_API.Models
 {
-    public class RetainShop
+    public class RetailShop
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int RSId { get; set; }
+        public int RetailShopId { get; set; }
         [Required]
-        [StringLength(15)]
-        public string RSName { get; set; }
+        [StringLength(30)]
+        public string RetailShopName { get; set; }
         [Required]
         [StringLength(50)]
         public string Address { get; set; }
@@ -24,5 +24,10 @@ namespace NEXUS_API.Models
         [StringLength(15)]
         public string Fax { get; set; }
 
+        //Relationship
+        [Required]
+        public int RegionId { get; set; }
+        public Region? Region { get; set; }
+        public ICollection<Employee>? Employees { get; set; }
     }
 }

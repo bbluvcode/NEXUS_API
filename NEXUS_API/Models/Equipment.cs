@@ -14,9 +14,20 @@ namespace NEXUS_API.Models
         public int StockQuantity { get; set; }
         public string Description { get; set; }       
         public bool Status { get; set; }
-        public int TypeId { get; set; }
-        public EquipmentType? EquipmentType { get; set; }
         public string? DiscountId { get; set; }
         public Discount? Discount { get; set; }
+
+        //Relationship
+        [Required]
+        public int EquipmentTypeId { get; set; }
+        public EquipmentType? EquipmentType { get; set; }
+        [Required]
+        public int VendorId { get; set; }
+        public Vendor? Vendor { get; set; }
+        [Required]
+        public int StockId { get; set; }
+        public Stock? Stock { get; set; }
+        public ICollection<InStockOrderDetail>? InStockOrderDetails { get; set; }
+        public ICollection<OutStockOrderDetail>? OutStockOrderDetails { get; set; }
     }
 }
