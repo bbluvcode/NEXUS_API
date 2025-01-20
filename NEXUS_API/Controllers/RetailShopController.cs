@@ -90,7 +90,7 @@ namespace NEXUS_API.Controllers
                 if (imageFile != null && imageFile.Length > 0)
                 {
                     // Sử dụng thư mục con trong project hiện tại
-                    var uploadsFolder = Path.Combine(@"D:\2308A0\HK3\API\NEXUS_API\NEXUS_API\NEXUS_API\Images\imageRetail");
+                    var uploadsFolder = Path.Combine(@"D:\2308A0\HK3\API\NEXUS_API\NEXUS_API\NEXUS_API\NEXUS_API\Images\imageRetail");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -107,7 +107,7 @@ namespace NEXUS_API.Controllers
                     }
 
                     // Lưu đường dẫn ảnh vào database
-                    retailShop.Image = "/uploads/imageRetail/" + fileName;
+                    retailShop.Image = "/Images/imageRetail/" + fileName;
                 }
                 else
                 {
@@ -146,7 +146,7 @@ namespace NEXUS_API.Controllers
                 if (imageFile != null)
                 {
                     // Sử dụng thư mục con trong project hiện tại
-                    string uploadsFolder = Path.Combine(@"D:\2308A0\HK3\API\NEXUS_API\NEXUS_API\NEXUS_API\Images\imageRetail");
+                    string uploadsFolder = Path.Combine(@"D:\2308A0\HK3\API\NEXUS_API\NEXUS_API\NEXUS_API\NEXUS_API\Images\imageRetail");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -160,7 +160,7 @@ namespace NEXUS_API.Controllers
                         await imageFile.CopyToAsync(stream);
                     }
 
-                    retailShop.Image = "/uploads/imageRetail/" + fileName;
+                    retailShop.Image = "/Images/imageRetail/" + fileName;
                 }
 
                 await _retailShopRepository.UpdateRetailShopAsync(retailShop);
