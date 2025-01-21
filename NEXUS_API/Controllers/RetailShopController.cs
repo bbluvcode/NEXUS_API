@@ -89,8 +89,8 @@ namespace NEXUS_API.Controllers
                 // Kiểm tra nếu có file ảnh
                 if (imageFile != null && imageFile.Length > 0)
                 {
-                    // Tạo đường dẫn thư mục tương đối từ thư mục chạy ứng dụng
-                    var baseDirectory = AppContext.BaseDirectory;
+                    // Thay đổi baseDirectory để trỏ tới thư mục root của dự án
+                    var baseDirectory = Directory.GetCurrentDirectory();
                     var uploadsFolder = Path.Combine(baseDirectory, "Images", "imageRetail");
                     if (!Directory.Exists(uploadsFolder))
                     {
@@ -108,7 +108,8 @@ namespace NEXUS_API.Controllers
                     }
 
                     // Lưu đường dẫn ảnh vào database
-                    retailShop.Image = Path.Combine("Images", "imageRetail", fileName).Replace("\\", "/");
+                    retailShop.Image = Path.Combine("/Images", "imageRetail", fileName).Replace("\\", "/");
+                    Console.WriteLine(filePath);
                 }
                 else
                 {
@@ -144,8 +145,8 @@ namespace NEXUS_API.Controllers
 
                 if (imageFile != null)
                 {
-                    // Tạo đường dẫn thư mục tương đối từ thư mục chạy ứng dụng
-                    var baseDirectory = AppContext.BaseDirectory;
+                    // Thay đổi baseDirectory để trỏ tới thư mục root của dự án
+                    var baseDirectory = Directory.GetCurrentDirectory();
                     var uploadsFolder = Path.Combine(baseDirectory, "Images", "imageRetail");
                     if (!Directory.Exists(uploadsFolder))
                     {
