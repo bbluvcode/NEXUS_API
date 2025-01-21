@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NEXUS_API.Models
 {
-    [Table("employeeRole")]
+    [Table("employeeRoles")]
     public class EmployeeRole
     {
         [Key]
