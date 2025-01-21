@@ -89,8 +89,9 @@ namespace NEXUS_API.Controllers
                 // Kiểm tra nếu có file ảnh
                 if (imageFile != null && imageFile.Length > 0)
                 {
-                    // Sử dụng thư mục con trong project hiện tại
-                    var uploadsFolder = Path.Combine(@"D:\2308A0\HK3\API\NEXUS_API\NEXUS_API\NEXUS_API\NEXUS_API\Images\imageRetail");
+                    // Tạo đường dẫn thư mục tương đối từ thư mục chạy ứng dụng
+                    var baseDirectory = AppContext.BaseDirectory;
+                    var uploadsFolder = Path.Combine(baseDirectory, "Images", "imageRetail");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -107,7 +108,7 @@ namespace NEXUS_API.Controllers
                     }
 
                     // Lưu đường dẫn ảnh vào database
-                    retailShop.Image = "/Images/imageRetail/" + fileName;
+                    retailShop.Image = Path.Combine("Images", "imageRetail", fileName).Replace("\\", "/");
                 }
                 else
                 {
@@ -133,8 +134,6 @@ namespace NEXUS_API.Controllers
             }
         }
 
-
-
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRetailShop(int id, [FromForm] RetailShop retailShop, IFormFile? imageFile)
         {
@@ -145,22 +144,23 @@ namespace NEXUS_API.Controllers
 
                 if (imageFile != null)
                 {
-                    // Sử dụng thư mục con trong project hiện tại
-                    string uploadsFolder = Path.Combine(@"D:\2308A0\HK3\API\NEXUS_API\NEXUS_API\NEXUS_API\NEXUS_API\Images\imageRetail");
+                    // Tạo đường dẫn thư mục tương đối từ thư mục chạy ứng dụng
+                    var baseDirectory = AppContext.BaseDirectory;
+                    var uploadsFolder = Path.Combine(baseDirectory, "Images", "imageRetail");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
                     }
 
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-                    string filePath = Path.Combine(uploadsFolder, fileName);
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await imageFile.CopyToAsync(stream);
                     }
 
-                    retailShop.Image = "/Images/imageRetail/" + fileName;
+                    retailShop.Image = Path.Combine("Images", "imageRetail", fileName).Replace("\\", "/");
                 }
 
                 await _retailShopRepository.UpdateRetailShopAsync(retailShop);
