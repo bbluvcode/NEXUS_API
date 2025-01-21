@@ -39,6 +39,7 @@ namespace NEXUS_API.Controllers
                     message = ex.Message,
                     status = HttpStatusCode.InternalServerError
                 });
+                //2
             }
         }
 
