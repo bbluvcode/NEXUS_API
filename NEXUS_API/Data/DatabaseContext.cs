@@ -40,7 +40,7 @@ namespace NEXUS_API.Data
         {
             modelBuilder.Entity<EmployeeRole>().ToTable("EmployeeRoles"); // Sửa tên bảng thành EmployeeRole
             base.OnModelCreating(modelBuilder);
-            base.OnModelCreating(modelBuilder);
+
             //Customer
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.CustomerRequests)
@@ -50,6 +50,13 @@ namespace NEXUS_API.Data
                 .HasMany(c => c.FeedBacks)
                 .WithOne(fb => fb.Customer)
                 .HasForeignKey(fb => fb.CustomerId);
+
+            //CustomerRequest
+            modelBuilder.Entity<CustomerRequest>()
+                .HasOne(cr => cr.Region)
+                .WithMany()
+                .HasForeignKey(cr => cr.RegionId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             //Account
             modelBuilder.Entity<Account>()
@@ -200,14 +207,29 @@ namespace NEXUS_API.Data
 
             // ServiceOrder
             modelBuilder.Entity<ServiceOrder>()
-                .HasOne(so => so.EmployeeCreater)
-                .WithMany(e => e.CreatedOrders)
+                .HasOne(so => so.EmployeeCreator)
+                .WithMany()
                 .HasForeignKey(so => so.EmpIDCreater)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(s => s.EmployeeSurveyor)
+                .WithMany()
+                .HasForeignKey(s => s.EmpIDSurveyor)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ServiceOrder>()
                 .HasOne(so => so.Account)
                 .WithMany(a => a.ServiceOrders)
                 .HasForeignKey(so => so.AccountId)
+                .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(s => s.CustomerRequest)
+                .WithMany()
+                .HasForeignKey(s => s.RequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(s => s.PlanFee)
+                .WithMany()
+                .HasForeignKey(s => s.PlanFeeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             //ServiceBill
