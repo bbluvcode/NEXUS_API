@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using NEXUS_API.Controllers;
 using NEXUS_API.Data;
@@ -55,6 +56,13 @@ namespace NEXUS_API
                 };
             });
             var app = builder.Build();
+
+            // Cho phép truy cập thư mục Images
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+                RequestPath = "/Images"
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

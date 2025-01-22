@@ -56,7 +56,7 @@ namespace NEXUS_API.Data
                 .HasOne(cr => cr.Region)
                 .WithMany()
                 .HasForeignKey(cr => cr.RegionId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             //Account
             modelBuilder.Entity<Account>()

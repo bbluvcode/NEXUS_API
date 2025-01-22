@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NEXUS_API.Migrations
 {
     /// <inheritdoc />
-    public partial class UpVer1 : Migration
+    public partial class Up22 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,7 +57,7 @@ namespace NEXUS_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmployeeRole",
+                name: "EmployeeRoles",
                 columns: table => new
                 {
                     RoleId = table.Column<int>(type: "int", nullable: false)
@@ -66,7 +66,7 @@ namespace NEXUS_API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeRole", x => x.RoleId);
+                    table.PrimaryKey("PK_EmployeeRoles", x => x.RoleId);
                 });
 
             migrationBuilder.CreateTable(
@@ -106,7 +106,9 @@ namespace NEXUS_API.Migrations
                     RegionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RegionCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    RegionName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    RegionName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Latitude = table.Column<decimal>(type: "decimal(10,5)", nullable: false),
+                    Longitude = table.Column<decimal>(type: "decimal(10,5)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,36 +135,14 @@ namespace NEXUS_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CustomerRequests",
-                columns: table => new
-                {
-                    RequestId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RequestTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ServiceRequest = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    EquipmentRequest = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsResponse = table.Column<bool>(type: "bit", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CustomerRequests", x => x.RequestId);
-                    table.ForeignKey(
-                        name: "FK_CustomerRequests_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "CustomerId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "FeedBacks",
                 columns: table => new
                 {
                     FeedBackId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    FeedBbackContent = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    FeedBackContent = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -205,17 +185,50 @@ namespace NEXUS_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CustomerRequests",
+                columns: table => new
+                {
+                    RequestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RequestTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ServiceRequest = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    EquipmentRequest = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateResolve = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsResponse = table.Column<bool>(type: "bit", nullable: false),
+                    RegionId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomerRequests", x => x.RequestId);
+                    table.ForeignKey(
+                        name: "FK_CustomerRequests_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "CustomerId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CustomerRequests_Regions_RegionId",
+                        column: x => x.RegionId,
+                        principalTable: "Regions",
+                        principalColumn: "RegionId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RetailShops",
                 columns: table => new
                 {
                     RetailShopId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RetailShopName = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    RetailShopName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     IsMainOffice = table.Column<bool>(type: "bit", nullable: false),
                     Fax = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     RegionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -308,9 +321,9 @@ namespace NEXUS_API.Migrations
                 {
                     table.PrimaryKey("PK_Employees", x => x.EmployeeId);
                     table.ForeignKey(
-                        name: "FK_Employees_EmployeeRole_EmployeeRoleId",
+                        name: "FK_Employees_EmployeeRoles_EmployeeRoleId",
                         column: x => x.EmployeeRoleId,
-                        principalTable: "EmployeeRole",
+                        principalTable: "EmployeeRoles",
                         principalColumn: "RoleId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -444,16 +457,17 @@ namespace NEXUS_API.Migrations
                 name: "ServiceOrders",
                 columns: table => new
                 {
-                    OrderId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deposit = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    EmpIDSurveyor = table.Column<int>(type: "int", nullable: false),
-                    SurveyDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SurveyStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SurveyDescribe = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmpIDCreater = table.Column<int>(type: "int", nullable: false),
-                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    OrderId = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
+                    DateCreate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Deposit = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    EmpIDCreater = table.Column<int>(type: "int", nullable: true),
+                    EmpIDSurveyor = table.Column<int>(type: "int", nullable: true),
+                    SurveyDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SurveyStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SurveyDescribe = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    RequestId = table.Column<int>(type: "int", nullable: true),
+                    PlanFeeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -463,13 +477,61 @@ namespace NEXUS_API.Migrations
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_ServiceOrders_CustomerRequests_RequestId",
+                        column: x => x.RequestId,
+                        principalTable: "CustomerRequests",
+                        principalColumn: "RequestId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ServiceOrders_Employees_EmpIDCreater",
                         column: x => x.EmpIDCreater,
                         principalTable: "Employees",
                         principalColumn: "EmployeeId",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ServiceOrders_Employees_EmpIDSurveyor",
+                        column: x => x.EmpIDSurveyor,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ServiceOrders_PlanFees_PlanFeeId",
+                        column: x => x.PlanFeeId,
+                        principalTable: "PlanFees",
+                        principalColumn: "PlanFeeId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SupportRequests",
+                columns: table => new
+                {
+                    SupportRequestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DateRequest = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DetailContent = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    DateResolved = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsResolved = table.Column<bool>(type: "bit", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    EmpIdResolver = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupportRequests", x => x.SupportRequestId);
+                    table.ForeignKey(
+                        name: "FK_SupportRequests_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "CustomerId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SupportRequests_Employees_EmpIdResolver",
+                        column: x => x.EmpIdResolver,
+                        principalTable: "Employees",
+                        principalColumn: "EmployeeId");
                 });
 
             migrationBuilder.CreateTable(
@@ -584,7 +646,7 @@ namespace NEXUS_API.Migrations
                     DateCreate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ServiceOrderId = table.Column<int>(type: "int", nullable: false),
+                    ServiceOrderId = table.Column<string>(type: "nvarchar(11)", nullable: false),
                     PlanId = table.Column<int>(type: "int", nullable: false),
                     EquipmentId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -625,7 +687,7 @@ namespace NEXUS_API.Migrations
                     Tax = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     Total = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     IsPay = table.Column<bool>(type: "bit", nullable: false),
-                    ServiceOrderId = table.Column<int>(type: "int", nullable: false)
+                    ServiceOrderId = table.Column<string>(type: "nvarchar(11)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -636,42 +698,6 @@ namespace NEXUS_API.Migrations
                         principalTable: "ServiceOrders",
                         principalColumn: "OrderId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SupportRequests",
-                columns: table => new
-                {
-                    SupportRequestId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateRequest = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    DetailContent = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    DateResolved = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsResolved = table.Column<bool>(type: "bit", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    EmpIdResolver = table.Column<int>(type: "int", nullable: true),
-                    ServiceOrderOrderId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SupportRequests", x => x.SupportRequestId);
-                    table.ForeignKey(
-                        name: "FK_SupportRequests_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "CustomerId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SupportRequests_Employees_EmpIdResolver",
-                        column: x => x.EmpIdResolver,
-                        principalTable: "Employees",
-                        principalColumn: "EmployeeId");
-                    table.ForeignKey(
-                        name: "FK_SupportRequests_ServiceOrders_ServiceOrderOrderId",
-                        column: x => x.ServiceOrderOrderId,
-                        principalTable: "ServiceOrders",
-                        principalColumn: "OrderId");
                 });
 
             migrationBuilder.CreateTable(
@@ -790,6 +816,11 @@ namespace NEXUS_API.Migrations
                 name: "IX_CustomerRequests_CustomerId",
                 table: "CustomerRequests",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomerRequests_RegionId",
+                table: "CustomerRequests",
+                column: "RegionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_Email",
@@ -968,6 +999,21 @@ namespace NEXUS_API.Migrations
                 column: "EmpIDCreater");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ServiceOrders_EmpIDSurveyor",
+                table: "ServiceOrders",
+                column: "EmpIDSurveyor");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceOrders_PlanFeeId",
+                table: "ServiceOrders",
+                column: "PlanFeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceOrders_RequestId",
+                table: "ServiceOrders",
+                column: "RequestId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stocks_RegionId",
                 table: "Stocks",
                 column: "RegionId");
@@ -981,11 +1027,6 @@ namespace NEXUS_API.Migrations
                 name: "IX_SupportRequests_EmpIdResolver",
                 table: "SupportRequests",
                 column: "EmpIdResolver");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SupportRequests_ServiceOrderOrderId",
-                table: "SupportRequests",
-                column: "ServiceOrderOrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SupportRequests_SupportRequestId",
@@ -1005,9 +1046,6 @@ namespace NEXUS_API.Migrations
                 name: "ConnectionDiary");
 
             migrationBuilder.DropTable(
-                name: "CustomerRequests");
-
-            migrationBuilder.DropTable(
                 name: "FeedBacks");
 
             migrationBuilder.DropTable(
@@ -1021,9 +1059,6 @@ namespace NEXUS_API.Migrations
 
             migrationBuilder.DropTable(
                 name: "OutStockOrderDetails");
-
-            migrationBuilder.DropTable(
-                name: "PlanFees");
 
             migrationBuilder.DropTable(
                 name: "ServiceBillDetails");
@@ -1047,9 +1082,6 @@ namespace NEXUS_API.Migrations
                 name: "Equipments");
 
             migrationBuilder.DropTable(
-                name: "Plans");
-
-            migrationBuilder.DropTable(
                 name: "InStockRequests");
 
             migrationBuilder.DropTable(
@@ -1071,16 +1103,25 @@ namespace NEXUS_API.Migrations
                 name: "Accounts");
 
             migrationBuilder.DropTable(
+                name: "CustomerRequests");
+
+            migrationBuilder.DropTable(
                 name: "Employees");
+
+            migrationBuilder.DropTable(
+                name: "PlanFees");
 
             migrationBuilder.DropTable(
                 name: "Customers");
 
             migrationBuilder.DropTable(
-                name: "EmployeeRole");
+                name: "EmployeeRoles");
 
             migrationBuilder.DropTable(
                 name: "RetailShops");
+
+            migrationBuilder.DropTable(
+                name: "Plans");
 
             migrationBuilder.DropTable(
                 name: "Regions");
