@@ -28,6 +28,9 @@ namespace NEXUS_API.Models
 
         //Relationship
         [Required]
+        public int RegionId { get; set; }
+        public Region? Region { get; set; }
+        [Required]
         public int CustomerId { get; set; }
         public Customer? Customer { get; set; }
     }
