@@ -16,9 +16,9 @@ namespace NEXUS_API.Models
 
         [Required]
         [StringLength(1000, ErrorMessage = "Service Request must not exceed 1000 characters.")]
-        public string ServiceRequest { get; set; }
+        public string ServiceRequest { get; set; } //plan fee
 
-        public string? EquipmentRequest { get; set; }
+        public string? EquipmentRequest { get; set; } //equipment expect
         [Required]
         public DateTime? DateCreate { get; set; }
         public DateTime? DateResolve { get; set; }
