@@ -68,6 +68,5 @@ namespace NEXUS_API.Models
         public ICollection<InStockOrder>? InStockOrders { get; set; }
         public ICollection<OutStockOrder>? OutStockOrders { get; set; }
         public ICollection<SupportRequest>? SupportRequests { get; set; }
-        public ICollection<ServiceOrder>? CreatedOrders { get; set; }
     }
 }

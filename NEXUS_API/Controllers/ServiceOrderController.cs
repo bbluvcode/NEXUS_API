@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NEXUS_API.Data;
+using NEXUS_API.DTOs;
 using NEXUS_API.Helpers;
 using NEXUS_API.Models;
 using System;
@@ -66,7 +67,7 @@ namespace NEXUS_API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateServiceOrder(int id, ServiceOrder serviceOrder)
+        public async Task<IActionResult> UpdateServiceOrder(string id, ServiceOrder serviceOrder)
         {
             object response = null;
             if (id != serviceOrder.OrderId)
@@ -87,5 +88,48 @@ namespace NEXUS_API.Controllers
                 return new ObjectResult(response);
             }
         }
+        [HttpPost("create-service-order")]
+        public async Task<IActionResult> CreateServiceOrder([FromBody] ServiceOrderDTO orderDto)
+        {
+            var order = new ServiceOrder
+            {
+                AccountId = orderDto.AccountId,
+                EmpIDCreater = orderDto.EmpIDCreater,
+                DateCreate = DateTime.UtcNow,
+                Deposit = orderDto.Deposit,
+                EmpIDSurveyor = orderDto.EmpIDSurveyor,
+                SurveyDate = orderDto.SurveyDate,
+                SurveyStatus = "valid"
+            };
+
+            _dbContext.ServiceOrders.Add(order);
+            await _dbContext.SaveChangesAsync();
+            return Ok(order);
+        }
+        [HttpPut("update-survey-result/{orderId}")]
+        public async Task<IActionResult> UpdateSurveyResult(int orderId, [FromBody] SurveyResultDTO surveyResultDto)
+        {
+            var order = await _dbContext.ServiceOrders.FindAsync(orderId);
+            if (order == null)
+                return NotFound("Order not found.");
+
+            order.SurveyStatus = surveyResultDto.SurveyStatus;
+            order.SurveyDescribe = surveyResultDto.SurveyDescribe;
+
+            await _dbContext.SaveChangesAsync();
+            return Ok("Survey result updated successfully.");
+        }
+        [HttpPut("complete-order/{orderId}")]
+        public async Task<IActionResult> CompleteOrder(int orderId)
+        {
+            var order = await _dbContext.ServiceOrders.FindAsync(orderId);
+            if (order == null)
+                return NotFound("Order not found.");
+
+            order.SurveyStatus = "finish";
+            await _dbContext.SaveChangesAsync();
+            return Ok("Order completed successfully.");
+        }
+
     }
 }

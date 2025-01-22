@@ -23,7 +23,7 @@ namespace NEXUS_API.Models
 
         //Relationship
         [Required]
-        public int ServiceOrderId { get; set; }
+        public string ServiceOrderId { get; set; }
         public ServiceOrder? ServiceOrder { get; set; }
         public ICollection<ServiceBillDetail>? ServiceBillDetails { get; set; }
     }
