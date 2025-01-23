@@ -82,6 +82,14 @@ namespace NEXUS_API.Controllers
 
                 string orderId = orderPrefix + nextSerialNumber.ToString("D10");
 
+                decimal depositAmount = orderPrefix switch
+                {
+                    "D" => 325m, // Dial-Up Connection Deposit
+                    "B" => 500m, // Broadband Connection Deposit
+                    "T" => 250m, // Telephone Connection Deposit
+                    _ => throw new Exception("Invalid connection type")
+                };
+
                 //Create order
                 var serviceOrder = new ServiceOrder
                 {
@@ -89,6 +97,7 @@ namespace NEXUS_API.Controllers
                     DateCreate = DateTime.UtcNow,
                     RequestId = customerRequest.RequestId,
                     SurveyStatus = "not yet",
+                    Deposit = depositAmount,
                 };
                 _dbContext.ServiceOrders.Add(serviceOrder);
                 await _dbContext.SaveChangesAsync();

@@ -139,7 +139,7 @@ namespace NEXUS_API.Controllers
                     return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Survey already assigned or completed", null));
                 }
                 // employee role Surveyor
-                var surveyor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignSurveyorDto.SurveyorId && e.EmployeeRoleId == 5);
+                var surveyor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignSurveyorDto.SurveyorId && e.EmployeeRoleId == 6);
 
                 if (surveyor == null)
                 {
@@ -209,19 +209,28 @@ namespace NEXUS_API.Controllers
                     _dbContext.Accounts.Add(account);
                     await _dbContext.SaveChangesAsync();
 
-                    
+                    // Get PlanId from PlanFeeId
+                    var planFee = await _dbContext.PlanFees
+                        .Include(pf => pf.Plan)
+                        .FirstOrDefaultAsync(pf => pf.PlanFeeId == updateSurveyDto.PlanFeeId);
+
+                    if (planFee == null)
+                    {
+                        return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid PlanFeeId", null));
+                    }
+
                     serviceOrder.PlanFeeId = updateSurveyDto.PlanFeeId;
                     var connections = new List<Connection>
                     {
                         new Connection
                         {
                             ConnectionId = Guid.NewGuid().ToString(),
-                            NumberOfConnections = updateSurveyDto.NumberOfConnections,
+                            NumberOfConnections = updateSurveyDto.NumberOfConnections ?? 0,
                             DateCreate = DateTime.UtcNow,
                             IsActive = false,
                             Description = "Connection pending activation",
                             ServiceOrderId = serviceOrder.OrderId,
-                            PlanId = updateSurveyDto.PlanFeeId,
+                            PlanId = planFee.PlanId,
                             EquipmentId = updateSurveyDto.EquipmentId 
                         }
                     };
@@ -235,6 +244,21 @@ namespace NEXUS_API.Controllers
                     await _dbContext.SaveChangesAsync();
 
                     return Ok(new ApiResponse(StatusCodes.Status200OK, "Survey updated and account created successfully", serviceOrder));
+                }
+                else if (updateSurveyDto.SurveyStatus == "invalid")
+                {
+                    if (string.IsNullOrWhiteSpace(updateSurveyDto.CancellationReason))
+                    {
+                        return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "CancellationReason is required for invalid surveys", null));
+                    }
+
+                    serviceOrder.SurveyStatus = "cancelled";
+                    serviceOrder.SurveyDate = DateTime.UtcNow;
+                    serviceOrder.SurveyDescribe = updateSurveyDto.CancellationReason;
+                    _dbContext.ServiceOrders.Update(serviceOrder);
+                    await _dbContext.SaveChangesAsync();
+
+                    return Ok(new ApiResponse(StatusCodes.Status200OK, "Survey updated as cancelled", serviceOrder));
                 }
                 else
                 {
@@ -343,6 +367,7 @@ namespace NEXUS_API.Controllers
 
                 // IsActive = true
                 connection.IsActive = true;
+                connection.Description = "Activate-connection";
                 _dbContext.Connections.Update(connection);
 
                 // ConnectionDiary
