@@ -124,7 +124,6 @@ namespace NEXUS_API.Controllers
             var list = await _dbContext.CustomerRequests.Include(x => x.Customer).ToListAsync();
             var customerRequestList = list.Select(x => new CustomerRequestDTO
             {
-                CustomerId = x.CustomerId,
                 RequestId = x.RequestId,
                 RequestTitle = x.RequestTitle,
                 ServiceRequest = x.ServiceRequest,
@@ -137,7 +136,6 @@ namespace NEXUS_API.Controllers
                 Email = x.Customer.Email,
                 PhoneNumber = x.Customer.PhoneNumber,
                 DateCreate = x.DateCreate,
-                DateResolve = x.DateResolve,
             }).ToList();
             var response = new ApiResponse(StatusCodes.Status200OK, "Get list of customer request successfully", customerRequestList);
             return Ok(response);
@@ -152,7 +150,6 @@ namespace NEXUS_API.Controllers
                 .ToListAsync();
             var customerRequestList = list.Select(x => new CustomerRequestDTO
             {
-                CustomerId = x.CustomerId,
                 RequestId = x.RequestId,
                 RequestTitle = x.RequestTitle,
                 ServiceRequest = x.ServiceRequest,
@@ -165,7 +162,6 @@ namespace NEXUS_API.Controllers
                 Email = x.Customer.Email,
                 PhoneNumber = x.Customer.PhoneNumber,
                 DateCreate = x.DateCreate,
-                DateResolve = x.DateResolve,
             }).ToList();
             var response = new ApiResponse(StatusCodes.Status200OK, "Get Requests of CustomerID: successfully", customerRequestList);
             return Ok(response);

@@ -33,7 +33,6 @@ namespace NEXUS_API.Models
         [StringLength(20)]
         public string PhoneNumber { get; set; }
 
-        [Required]
         [StringLength(20)]
         public string? IdentificationNo { get; set; }
 

@@ -50,13 +50,6 @@ namespace NEXUS_API.Controllers
                     customer = existingCustomer;
                 }
 
-                var mainRetailShop = await _dbContext.RetailShops.FirstOrDefaultAsync(r => r.RegionId == customerRequestDto.RegionId && r.IsMainOffice == true);
-                if (mainRetailShop == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status400BadRequest, "No main retail shop found for the specified region", null);
-                    return NotFound(response);
-                }
-
                 var customerRequest = new CustomerRequest
                 {
                     RequestTitle = customerRequestDto.RequestTitle,
@@ -138,100 +131,9 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, response);
             }
         }
-        [HttpPost("create-order")]
-        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDTO createOrderDto)
-        {
-            object response = null;
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        
 
-            try
-            {
-                var customerRequest = await _dbContext.CustomerRequests.FirstOrDefaultAsync(cr => cr.RequestId == createOrderDto.RequestId);
-                if (customerRequest == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "Customer request not found", null);
-                    return NotFound(response);
-                }
 
-                var mainRetailShop = await _dbContext.RetailShops
-                    .FirstOrDefaultAsync(r => r.RegionId == customerRequest.RegionId && r.IsMainOffice == true);
-                if (mainRetailShop == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status400BadRequest, "Main retail shop not found for the specified region", null);
-                    return BadRequest(response);
-                }
-
-                // Tạo mã OrderId
-                string orderId = Guid.NewGuid().ToString("N").Substring(0, 11).ToUpper();
-
-                var serviceOrder = new ServiceOrder
-                {
-                    OrderId = orderId,
-                    DateCreate = DateTime.UtcNow,
-                    Deposit = createOrderDto.Deposit,
-                    EmpIDCreater = createOrderDto.EmpIDCreater,
-                    RequestId = customerRequest.RequestId,
-                    PlanFeeId = createOrderDto.PlanFeeId,
-                    SurveyStatus = "not yet",
-                };
-
-                _dbContext.ServiceOrders.Add(serviceOrder);
-                await _dbContext.SaveChangesAsync();
-
-                response = new ApiResponse(StatusCodes.Status201Created, "Service order created successfully", serviceOrder);
-                return Created("success", response);
-            }
-            catch (Exception ex)
-            {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null);
-                return StatusCode(500, response);
-            }
-        }
-
-        [HttpPost("assign-surveyor")]
-        public async Task<IActionResult> AssignSurveyor([FromBody] AssignSurveyorDTO assignSurveyorDto)
-        {
-            object response = null;
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            try
-            {
-                var serviceOrder = await _dbContext.ServiceOrders.FirstOrDefaultAsync(so => so.OrderId == assignSurveyorDto.OrderId);
-                if (serviceOrder == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "Service order not found", null);
-                    return NotFound(response);
-                }
-                var surveyor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignSurveyorDto.SurveyorId && e.EmployeeRoleId == 2);
-                if (surveyor == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "Surveyor not found", null);
-                    return NotFound(response);
-                }
-
-                // update surveyor
-                serviceOrder.EmpIDSurveyor = surveyor.EmployeeId;
-                serviceOrder.SurveyDate = DateTime.UtcNow;
-                serviceOrder.SurveyStatus = "valid"; 
-                serviceOrder.SurveyDescribe = assignSurveyorDto.SurveyDescribe;
-
-                _dbContext.ServiceOrders.Update(serviceOrder);
-                await _dbContext.SaveChangesAsync();
-
-                response = new ApiResponse(StatusCodes.Status200OK, "Surveyor assigned successfully", serviceOrder);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null);
-                return StatusCode(500, response);
-            }
-        }
         [HttpPut("update-survey-status")]
         public async Task<IActionResult> UpdateSurveyStatus([FromBody] UpdateSurveyStatusDTO updateSurveyStatusDto)
         {

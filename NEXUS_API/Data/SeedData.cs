@@ -386,7 +386,7 @@ namespace NEXUS_API.Data
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
                         RegionId = 1,
-                        CustomerId = 2,
+                        CustomerId = 2
                     },
                     new CustomerRequest
                     {
@@ -396,7 +396,7 @@ namespace NEXUS_API.Data
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
                         RegionId = 1,
-                        CustomerId = 3,
+                        CustomerId = 3
                     },
                     new CustomerRequest
                     {
@@ -406,7 +406,7 @@ namespace NEXUS_API.Data
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
                         RegionId = 1,
-                        CustomerId = 3,
+                        CustomerId = 3
                     },
                     new CustomerRequest
                     {
@@ -426,7 +426,7 @@ namespace NEXUS_API.Data
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
                         RegionId = 1,
-                        CustomerId = 3,
+                        CustomerId = 3
                     }
                 };
 

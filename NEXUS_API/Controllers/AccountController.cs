@@ -17,7 +17,7 @@ namespace NEXUS_API.Controllers
         {
             _dbContext = dbContext;
         }
-
+        [HttpGet("next-customer-sequence")]
         //get next customer sequence
         public async Task<int> GetNextCustomerSequence(string type, string regionCode)
         {
@@ -33,6 +33,7 @@ namespace NEXUS_API.Controllers
             return lastSequence + 1;
         }
         //generate AccountId
+        [HttpGet("generate-accountid")]
         public string GenerateAccountId(string type, string regionCode, int customerSequence)
         {
             return $"{type}-{regionCode}-{customerSequence:D7}";
