@@ -325,6 +325,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "test",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 1
                     },
                     new CustomerRequest
@@ -334,6 +335,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Broadband Router Model BR123",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 1
                     },
                     new CustomerRequest
@@ -343,6 +345,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Replacement Handset Model LH456",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 1
                     },
                     new CustomerRequest
@@ -352,6 +355,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Dial-up Modem Model DM789",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
+                        RegionId = 1,
                         CustomerId = 1
                     },
                     new CustomerRequest
@@ -361,6 +365,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 2
                     },
                     new CustomerRequest
@@ -370,7 +375,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Land-line Phone Model LL321",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
-                        CustomerId = 2
+                        RegionId = 1,
+                        CustomerId = 2,
                     },
                     new CustomerRequest
                     {
@@ -379,7 +385,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
-                        CustomerId = 2
+                        RegionId = 1,
+                        CustomerId = 2,
                     },
                     new CustomerRequest
                     {
@@ -388,7 +395,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "New Router Model BR999",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
-                        CustomerId = 3
+                        RegionId = 1,
+                        CustomerId = 3,
                     },
                     new CustomerRequest
                     {
@@ -397,7 +405,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
-                        CustomerId = 3
+                        RegionId = 1,
+                        CustomerId = 3,
                     },
                     new CustomerRequest
                     {
@@ -406,6 +415,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Replacement Modem Model DM111",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
+                        RegionId = 1,
                         CustomerId = 3
                     },
                     new CustomerRequest
@@ -415,7 +425,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "test",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
-                        CustomerId = 3
+                        RegionId = 1,
+                        CustomerId = 3,
                     }
                 };
 
