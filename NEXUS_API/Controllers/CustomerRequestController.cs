@@ -131,47 +131,5 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, response);
             }
         }
-        
-
-
-        [HttpPut("update-survey-status")]
-        public async Task<IActionResult> UpdateSurveyStatus([FromBody] UpdateSurveyStatusDTO updateSurveyStatusDto)
-        {
-            object response = null;
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            try
-            {
-                var serviceOrder = await _dbContext.ServiceOrders
-                    .FirstOrDefaultAsync(so => so.OrderId == updateSurveyStatusDto.OrderId);
-                if (serviceOrder == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "Service order not found", null);
-                    return NotFound(response);
-                }
-                if (serviceOrder.EmpIDSurveyor != updateSurveyStatusDto.SurveyorId)
-                {
-                    response = new ApiResponse(StatusCodes.Status403Forbidden, "You are not authorized to update this survey", null);
-                    return Forbid();
-                }
-                serviceOrder.SurveyStatus = updateSurveyStatusDto.SurveyStatus;
-                serviceOrder.SurveyDescribe = updateSurveyStatusDto.SurveyDescribe;
-                serviceOrder.SurveyDate = DateTime.UtcNow;
-
-                _dbContext.ServiceOrders.Update(serviceOrder);
-                await _dbContext.SaveChangesAsync();
-
-                response = new ApiResponse(StatusCodes.Status200OK, "Survey status updated successfully", serviceOrder);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null);
-                return StatusCode(500, response);
-            }
-        }
-
     }
 }

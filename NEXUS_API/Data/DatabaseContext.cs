@@ -20,6 +20,7 @@ namespace NEXUS_API.Data
         public DbSet<ConnectionDiary> ConnectionDiarys { get; set; }
         public DbSet<CustomerRequest> CustomerRequests { get; set; }
         public DbSet<FeedBack> FeedBacks { get; set; }
+        public DbSet<InstallationOrder> InstallationOrders { get; set; }
         public DbSet<InStockOrder> InStockOrders { get; set; }
         public DbSet<InStockOrderDetail> InStockOrderDetails { get; set; }
         public DbSet<InStockRequest> InStockRequests { get; set; }
@@ -231,6 +232,11 @@ namespace NEXUS_API.Data
                 .WithMany()
                 .HasForeignKey(s => s.PlanFeeId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(so => so.InstallationOrder) 
+                .WithOne(io => io.ServiceOrder)    
+                .HasForeignKey<InstallationOrder>(io => io.ServiceOrderId) 
+                .OnDelete(DeleteBehavior.Cascade);
 
             //ServiceBill
             modelBuilder.Entity<ServiceBill>()

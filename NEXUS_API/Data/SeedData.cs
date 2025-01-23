@@ -72,8 +72,13 @@ namespace NEXUS_API.Data
                 var roles = new List<EmployeeRole>
                 {
                     new EmployeeRole { RoleName = "Admin" },
+                    new EmployeeRole { RoleName = "ManagerShop" },
+                    new EmployeeRole { RoleName = "Accountant" },
+                    new EmployeeRole { RoleName = "ITSupport" },
                     new EmployeeRole { RoleName = "Technical" },
-                    new EmployeeRole { RoleName = "Accountant" }
+                    new EmployeeRole { RoleName = "Surveyor" },
+                    new EmployeeRole { RoleName = "CustomerSupport" },
+                    new EmployeeRole { RoleName = "SaleShop" },
                 };
                 _dbContext.EmployeeRoles.AddRange(roles);
                 _dbContext.SaveChanges();
@@ -524,9 +529,7 @@ namespace NEXUS_API.Data
 
                 _dbContext.FeedBacks.AddRange(feedbacks);
                 _dbContext.SaveChanges();
-            }
-
+           }
         }
-
     }
 }
