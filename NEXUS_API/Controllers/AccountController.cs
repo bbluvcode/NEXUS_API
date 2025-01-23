@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NEXUS_API.Data;
 using NEXUS_API.DTOs;
+using NEXUS_API.Helpers;
 using NEXUS_API.Models;
 
 namespace NEXUS_API.Controllers
@@ -17,42 +18,12 @@ namespace NEXUS_API.Controllers
         {
             _dbContext = dbContext;
         }
-        [HttpGet("next-customer-sequence")]
-        //get next customer sequence
-        public async Task<int> GetNextCustomerSequence(string type, string regionCode)
+        [HttpGet]
+        public async Task<IActionResult> GetAccounts()
         {
-            var lastAccount = await _dbContext.Accounts
-                .Where(a => a.Type == type && a.AccountId.StartsWith($"{type}-{regionCode}-"))
-                .OrderByDescending(a => a.AccountId)
-                .FirstOrDefaultAsync();
-            if (lastAccount == null)
-            {
-                return 1;
-            }
-            var lastSequence = int.Parse(lastAccount.AccountId.Split('-')[2]);
-            return lastSequence + 1;
-        }
-        //generate AccountId
-        [HttpGet("generate-accountid")]
-        public string GenerateAccountId(string type, string regionCode, int customerSequence)
-        {
-            return $"{type}-{regionCode}-{customerSequence:D7}";
-        }
-        //Create Account
-        [HttpPost]
-        public async Task<string> CreateAccount(AccountDTO accountDTO)
-        {
-            int customerSequence = await GetNextCustomerSequence(accountDTO.Type, accountDTO.RegionCode);
-            string accountId = GenerateAccountId(accountDTO.Type, accountDTO.RegionCode, customerSequence);
-            var account = new Account
-            {
-                AccountId = accountId,
-                CustomerId = accountDTO.CustomerId,
-                Type = accountDTO.Type,
-            };
-            _dbContext.Accounts.Add(account);
-            await _dbContext.SaveChangesAsync();
-            return accountId;
+            var Accounts = await _dbContext.Accounts.ToListAsync();
+            var response = new ApiResponse(StatusCodes.Status200OK, "get Accounts successfully", Accounts);
+            return Ok(response);
         }
     }
 }

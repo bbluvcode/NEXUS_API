@@ -29,11 +29,11 @@ namespace NEXUS_API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetServiceOrder(int id)
+        [HttpGet("get-order/{id}")]
+        public async Task<ActionResult> GetServiceOrder(string id)
         {
             object response = null;
-            var serviceOrder = await _dbContext.ServiceOrders.FindAsync(id);
+            var serviceOrder = await _dbContext.ServiceOrders.FirstOrDefaultAsync(o => o.OrderId == id);
             if (serviceOrder == null)
             {
                 response = new ApiResponse(StatusCodes.Status404NotFound, "Not found", null);
@@ -106,19 +106,6 @@ namespace NEXUS_API.Controllers
             await _dbContext.SaveChangesAsync();
             return Ok(order);
         }
-        [HttpPut("update-survey-result/{orderId}")]
-        public async Task<IActionResult> UpdateSurveyResult(int orderId, [FromBody] SurveyResultDTO surveyResultDto)
-        {
-            var order = await _dbContext.ServiceOrders.FindAsync(orderId);
-            if (order == null)
-                return NotFound("Order not found.");
-
-            order.SurveyStatus = surveyResultDto.SurveyStatus;
-            order.SurveyDescribe = surveyResultDto.SurveyDescribe;
-
-            await _dbContext.SaveChangesAsync();
-            return Ok("Survey result updated successfully.");
-        }
         [HttpPut("complete-order/{orderId}")]
         public async Task<IActionResult> CompleteOrder(int orderId)
         {
@@ -130,6 +117,251 @@ namespace NEXUS_API.Controllers
             await _dbContext.SaveChangesAsync();
             return Ok("Order completed successfully.");
         }
+        [HttpPost("assign-surveyor/{orderId}")]
+        public async Task<IActionResult> AssignSurveyor(string orderId, [FromBody] AssignSurveyorDTO assignSurveyorDto)
+        {
+            if (string.IsNullOrWhiteSpace(orderId))
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "OrderId is required", null));
+            }
 
+            try
+            {
+                var serviceOrder = await _dbContext.ServiceOrders.FirstOrDefaultAsync(so => so.OrderId == orderId);
+
+                if (serviceOrder == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "ServiceOrder not found", null));
+                }
+
+                if (serviceOrder.SurveyStatus != "not yet")
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Survey already assigned or completed", null));
+                }
+                // employee role Surveyor
+                var surveyor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignSurveyorDto.SurveyorId && e.EmployeeRoleId == 5);
+
+                if (surveyor == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Surveyor not found or not eligible", null));
+                }
+
+                // Update ServiceOrder
+                serviceOrder.EmpIDCreater = assignSurveyorDto.EmpIDCreater;
+                serviceOrder.EmpIDSurveyor = surveyor.EmployeeId;
+                serviceOrder.EmployeeSurveyor = surveyor;
+                serviceOrder.SurveyDate = DateTime.UtcNow;
+                serviceOrder.SurveyStatus = "assigned";
+
+                _dbContext.ServiceOrders.Update(serviceOrder);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Surveyor assigned successfully", serviceOrder));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
+        [HttpPut("update-survey/{orderId}")]
+        public async Task<IActionResult> UpdateSurveyStatusAndCreateAccount(string orderId, [FromBody] UpdateSurveyDTO updateSurveyDto)
+        {
+            if (string.IsNullOrWhiteSpace(orderId))
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "OrderId is required", null));
+            }
+
+            try
+            {
+                var serviceOrder = await _dbContext.ServiceOrders
+                    .Include(so => so.CustomerRequest)
+                        .ThenInclude(cr => cr.Customer) 
+                    .FirstOrDefaultAsync(so => so.OrderId == orderId);
+
+
+                if (serviceOrder == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "ServiceOrder not found", null));
+                }
+
+                if (updateSurveyDto.SurveyStatus == "valid")
+                {
+                    //Create AccountId
+                    string accountPrefix = serviceOrder.OrderId.Substring(0, 1);
+                    string regionCode = serviceOrder.CustomerRequest.RegionId.ToString("D3");
+                    var lastAccount = await _dbContext.Accounts
+                        .Where(a => a.AccountId.StartsWith(accountPrefix + regionCode))
+                        .OrderByDescending(a => a.AccountId)
+                        .FirstOrDefaultAsync();
+                    int nextSerialNumber = lastAccount == null
+                        ? 1
+                        : int.Parse(lastAccount.AccountId.Substring(4)) + 1;
+                    string accountId = accountPrefix + regionCode + nextSerialNumber.ToString("D12");
+
+                    //Save Account
+                    var account = new Account
+                    {
+                        AccountId = accountId,
+                        CustomerId = serviceOrder.CustomerRequest.Customer.CustomerId,
+                        Type = accountPrefix,
+                        CreatedDate = DateTime.UtcNow,
+                    };
+                    _dbContext.Accounts.Add(account);
+                    await _dbContext.SaveChangesAsync();
+
+                    
+                    serviceOrder.PlanFeeId = updateSurveyDto.PlanFeeId;
+                    var connections = new List<Connection>
+                    {
+                        new Connection
+                        {
+                            ConnectionId = Guid.NewGuid().ToString(),
+                            NumberOfConnections = updateSurveyDto.NumberOfConnections,
+                            DateCreate = DateTime.UtcNow,
+                            IsActive = false,
+                            Description = "Connection pending activation",
+                            ServiceOrderId = serviceOrder.OrderId,
+                            PlanId = updateSurveyDto.PlanFeeId,
+                            EquipmentId = updateSurveyDto.EquipmentId 
+                        }
+                    };
+                    _dbContext.Connections.AddRange(connections);
+
+                    //Update ServiceOrder
+                    serviceOrder.AccountId = account.AccountId;
+                    serviceOrder.SurveyStatus = "installation";
+                    serviceOrder.SurveyDate = DateTime.UtcNow;
+                    _dbContext.ServiceOrders.Update(serviceOrder);
+                    await _dbContext.SaveChangesAsync();
+
+                    return Ok(new ApiResponse(StatusCodes.Status200OK, "Survey updated and account created successfully", serviceOrder));
+                }
+                else
+                {
+                    serviceOrder.SurveyStatus = updateSurveyDto.SurveyStatus;
+                    serviceOrder.SurveyDate = DateTime.UtcNow;
+                    _dbContext.ServiceOrders.Update(serviceOrder);
+                    await _dbContext.SaveChangesAsync();
+
+                    return Ok(new ApiResponse(StatusCodes.Status200OK, "Survey updated successfully", serviceOrder));
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
+        [HttpPost("assign-technician/{orderId}")]
+        public async Task<IActionResult> AssignTechnician(string orderId, [FromBody] AssignTechnicianDTO assignDto)
+        {
+            if (string.IsNullOrWhiteSpace(orderId))
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "OrderId is required", null));
+            }
+
+            try
+            {
+                var serviceOrder = await _dbContext.ServiceOrders
+                    .FirstOrDefaultAsync(so => so.OrderId == orderId);
+
+                if (serviceOrder == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "ServiceOrder not found", null));
+                }
+
+                if (serviceOrder.SurveyStatus != "installation")
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Survey must be valid to assign technician", null));
+                }
+
+                // Create InstallationOrder
+                var installationOrder = new InstallationOrder
+                {
+                    ServiceOrderId = serviceOrder.OrderId,
+                    TechnicianId = assignDto.TechnicianId,
+                    DateAssigned = DateTime.UtcNow,
+                    Status = "Assigned"
+                };
+
+                _dbContext.InstallationOrders.Add(installationOrder);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Technician assigned successfully", installationOrder));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
+        [HttpPut("complete-installation/{installationId}")]
+        public async Task<IActionResult> CompleteInstallation(int installationId, [FromBody] CompleteInstallationDTO completeDto)
+        {
+            try
+            {
+                var installationOrder = await _dbContext.InstallationOrders
+                    .FirstOrDefaultAsync(io => io.InstallationId == installationId);
+
+                if (installationOrder == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "InstallationOrder not found", null));
+                }
+
+                installationOrder.Status = "Completed";
+                installationOrder.DateCompleted = DateTime.UtcNow;
+                installationOrder.Notes = completeDto.Notes;
+
+                _dbContext.InstallationOrders.Update(installationOrder);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Installation completed successfully", installationOrder));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
+        [HttpPost("activate-connection/{orderId}")]
+        public async Task<IActionResult> ActivateConnection(string orderId)
+        {
+            try
+            {
+                var serviceOrder = await _dbContext.ServiceOrders
+                    .Include(so => so.InstallationOrder)
+                    .Include(so => so.Connections)
+                    .FirstOrDefaultAsync(so => so.OrderId == orderId);
+
+                if (serviceOrder == null || serviceOrder.InstallationOrder?.Status != "Completed")
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Installation must be completed before activating connection", null));
+                }
+
+                var connection = serviceOrder.Connections.FirstOrDefault();
+                if (connection == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Connection not found", null));
+                }
+
+                // IsActive = true
+                connection.IsActive = true;
+                _dbContext.Connections.Update(connection);
+
+                // ConnectionDiary
+                var connectionDiary = new ConnectionDiary
+                {
+                    ConnectionId = connection.ConnectionId,
+                    DateStart = DateTime.UtcNow
+                };
+
+                _dbContext.ConnectionDiaries.Add(connectionDiary);
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Connection activated successfully", connection));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
     }
 }

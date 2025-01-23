@@ -11,7 +11,8 @@ namespace NEXUS_API.Models
         public int CustomerId { get; set; }
         public Customer? Customer { get; set; } 
         [Required]
-        public string? Type { get; set; }
+        public string Type { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public ICollection<ServiceOrder>? ServiceOrders { get; set; }
     }
 }

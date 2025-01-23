@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NEXUS_API.Data;
 
@@ -11,9 +12,11 @@ using NEXUS_API.Data;
 namespace NEXUS_API.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250122191839_Up23.2")]
+    partial class Up232
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,6 +62,7 @@ namespace NEXUS_API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("EquipmentId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -623,44 +627,6 @@ namespace NEXUS_API.Migrations
                     b.HasIndex("InStockRequestId");
 
                     b.ToTable("InStockRequestDetails");
-                });
-
-            modelBuilder.Entity("NEXUS_API.Models.InstallationOrder", b =>
-                {
-                    b.Property<int>("InstallationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InstallationId"));
-
-                    b.Property<DateTime>("DateAssigned")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateCompleted")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ServiceOrderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(11)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TechnicianId")
-                        .HasColumnType("int");
-
-                    b.HasKey("InstallationId");
-
-                    b.HasIndex("ServiceOrderId")
-                        .IsUnique();
-
-                    b.HasIndex("TechnicianId");
-
-                    b.ToTable("InstallationOrders");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.News", b =>
@@ -1228,7 +1194,9 @@ namespace NEXUS_API.Migrations
                 {
                     b.HasOne("NEXUS_API.Models.Equipment", "Equipment")
                         .WithMany()
-                        .HasForeignKey("EquipmentId");
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("NEXUS_API.Models.Plan", "Plan")
                         .WithMany("Connections")
@@ -1422,25 +1390,6 @@ namespace NEXUS_API.Migrations
                     b.Navigation("Equipment");
 
                     b.Navigation("InStockRequest");
-                });
-
-            modelBuilder.Entity("NEXUS_API.Models.InstallationOrder", b =>
-                {
-                    b.HasOne("NEXUS_API.Models.ServiceOrder", "ServiceOrder")
-                        .WithOne("InstallationOrder")
-                        .HasForeignKey("NEXUS_API.Models.InstallationOrder", "ServiceOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NEXUS_API.Models.Employee", "Technician")
-                        .WithMany()
-                        .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ServiceOrder");
-
-                    b.Navigation("Technician");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.News", b =>
@@ -1711,8 +1660,6 @@ namespace NEXUS_API.Migrations
             modelBuilder.Entity("NEXUS_API.Models.ServiceOrder", b =>
                 {
                     b.Navigation("Connections");
-
-                    b.Navigation("InstallationOrder");
 
                     b.Navigation("ServiceBill");
                 });
