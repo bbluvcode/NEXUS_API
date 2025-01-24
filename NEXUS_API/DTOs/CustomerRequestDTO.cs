@@ -11,6 +11,9 @@ namespace NEXUS_API.DTOs
         public DateTime? DateCreate { get; set; }
         public bool IsResponse { get; set; } // Indicates if the request has been responded to
         public int RegionId { get; set; }
+        public decimal? Deposit { get; set; }
+        public string? InstallationAddress { get; set; }
+
         public string FullName { get; set; }
         public string? Gender { get; set; }
         public DateTime? DateOfBirth { get; set; }
