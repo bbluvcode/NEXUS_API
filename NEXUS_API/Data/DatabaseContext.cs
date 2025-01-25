@@ -7,6 +7,7 @@ namespace NEXUS_API.Data
 
         public DatabaseContext(DbContextOptions options) : base(options) { }       
         //
+        //public DbSet<PayPalCustomerRequestDeposit> PayPalCustomerRequestDeposits { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiaries { get; set; }

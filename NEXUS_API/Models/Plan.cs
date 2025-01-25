@@ -22,7 +22,7 @@ namespace NEXUS_API.Models
         public string Description { get; set; }
 
         [Required]
-        public bool isUsing { get; set; }
+        public bool IsUsing { get; set; }
 
         //Relationship
         public ICollection<PlanFee>? PlanFees { get; set; }

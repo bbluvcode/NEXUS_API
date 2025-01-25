@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using NEXUS_API.Controllers;
 using NEXUS_API.Data;
 using NEXUS_API.Helpers;
+using NEXUS_API.Models;
 using NEXUS_API.Repository;
 using NEXUS_API.Service;
 using System.Text;
@@ -24,6 +25,10 @@ namespace NEXUS_API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            // Add PayPal configuration from appsettings.json
+            builder.Services.Configure<PayPalConfig>(builder.Configuration.GetSection("PayPalConfig"));
+            builder.Services.AddSingleton<PayPalService>();
+            //mail config
             builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.AddTransient<EmailService>();
             builder.Services.AddDbContext<DatabaseContext>(options =>

@@ -7,6 +7,7 @@ using NEXUS_API.Models;
 using NEXUS_API.Data;
 using NEXUS_API.Helpers;
 using NEXUS_API.DTOs;
+using NEXUS_API.Service;
 
 namespace NEXUS_API.Controllers
 {
@@ -16,9 +17,11 @@ namespace NEXUS_API.Controllers
     {
         private readonly DatabaseContext _dbContext;
 
-        public CustomerController(DatabaseContext dbContext)
+        private readonly PayPalService _payPalService;
+        public CustomerController(DatabaseContext dbContext, PayPalService payPalService)
         {
             _dbContext = dbContext;
+            _payPalService = payPalService;
         }
 
         [HttpGet]
@@ -121,7 +124,7 @@ namespace NEXUS_API.Controllers
         [HttpGet("all-customer-request")]
         public async Task<IActionResult> GetAllCustomerRequest()
         {
-            var list = await _dbContext.CustomerRequests.Include(x => x.Customer).ToListAsync();
+            var list = await _dbContext.CustomerRequests.Include(x => x.Customer).Include(x=>x.Region).ToListAsync();
             var customerRequestList = list.Select(x => new CustomerRequestDTO
             {
                 RequestId = x.RequestId,
@@ -130,7 +133,10 @@ namespace NEXUS_API.Controllers
                 EquipmentRequest = x.EquipmentRequest,
                 IsResponse = x.IsResponse,
                 RegionId = x.RegionId,
+                RegionCode = x.Region.RegionCode,
+                RegionName = x.Region.RegionName,
                 Deposit = x.Deposit,
+                DepositStatus = x.DepositStatus,
                 InstallationAddress = x.InstallationAddress,
                 FullName = x.Customer.FullName,
                 Gender = x.Customer.Gender,
@@ -150,6 +156,7 @@ namespace NEXUS_API.Controllers
             var list = await _dbContext.CustomerRequests
                 .Where(x => x.CustomerId == cusID)
                 .Include(x => x.Customer)
+                .Include(x => x.Region)
                 .ToListAsync();
             var customerRequestList = list.Select(x => new CustomerRequestDTO
             {
@@ -158,6 +165,8 @@ namespace NEXUS_API.Controllers
                 ServiceRequest = x.ServiceRequest,
                 EquipmentRequest = x.EquipmentRequest,
                 RegionId = x.RegionId,
+                RegionCode = x.Region.RegionCode,
+                RegionName = x.Region.RegionName,
                 Deposit = x.Deposit,
                 InstallationAddress = x.InstallationAddress,
                 IsResponse = x.IsResponse,
@@ -169,7 +178,7 @@ namespace NEXUS_API.Controllers
                 PhoneNumber = x.Customer.PhoneNumber,
                 DateCreate = x.DateCreate,
             }).ToList();
-            var response = new ApiResponse(StatusCodes.Status200OK, "Get Requests of CustomerID: successfully", customerRequestList);
+            var response = new ApiResponse(StatusCodes.Status200OK, "Get Requests of CustomerID:"+ cusID + " successfully", customerRequestList);
             return Ok(response);
         }
 
@@ -181,10 +190,17 @@ namespace NEXUS_API.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // Gọi dịch vụ PayPal để tạo thanh toán và lấy thông tin đơn hàng
+                    var order = await _payPalService.CreatePayment(cusReq.Deposit);
+
+                    // Lấy URL phê duyệt từ PayPal
+                    // (nơi người dùng sẽ được chuyển hướng để xác nhận thanh toán)
+                    var approvalLink = order.Links?.FirstOrDefault(link => link.Rel == "approve")?.Href;
+
                     await _dbContext.CustomerRequests.AddAsync(cusReq);
                     await _dbContext.SaveChangesAsync();
-                    response = new ApiResponse(StatusCodes.Status200OK, "Create customer request successfully", cusReq);
-                    return Created("success", response);
+                    //response = new ApiResponse(StatusCodes.Status200OK, "Create customer request successfully", cusReq);
+                    return Created("success", new { data = cusReq, approvalUrl = approvalLink });
                 }
                 response = new ApiResponse(StatusCodes.Status400BadRequest, "Create customer request fail", null);
                 return BadRequest(response);

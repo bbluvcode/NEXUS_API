@@ -11,7 +11,11 @@ namespace NEXUS_API.DTOs
         public DateTime? DateCreate { get; set; }
         public bool IsResponse { get; set; } // Indicates if the request has been responded to
         public int RegionId { get; set; }
+        public string RegionCode { get; set; }
+        public string RegionName { get; set; } // Name of region (varchar(20))
+
         public decimal? Deposit { get; set; }
+        public string? DepositStatus { get; set; }
         public string? InstallationAddress { get; set; }
 
         public string FullName { get; set; }

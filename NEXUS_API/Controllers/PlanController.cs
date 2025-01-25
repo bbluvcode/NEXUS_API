@@ -74,7 +74,7 @@ namespace NEXUS_API.Controllers
                 plan.PlanName = planUpdate.PlanName;
                 plan.SecurityDeposit = planUpdate.SecurityDeposit;
                 plan.Description = planUpdate.Description;
-                plan.isUsing = planUpdate.isUsing;
+                plan.IsUsing = planUpdate.IsUsing;
 
                 await _dbContext.SaveChangesAsync();
                 response = new ApiResponse(StatusCodes.Status200OK, "update plan successfully", plan);

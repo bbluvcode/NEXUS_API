@@ -26,7 +26,8 @@ namespace NEXUS_API.Models
         [Required]
         public bool IsResponse { get; set; } // Indicates if the request has been responded to
         [Column(TypeName = ("decimal(10,2)"))]
-        public decimal? Deposit { get; set; }
+        public decimal Deposit { get; set; }
+        public string? DepositStatus { get; set; } = "pending";
         public string? InstallationAddress { get; set; }
         //Relationship
         [Required]
