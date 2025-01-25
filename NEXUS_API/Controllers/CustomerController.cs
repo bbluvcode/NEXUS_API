@@ -196,7 +196,7 @@ namespace NEXUS_API.Controllers
                     // Lấy URL phê duyệt từ PayPal
                     // (nơi người dùng sẽ được chuyển hướng để xác nhận thanh toán)
                     var approvalLink = order.Links?.FirstOrDefault(link => link.Rel == "approve")?.Href;
-
+                    cusReq.DepositPaymentId = order.Id;
                     await _dbContext.CustomerRequests.AddAsync(cusReq);
                     await _dbContext.SaveChangesAsync();
                     //response = new ApiResponse(StatusCodes.Status200OK, "Create customer request successfully", cusReq);
@@ -210,6 +210,37 @@ namespace NEXUS_API.Controllers
                 response = new ApiResponse(StatusCodes.Status500InternalServerError, "Server error, loi sql da ton tai fk", null);
                 return StatusCode(500, response);
 
+            }
+        }
+
+        [HttpPost("capture-deposit")]
+        public async Task<IActionResult> CapturePayment([FromBody] PayPalCaptureDepositRequest captureRequest)
+        {
+            try
+            {
+                // Gọi dịch vụ PayPal để capture thanh toán dựa
+                // trên orderId (mà người dùng đã xác nhận)
+                var order = await _payPalService.CapturePayment(captureRequest.CustomerRequestId);
+                
+                // Kiểm tra trạng thái thanh toán
+                // của đơn hàng (được hoàn thành hay chưa)
+                bool isPaid = order.Status == "COMPLETED";
+
+                // Cập nhật trạng thái đơn hàng trong cơ sở dữ liệu
+                //await _dbContext.UpdateDepositStatus(captureRequest.OrderId, isPaid ? "Paid" : "Pending");
+                var cusReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(o => o.DepositPaymentId.ToString() == captureRequest.CustomerRequestId);
+                if (cusReq != null)
+                {
+                    cusReq.DepositStatus = isPaid ? "Paid" : "Pending";
+                    await _dbContext.SaveChangesAsync();
+                }
+                // Trả về thông tin đơn hàng đã được capture
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                // Nếu có lỗi xảy ra, trả về mã lỗi 400 và thông báo lỗi
+                return BadRequest(new { message = ex.Message });
             }
         }
 

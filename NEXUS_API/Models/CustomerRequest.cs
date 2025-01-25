@@ -9,7 +9,6 @@ namespace NEXUS_API.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RequestId { get; set; }
-
         [Required]
         [StringLength(100, ErrorMessage = "Request Title must not exceed 100 characters.")]
         public string RequestTitle { get; set; }
@@ -27,6 +26,7 @@ namespace NEXUS_API.Models
         public bool IsResponse { get; set; } // Indicates if the request has been responded to
         [Column(TypeName = ("decimal(10,2)"))]
         public decimal Deposit { get; set; }
+        public string? DepositPaymentId { get; set; }
         public string? DepositStatus { get; set; } = "pending";
         public string? InstallationAddress { get; set; }
         //Relationship
