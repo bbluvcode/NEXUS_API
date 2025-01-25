@@ -123,6 +123,7 @@ namespace NEXUS_API.Controllers
                     RequestId = cr.RequestId,
                     RequestTitle = cr.RequestTitle,
                     ServiceRequest = cr.ServiceRequest,
+                    RegionId = cr.RegionId,
                     DateCreate = cr.DateCreate,
                     IsResponse = cr.IsResponse
                 }).ToListAsync();
