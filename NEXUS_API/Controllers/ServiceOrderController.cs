@@ -88,89 +88,142 @@ namespace NEXUS_API.Controllers
                 return new ObjectResult(response);
             }
         }
-        [HttpPost("create-service-order")]
-        public async Task<IActionResult> CreateServiceOrder([FromBody] ServiceOrderDTO orderDto)
-        {
-            var order = new ServiceOrder
-            {
-                AccountId = orderDto.AccountId,
-                EmpIDCreater = orderDto.EmpIDCreater,
-                DateCreate = DateTime.UtcNow,
-                Deposit = orderDto.Deposit,
-                EmpIDSurveyor = orderDto.EmpIDSurveyor,
-                SurveyDate = orderDto.SurveyDate,
-                SurveyStatus = "valid"
-            };
 
-            _dbContext.ServiceOrders.Add(order);
-            await _dbContext.SaveChangesAsync();
-            return Ok(order);
-        }
-        [HttpPut("complete-order/{orderId}")]
-        public async Task<IActionResult> CompleteOrder(int orderId)
+        [HttpGet("get-surveyors/{regionId}")]
+        public async Task<IActionResult> GetSurveyorsByRegion(int regionId)
         {
-            var order = await _dbContext.ServiceOrders.FindAsync(orderId);
-            if (order == null)
-                return NotFound("Order not found.");
-
-            order.SurveyStatus = "finish";
-            await _dbContext.SaveChangesAsync();
-            return Ok("Order completed successfully.");
-        }
-        [HttpPost("assign-surveyor/{orderId}")]
-        public async Task<IActionResult> AssignSurveyor(string orderId, [FromBody] AssignSurveyorDTO assignSurveyorDto)
-        {
-            if (string.IsNullOrWhiteSpace(orderId))
-            {
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "OrderId is required", null));
-            }
-
             try
             {
-                var serviceOrder = await _dbContext.ServiceOrders.FirstOrDefaultAsync(so => so.OrderId == orderId);
+                var surveyors = await _dbContext.Employees
+                    .Include(e => e.EmployeeRole) 
+                    .Include(e => e.RetailShop) 
+                    .Where(e => e.RetailShop.RegionId == regionId && e.EmployeeRole.RoleName == "Surveyor")
+                    .Select(e => new
+                    {
+                        EmployeeId = e.EmployeeId,
+                        FullName = e.FullName + " - " + e.RetailShop.RetailShopName
+                    })
+                    .ToListAsync();
 
-                if (serviceOrder == null)
+                if (surveyors == null || !surveyors.Any())
                 {
-                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "ServiceOrder not found", null));
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No surveyors found in this region.", null));
                 }
 
-                if (serviceOrder.SurveyStatus != "not yet")
-                {
-                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Survey already assigned or completed", null));
-                }
-                // employee role Surveyor
-                var surveyor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignSurveyorDto.SurveyorId && e.EmployeeRoleId == 6);
-
-                if (surveyor == null)
-                {
-                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Surveyor not found or not eligible", null));
-                }
-
-                // Update ServiceOrder
-                serviceOrder.EmpIDCreater = assignSurveyorDto.EmpIDCreater;
-                serviceOrder.EmpIDSurveyor = surveyor.EmployeeId;
-                serviceOrder.EmployeeSurveyor = surveyor;
-                serviceOrder.SurveyDate = DateTime.UtcNow;
-                serviceOrder.SurveyStatus = "assigned";
-
-                _dbContext.ServiceOrders.Update(serviceOrder);
-                await _dbContext.SaveChangesAsync();
-
-                return Ok(new ApiResponse(StatusCodes.Status200OK, "Surveyor assigned successfully", serviceOrder));
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Surveyors retrieved successfully", surveyors));
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
             }
         }
+
+        [HttpGet("get-technicals/{regionId}")]
+        public async Task<IActionResult> GetTechnicalsByRegion(int regionId)
+        {
+            try
+            {               
+                var technicals = await _dbContext.Employees
+                    .Include(e => e.EmployeeRole) 
+                    .Include(e => e.RetailShop)
+                    .Where(e => e.RetailShop.RegionId == regionId && e.EmployeeRole.RoleName == "Technical")
+                    .Select(e => new
+                    {
+                        EmployeeId = e.EmployeeId,
+                        FullName = e.FullName + " - " + e.RetailShop.RetailShopName
+                    })
+                    .ToListAsync();
+
+                if (technicals == null || !technicals.Any())
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No technical staff found in this region.", null));
+                }
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Technicals retrieved successfully", technicals));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
+
+        [HttpPost("create-order-and-assign-survey/{requestId}")]
+        public async Task<IActionResult> CreateServiceOrder(int requestId, [FromBody] AssignSurveyorDTO assignSurveyorDto)
+        {
+            try
+            {
+                //Find CustomerRequest from RequestId
+                var customerRequest = await _dbContext.CustomerRequests.FirstOrDefaultAsync(cr => cr.RequestId == requestId);
+
+                if (customerRequest == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "CustomerRequest not found", null));
+                }
+
+                // Create OrderId from Request
+                string orderPrefix = (customerRequest.ServiceRequest + " " + customerRequest.RequestTitle).ToLower() switch
+                {
+                    var s when s.Contains("Dial-up", StringComparison.OrdinalIgnoreCase) => "D",
+                    var s when s.Contains("Telephone", StringComparison.OrdinalIgnoreCase) => "T",
+                    var s when s.Contains("Broadband", StringComparison.OrdinalIgnoreCase) => "B",
+                    _ => throw new Exception("Invalid connection type in RequestTitle or ServiceRequest")
+                };
+
+                var lastOrder = await _dbContext.ServiceOrders
+                    .Where(so => so.OrderId.StartsWith(orderPrefix))
+                    .OrderByDescending(so => so.OrderId)
+                    .FirstOrDefaultAsync();
+
+                int nextSerialNumber = lastOrder == null
+                    ? 1
+                    : int.Parse(lastOrder.OrderId.Substring(1)) + 1;
+
+                string orderId = orderPrefix + nextSerialNumber.ToString("D10");
+
+                decimal depositAmount = orderPrefix switch
+                {
+                    "D" => 325m, // Dial-Up Connection Deposit
+                    "B" => 500m, // Broadband Connection Deposit
+                    "T" => 250m, // Telephone Connection Deposit
+                    _ => throw new Exception("Invalid connection type")
+                };
+
+                // Find employee with role Surveyor
+                var surveyor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignSurveyorDto.SurveyorId && e.EmployeeRoleId == 6);
+                if (surveyor == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Surveyor not found or not eligible", null));
+                }
+
+                // Create ServiceOrder
+                var serviceOrder = new ServiceOrder
+                {
+                    OrderId = orderId,
+                    DateCreate = DateTime.UtcNow,
+                    RequestId = customerRequest.RequestId,
+                    SurveyStatus = "Surveyor Assigned",
+                    Deposit = depositAmount,
+                    EmpIDSurveyor = surveyor.EmployeeId,
+                    EmpIDCreater = assignSurveyorDto.EmpIDCreater,
+                };
+                _dbContext.ServiceOrders.Add(serviceOrder);
+
+                customerRequest.IsResponse = true;
+                _dbContext.CustomerRequests.Update(customerRequest);
+
+                await _dbContext.SaveChangesAsync();
+
+                return Created("success", new ApiResponse(StatusCodes.Status201Created, "ServiceOrder created and surveyor assigned successfully", serviceOrder));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error " + ex.Message, null));
+            }
+        }
+
         [HttpPut("update-survey/{orderId}")]
         public async Task<IActionResult> UpdateSurveyStatusAndCreateAccount(string orderId, [FromBody] UpdateSurveyDTO updateSurveyDto)
         {
-            if (string.IsNullOrWhiteSpace(orderId))
-            {
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "OrderId is required", null));
-            }
-
             try
             {
                 var serviceOrder = await _dbContext.ServiceOrders
@@ -184,7 +237,7 @@ namespace NEXUS_API.Controllers
                     return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "ServiceOrder not found", null));
                 }
 
-                if (updateSurveyDto.SurveyStatus == "valid")
+                if (updateSurveyDto.SurveyStatus == "Valid")
                 {
                     //Create AccountId
                     string accountPrefix = serviceOrder.OrderId.Substring(0, 1);
@@ -193,10 +246,10 @@ namespace NEXUS_API.Controllers
                         .Where(a => a.AccountId.StartsWith(accountPrefix + regionCode))
                         .OrderByDescending(a => a.AccountId)
                         .FirstOrDefaultAsync();
-                    int nextSerialNumber = lastAccount == null
+                    int nextSerialNumberAccount = lastAccount == null
                         ? 1
                         : int.Parse(lastAccount.AccountId.Substring(4)) + 1;
-                    string accountId = accountPrefix + regionCode + nextSerialNumber.ToString("D12");
+                    string accountId = accountPrefix + regionCode + nextSerialNumberAccount.ToString("D12");
 
                     //Save Account
                     var account = new Account
@@ -213,18 +266,32 @@ namespace NEXUS_API.Controllers
                     var planFee = await _dbContext.PlanFees
                         .Include(pf => pf.Plan)
                         .FirstOrDefaultAsync(pf => pf.PlanFeeId == updateSurveyDto.PlanFeeId);
-
                     if (planFee == null)
                     {
                         return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid PlanFeeId", null));
                     }
-
                     serviceOrder.PlanFeeId = updateSurveyDto.PlanFeeId;
+
+                    //Create ConnectionId
+                    string connectionPrefix = serviceOrder.OrderId.Substring(0, 1); // D, B, T
+
+                    // Lấy số thứ tự tiếp theo
+                    var lastConnection = await _dbContext.Connections
+                        .Where(c => c.ConnectionId.StartsWith(connectionPrefix + "-" + regionCode))
+                        .OrderByDescending(c => c.ConnectionId)
+                        .FirstOrDefaultAsync();
+
+                    int nextSerialNumberConnection = lastConnection == null
+                        ? 1
+                        : int.Parse(lastConnection.ConnectionId.Split('-')[2]) + 1;
+
+                    // Tạo ConnectionId
+                    string connectionId = $"{connectionPrefix}-{regionCode}-{nextSerialNumberConnection:D6}";
                     var connections = new List<Connection>
                     {
                         new Connection
                         {
-                            ConnectionId = Guid.NewGuid().ToString(),
+                            ConnectionId = connectionId,
                             NumberOfConnections = updateSurveyDto.NumberOfConnections ?? 0,
                             DateCreate = DateTime.UtcNow,
                             IsActive = false,
@@ -238,21 +305,21 @@ namespace NEXUS_API.Controllers
 
                     //Update ServiceOrder
                     serviceOrder.AccountId = account.AccountId;
-                    serviceOrder.SurveyStatus = "installation";
+                    serviceOrder.SurveyStatus = "Installation";
                     serviceOrder.SurveyDate = DateTime.UtcNow;
                     _dbContext.ServiceOrders.Update(serviceOrder);
                     await _dbContext.SaveChangesAsync();
 
                     return Ok(new ApiResponse(StatusCodes.Status200OK, "Survey updated and account created successfully", serviceOrder));
                 }
-                else if (updateSurveyDto.SurveyStatus == "invalid")
+                else if (updateSurveyDto.SurveyStatus == "Invalid")
                 {
                     if (string.IsNullOrWhiteSpace(updateSurveyDto.CancellationReason))
                     {
                         return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "CancellationReason is required for invalid surveys", null));
                     }
 
-                    serviceOrder.SurveyStatus = "cancelled";
+                    serviceOrder.SurveyStatus = "Cancelled";
                     serviceOrder.SurveyDate = DateTime.UtcNow;
                     serviceOrder.SurveyDescribe = updateSurveyDto.CancellationReason;
                     _dbContext.ServiceOrders.Update(serviceOrder);
@@ -278,11 +345,6 @@ namespace NEXUS_API.Controllers
         [HttpPost("assign-technician/{orderId}")]
         public async Task<IActionResult> AssignTechnician(string orderId, [FromBody] AssignTechnicianDTO assignDto)
         {
-            if (string.IsNullOrWhiteSpace(orderId))
-            {
-                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "OrderId is required", null));
-            }
-
             try
             {
                 var serviceOrder = await _dbContext.ServiceOrders
@@ -293,7 +355,7 @@ namespace NEXUS_API.Controllers
                     return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "ServiceOrder not found", null));
                 }
 
-                if (serviceOrder.SurveyStatus != "installation")
+                if (serviceOrder.SurveyStatus != "Installation")
                 {
                     return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Survey must be valid to assign technician", null));
                 }
@@ -306,8 +368,11 @@ namespace NEXUS_API.Controllers
                     DateAssigned = DateTime.UtcNow,
                     Status = "Assigned"
                 };
-
                 _dbContext.InstallationOrders.Add(installationOrder);
+
+                serviceOrder.SurveyStatus = "Technician Assigned";
+                _dbContext.ServiceOrders.Update(serviceOrder);
+
                 await _dbContext.SaveChangesAsync();
 
                 return Ok(new ApiResponse(StatusCodes.Status200OK, "Technician assigned successfully", installationOrder));
@@ -323,6 +388,7 @@ namespace NEXUS_API.Controllers
             try
             {
                 var installationOrder = await _dbContext.InstallationOrders
+                    .Include(io => io.ServiceOrder)
                     .FirstOrDefaultAsync(io => io.InstallationId == installationId);
 
                 if (installationOrder == null)
@@ -333,8 +399,15 @@ namespace NEXUS_API.Controllers
                 installationOrder.Status = "Completed";
                 installationOrder.DateCompleted = DateTime.UtcNow;
                 installationOrder.Notes = completeDto.Notes;
-
                 _dbContext.InstallationOrders.Update(installationOrder);
+
+                var serviceOrder = installationOrder.ServiceOrder;
+                if (serviceOrder != null)
+                {
+                    serviceOrder.SurveyStatus = "Installation Completed";
+                    _dbContext.ServiceOrders.Update(serviceOrder);
+                }
+
                 await _dbContext.SaveChangesAsync();
 
                 return Ok(new ApiResponse(StatusCodes.Status200OK, "Installation completed successfully", installationOrder));
@@ -382,6 +455,37 @@ namespace NEXUS_API.Controllers
                 await _dbContext.SaveChangesAsync();
 
                 return Ok(new ApiResponse(StatusCodes.Status200OK, "Connection activated successfully", connection));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
+        [HttpPut("deactivate-connection/{connectionId}")]
+        public async Task<IActionResult> DeactivateConnection(string connectionId)
+        {
+            try
+            {
+                var connection = await _dbContext.Connections
+                    .Include(c => c.ConnectionDiaries)
+                    .FirstOrDefaultAsync(c => c.ConnectionId == connectionId);
+
+                if (connection == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Connection not found", null));
+                }
+
+                var activeDiary = connection.ConnectionDiaries.FirstOrDefault(cd => cd.DateEnd == null);
+                if (activeDiary == null)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "No active connection found to deactivate", null));
+                }
+
+                activeDiary.DateEnd = DateTime.UtcNow;
+                _dbContext.ConnectionDiaries.Update(activeDiary);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Connection deactivated successfully", activeDiary));
             }
             catch (Exception ex)
             {
