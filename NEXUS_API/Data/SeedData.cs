@@ -8,6 +8,30 @@ namespace NEXUS_API.Data
         public static void SeedingData(DatabaseContext _dbContext)
         {
             _dbContext.Database.Migrate();
+            //Seed Keywords
+            if (!_dbContext.Keywords.Any())
+            {
+                var keywords = new List<Keyword>()
+                {
+                    new Keyword
+                    {
+                        Words = "fuck",
+                        Status = true,
+                    },
+                    new Keyword
+                    {
+                        Words = "fck",
+                        Status = true,
+                    },
+                    new Keyword
+                    {
+                        Words = "dog",
+                        Status = true,
+                    },                    
+                };
+                _dbContext.Keywords.AddRange(keywords);
+                _dbContext.SaveChanges();
+            }
             // Seed Regions
             if (!_dbContext.Regions.Any())
             {

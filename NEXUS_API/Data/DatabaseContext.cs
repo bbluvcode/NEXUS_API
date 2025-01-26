@@ -7,7 +7,7 @@ namespace NEXUS_API.Data
 
         public DatabaseContext(DbContextOptions options) : base(options) { }       
         //
-        //public DbSet<PayPalCustomerRequestDeposit> PayPalCustomerRequestDeposits { get; set; }
+        public DbSet<Keyword> Keywords { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiaries { get; set; }
@@ -42,7 +42,9 @@ namespace NEXUS_API.Data
         {
             modelBuilder.Entity<EmployeeRole>().ToTable("EmployeeRoles"); // Sửa tên bảng thành EmployeeRole
             base.OnModelCreating(modelBuilder);
-
+            modelBuilder.Entity<Keyword>()
+               .HasIndex(k => k.Words)
+               .IsUnique();
             //Customer
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.CustomerRequests)
