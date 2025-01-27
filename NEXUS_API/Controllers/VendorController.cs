@@ -36,6 +36,42 @@ public class VendorController : ControllerBase
         }
     }
 
+    [HttpPost]
+    public async Task<IActionResult> AddVendor([FromBody] Vendor vendor)
+    {
+        if (vendor == null)
+        {
+            return BadRequest(new
+            {
+                message = "Vendor data is null.",
+                status = HttpStatusCode.BadRequest
+            });
+        }
+
+        try
+        {
+            await _vendorRepository.AddVendorAsync(vendor);
+            return CreatedAtAction(
+                nameof(GetVendorById), // The action name to retrieve the vendor
+                new { id = vendor.VendorId }, // The route parameter for GetVendorById
+                new
+                {
+                    data = vendor,
+                    message = "Vendor added successfully",
+                    status = HttpStatusCode.Created
+                });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                message = ex.Message,
+                status = HttpStatusCode.InternalServerError
+            });
+        }
+    }
+
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVendorById(int id)
     {
@@ -67,6 +103,48 @@ public class VendorController : ControllerBase
             });
         }
     }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateVendor(int id, [FromBody] Vendor vendor)
+    {
+        // Check if the vendor id from the URL matches the vendor id in the body
+        if (id != vendor.VendorId)
+        {
+            return BadRequest(new
+            {
+                message = "Vendor ID mismatch.",
+                status = HttpStatusCode.BadRequest
+            });
+        }
+
+        try
+        {
+            // Update the vendor
+            await _vendorRepository.UpdateVendorAsync(vendor);
+
+            return Ok(new
+            {
+                message = "Vendor updated successfully",
+                status = HttpStatusCode.OK
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                message = ex.Message,
+                status = HttpStatusCode.NotFound
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                message = ex.Message,
+                status = HttpStatusCode.InternalServerError
+            });
+        }
+    }
+
 
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateVendorStatus(int id, [FromBody] bool status)

@@ -44,6 +44,7 @@ namespace NEXUS_API.Service
                 existingVendor.Fax = vendor.Fax;
                 existingVendor.Description = vendor.Description;
                 existingVendor.RegionId = vendor.RegionId;
+                existingVendor.Status = vendor.Status;
 
                 await _dbContext.SaveChangesAsync();
             }
