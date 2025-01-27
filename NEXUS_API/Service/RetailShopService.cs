@@ -42,7 +42,9 @@ namespace NEXUS_API.Service
                 existingRetailShop.IsMainOffice = retailShop.IsMainOffice;
                 existingRetailShop.Fax = retailShop.Fax;
                 existingRetailShop.RegionId = retailShop.RegionId;
-                if (!string.IsNullOrEmpty(retailShop.Image)) // Chỉ cập nhật ảnh nếu có thay đổi
+                existingRetailShop.Status = retailShop.Status; // Update the status field
+
+                if (!string.IsNullOrEmpty(retailShop.Image)) // Only update the image if provided
                 {
                     existingRetailShop.Image = retailShop.Image;
                 }

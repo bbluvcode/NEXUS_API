@@ -27,7 +27,7 @@ namespace NEXUS_API.Data
                     {
                         Words = "dog",
                         Status = true,
-                    },                    
+                    },
                 };
                 _dbContext.Keywords.AddRange(keywords);
                 _dbContext.SaveChanges();
@@ -90,6 +90,71 @@ namespace NEXUS_API.Data
                 _dbContext.Regions.AddRange(regions);
                 _dbContext.SaveChanges();
             }
+            // Seed Vendors
+            if (!_dbContext.Vendors.Any())
+            {
+                var vendors = new List<Vendor>
+                {
+                    new Vendor
+                    {
+                        VendorName = "Tech Supply Co.",
+                        Address = "123 Nguyen Hue, Ho Chi Minh City",
+                        Email = "contact@techsupply.com",
+                        Phone = "0901234567",
+                        Fax = "0281234567",
+                        Description = "Leading supplier of IT equipment.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "HCMC-001")?.RegionId
+                    },
+                    new Vendor
+                    {
+                        VendorName = "Hanoi Elec",
+                        Address = "456 Le Duan, Ha Noi",
+                        Email = "info@hanoielec.vn",
+                        Phone = "0987654321",
+                        Fax = "0241234567",
+                        Description = "Trusted provider of electronic components.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "HN-002")?.RegionId
+                    },
+                    new Vendor
+                    {
+                        VendorName = "AsiaTech",
+                        Address = "789 Tran Phu, Da Nang",
+                        Email = "support@asiatech.com",
+                        Phone = "0912345678",
+                        Fax = "0511234567",
+                        Description = "Supplier of networking and security equipment.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "DN-003")?.RegionId
+                    },
+                    new Vendor
+                    {
+                        VendorName = "SG Traders",
+                        Address = "12 Orchard Road, Singapore",
+                        Email = "sales@sgtraders.com",
+                        Phone = "6512345678",
+                        Fax = "6512345679",
+                        Description = "Leading B2B distributor in Southeast Asia.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "SG-005")?.RegionId
+                    },
+                    new Vendor
+                    {
+                        VendorName = "BKK Imports",
+                        Address = "88 Sukhumvit, Bangkok",
+                        Email = "contact@bkkimports.com",
+                        Phone = "6612345678",
+                        Fax = "6612345679",
+                        Description = "Specializing in hardware and industrial equipment.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "BKK-007")?.RegionId
+                    }
+                };
+
+                _dbContext.Vendors.AddRange(vendors);
+                _dbContext.SaveChanges();
+            }
             // Seed EmployeeRoles
             if (!_dbContext.EmployeeRoles.Any())
             {
@@ -111,89 +176,97 @@ namespace NEXUS_API.Data
             if (!_dbContext.RetailShops.Any())
             {
                 var retailShops = new List<RetailShop>
-            {
-                new RetailShop
                 {
-                    RetailShopName = "Main Office",
-                    Address = "123 Main St, District 1, HCMC",
-                    Email = "mainoffice@nexus.com",
-                    Phone = "0123456789",
-                    IsMainOffice = true,
-                    Fax = "012345678",
-                    RegionId = 1, // Replace with a valid RegionId in your database
-                    Image = "/Images/imageRetail/main_office.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Branch A",
-                    Address = "456 Branch St, District 3, HCMC",
-                    Email = "brancha@nexus.com",
-                    Phone = "0987654321",
-                    IsMainOffice = false,
-                    Fax = "987654321",
-                    RegionId = 2, // Replace with a valid RegionId in your database
-                    Image = "/Images/imageRetail/branch_a.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Branch B",
-                    Address = "789 Second Ave, District 7, HCMC",
-                    Email = "branchb@nexus.com",
-                    Phone = "0912345678",
-                    IsMainOffice = false,
-                    Fax = "091234567",
-                    RegionId = 3, // Replace with a valid RegionId in your database
-                    Image = "/Images/imageRetail/branch_b.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Asia HQ",
-                    Address = "789 Asia Center, Singapore",
-                    Email = "asiahq@nexus.com",
-                    Phone = "0923456789",
-                    IsMainOffice = false,
-                    Fax = "092345678",
-                    RegionId = 4, // Asia Headquarters
-                    Image = "/Images/imageRetail/asia_hq.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Singapore Branch",
-                    Address = "123 Orchard Rd, Singapore",
-                    Email = "sgbranch@nexus.com",
-                    Phone = "0911122233",
-                    IsMainOffice = false,
-                    Fax = "0911122233",
-                    RegionId = 5, // Singapore
-                    Image = "/Images/imageRetail/sg_branch.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Kuala Lumpur Branch",
-                    Address = "45 Jalan Ampang, Kuala Lumpur",
-                    Email = "klbranch@nexus.com",
-                    Phone = "0909988776",
-                    IsMainOffice = false,
-                    Fax = "0909988776",
-                    RegionId = 6, // Kuala Lumpur
-                    Image = "/Images/imageRetail/kl_branch.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Bangkok Branch",
-                    Address = "99 Sukhumvit Rd, Bangkok",
-                    Email = "bkkbranch@nexus.com",
-                    Phone = "0988765432",
-                    IsMainOffice = false,
-                    Fax = "0988765432",
-                    RegionId = 7, // Bangkok
-                    Image = "/Images/imageRetail/bkk_branch.jpg"
-                }
-            };
+                    new RetailShop
+                    {
+                        RetailShopName = "Main Office",
+                        Address = "123 Main St, District 1, HCMC",
+                        Email = "mainoffice@nexus.com",
+                        Phone = "0123456789",
+                        IsMainOffice = true,
+                        Fax = "012345678",
+                        RegionId = 1, // Replace with a valid RegionId in your database
+                        Image = "/Images/imageRetail/main_office.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Branch A",
+                        Address = "456 Branch St, District 3, HCMC",
+                        Email = "brancha@nexus.com",
+                        Phone = "0987654321",
+                        IsMainOffice = false,
+                        Fax = "987654321",
+                        RegionId = 2, // Replace with a valid RegionId in your database
+                        Image = "/Images/imageRetail/branch_a.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Branch B",
+                        Address = "789 Second Ave, District 7, HCMC",
+                        Email = "branchb@nexus.com",
+                        Phone = "0912345678",
+                        IsMainOffice = false,
+                        Fax = "091234567",
+                        RegionId = 3, // Replace with a valid RegionId in your database
+                        Image = "/Images/imageRetail/branch_b.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Asia HQ",
+                        Address = "789 Asia Center, Singapore",
+                        Email = "asiahq@nexus.com",
+                        Phone = "0923456789",
+                        IsMainOffice = false,
+                        Fax = "092345678",
+                        RegionId = 4, // Asia Headquarters
+                        Image = "/Images/imageRetail/asia_hq.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Singapore Branch",
+                        Address = "123 Orchard Rd, Singapore",
+                        Email = "sgbranch@nexus.com",
+                        Phone = "0911122233",
+                        IsMainOffice = false,
+                        Fax = "0911122233",
+                        RegionId = 5, // Singapore
+                        Image = "/Images/imageRetail/sg_branch.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Kuala Lumpur Branch",
+                        Address = "45 Jalan Ampang, Kuala Lumpur",
+                        Email = "klbranch@nexus.com",
+                        Phone = "0909988776",
+                        IsMainOffice = false,
+                        Fax = "0909988776",
+                        RegionId = 6, // Kuala Lumpur
+                        Image = "/Images/imageRetail/kl_branch.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Bangkok Branch",
+                        Address = "99 Sukhumvit Rd, Bangkok",
+                        Email = "bkkbranch@nexus.com",
+                        Phone = "0988765432",
+                        IsMainOffice = false,
+                        Fax = "0988765432",
+                        RegionId = 7, // Bangkok
+                        Image = "/Images/imageRetail/bkk_branch.jpg",
+                        Status = true
+                    }
+                };
 
                 _dbContext.RetailShops.AddRange(retailShops);
                 _dbContext.SaveChanges();
             }
+
 
 
             // Seed Employees
@@ -553,7 +626,7 @@ namespace NEXUS_API.Data
 
                 _dbContext.FeedBacks.AddRange(feedbacks);
                 _dbContext.SaveChanges();
-           }
+            }
         }
     }
 }

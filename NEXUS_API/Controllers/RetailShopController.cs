@@ -173,5 +173,40 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, new { message = ex.Message, status = HttpStatusCode.InternalServerError });
             }
         }
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateRetailShopStatus(int id, [FromBody] bool status)
+        {
+            try
+            {
+                var retailShop = await _retailShopRepository.GetRetailShopByIdAsync(id);
+                if (retailShop == null)
+                {
+                    return NotFound(new
+                    {
+                        message = $"RetailShop with ID {id} not found.",
+                        status = HttpStatusCode.NotFound
+                    });
+                }
+
+                retailShop.Status = status;
+                await _retailShopRepository.UpdateRetailShopAsync(retailShop);
+
+                return Ok(new
+                {
+                    data = retailShop,
+                    message = "RetailShop status updated successfully",
+                    status = HttpStatusCode.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = ex.Message,
+                    status = HttpStatusCode.InternalServerError
+                });
+            }
+        }
+
     }
 }
