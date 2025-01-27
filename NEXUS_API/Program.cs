@@ -38,6 +38,7 @@ namespace NEXUS_API
             builder.Services.AddScoped<IEmployeeRepository, EmployeeService>();
             builder.Services.AddScoped<IRegionRepository, RegionService>();
             builder.Services.AddScoped<IRetailShopRepository, RetailShopService>();
+            builder.Services.AddScoped<IVendorRepository, VendorService>();
 
             builder.Services.AddControllersWithViews().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
