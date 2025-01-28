@@ -540,48 +540,48 @@ namespace NEXUS_API.Data
             if (!_dbContext.SupportRequests.Any())
             {
                 var supportRequests = new List<SupportRequest>
+            {
+                new SupportRequest
                 {
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 5),
-                        Title = "test",
-                        DetailContent = "test",
-                        DateResolved = null,
-                        IsResolved = false,
-                        CustomerId = 1, // Replace with valid CustomerId
-                        EmpIdResolver = null // No resolver yet
-                    },
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 5),
-                        Title = "Request for Broadband Repair",
-                        DetailContent = "The broadband connection is not working since yesterday evening.",
-                        DateResolved = null,
-                        IsResolved = false,
-                        CustomerId = 1, // Replace with valid CustomerId
-                        EmpIdResolver = null // No resolver yet
-                    },
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 10),
-                        Title = "Request for Land-line Repair",
-                        DetailContent = "Land-line phone is not working properly; there is a lot of static noise.",
-                        DateResolved = new DateTime(2024, 1, 12),
-                        IsResolved = true,
-                        CustomerId = 2, // Replace with valid CustomerId
-                        EmpIdResolver = 1 // EmployeeId of resolver
-                    },
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 15),
-                        Title = "Help with Dial-up Internet Configuration",
-                        DetailContent = "Need assistance in configuring the dial-up connection for better speed.",
-                        DateResolved = null,
-                        IsResolved = false,
-                        CustomerId = 3, // Replace with valid CustomerId
-                        EmpIdResolver = null // No resolver yet
-                    },
-                };
+                    DateRequest = new DateTime(2024, 1, 5),
+                    Title = "test",
+                    DetailContent = "test",
+                    DateResolved = null,
+                    IsResolved = false,
+                    Email = "bbluvcode@gmail.com", // Replace with valid Email
+                    EmpIdResolver = null // No resolver yet
+                },
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 5),
+                    Title = "Request for Broadband Repair",
+                    DetailContent = "The broadband connection is not working since yesterday evening.",
+                    DateResolved = null,
+                    IsResolved = false,
+                    Email = "bbluvcode@gmail.com", // Replace with valid Email
+                    EmpIdResolver = null // No resolver yet
+                },
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 10),
+                    Title = "Request for Land-line Repair",
+                    DetailContent = "Land-line phone is not working properly; there is a lot of static noise.",
+                    DateResolved = new DateTime(2024, 1, 12),
+                    IsResolved = true,
+                    Email = "bbluvcode@gmail.com", // Replace with valid Email
+                    EmpIdResolver = 1 // EmployeeId of resolver
+                },
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 15),
+                    Title = "Help with Dial-up Internet Configuration",
+                    DetailContent = "Need assistance in configuring the dial-up connection for better speed.",
+                    DateResolved = null,
+                    IsResolved = false,
+                    Email = "bbluvcode@gmail.com", // Replace with valid Email
+                    EmpIdResolver = null // No resolver yet
+                },
+            };
                 _dbContext.SupportRequests.AddRange(supportRequests);
                 _dbContext.SaveChanges();
             }

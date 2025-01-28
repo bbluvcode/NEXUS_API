@@ -42,9 +42,7 @@ namespace NEXUS_API.Data
         {
             modelBuilder.Entity<EmployeeRole>().ToTable("EmployeeRoles"); // Sửa tên bảng thành EmployeeRole
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Keyword>()
-               .HasIndex(k => k.Words)
-               .IsUnique();
+            
             //Customer
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.CustomerRequests)
@@ -270,10 +268,10 @@ namespace NEXUS_API.Data
                 .HasOne(sr => sr.Employee)
                 .WithMany(e => e.SupportRequests)
                 .HasForeignKey(sr => sr.EmpIdResolver);
-            modelBuilder.Entity<SupportRequest>()
-                .HasOne(sr => sr.Customer)
-                .WithMany(c => c.SupportRequests)
-                .HasForeignKey(sr => sr.CustomerId);
+            //modelBuilder.Entity<SupportRequest>()
+            //    .HasOne(sr => sr.Customer)
+            //    .WithMany(c => c.SupportRequests)
+            //    .HasForeignKey(sr => sr.Email);
 
             //Vendor
             modelBuilder.Entity<Vendor>()
@@ -330,6 +328,7 @@ namespace NEXUS_API.Data
             {
                 entity.HasIndex(fb => fb.CustomerId); 
             });
+            modelBuilder.Entity<Keyword>().HasIndex(k => k.Words).IsUnique();
         }
     }
 }

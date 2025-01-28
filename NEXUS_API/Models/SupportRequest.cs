@@ -23,7 +23,8 @@ namespace NEXUS_API.Models
 
         //Relationship
         [Required]
-        public int CustomerId { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
         public Customer? Customer { get; set; }
         public int? EmpIdResolver { get; set; }
         public Employee? Employee { get; set; }

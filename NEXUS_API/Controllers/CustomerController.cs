@@ -337,28 +337,29 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetSupportRequests()
         {
             var supportRequests = await _dbContext.SupportRequests
-                .Include(x => x.Customer)
+                //.Include(x => x.Customer)
                 .Include(x => x.Employee)
                 .ToListAsync();
 
-            var supportRequestDTOs = supportRequests.Select(sr => new SupportRequestDTO
-            {
-                SupportRequestId = sr.SupportRequestId,
-                DateRequest = sr.DateRequest,
-                CustomerId = sr.CustomerId,
-                Title = sr.Title,
-                DetailContent = sr.DetailContent,
-                DateResolved = sr.DateResolved,
-                IsResolved = sr.IsResolved,                                
-                FullName = sr.Customer.FullName,
-                Gender = sr.Customer.Gender,
-                DateOfBirth = sr.Customer.DateOfBirth,
-                Address = sr.Customer.Address,
-                Email = sr.Customer.Email,
-                PhoneNumber = sr.Customer.PhoneNumber
-            }).ToList();
+            //var supportRequestDTOs = supportRequests.Select(sr => new SupportRequestDTO
+            //{
+            //    SupportRequestId = sr.SupportRequestId,
+            //    Email = sr.Email,
+            //    DateRequest = sr.DateRequest,
+            //    Title = sr.Title,
+            //    DetailContent = sr.DetailContent,
+            //    DateResolved = sr.DateResolved,
+            //    IsResolved = sr.IsResolved,      
+            //    CustomerId = sr.Customer.CustomerId,
+            //    FullName = sr.Customer.FullName,
+            //    Gender = sr.Customer.Gender,
+            //    DateOfBirth = sr.Customer.DateOfBirth,
+            //    Address = sr.Customer.Address,
+            //    PhoneNumber = sr.Customer.PhoneNumber
+            //}).ToList();
 
-            var response = new ApiResponse(StatusCodes.Status200OK, "Get support requests successfully", supportRequestDTOs);
+            //var response = new ApiResponse(StatusCodes.Status200OK, "Get support requests successfully", supportRequestDTOs);
+            var response = new ApiResponse(StatusCodes.Status200OK, "Get support requests successfully", supportRequests);
             return Ok(response);
         }
 
