@@ -4,7 +4,7 @@ namespace NEXUS_API.Helpers
 {
     public class UploadFile
     {
-        static readonly string baseFolder = "Uploads";
+        static readonly string baseFolder = "Images";
         static readonly string rootUrl = "http://localhost:5185/";
         public static async Task<string> SaveImage(string subFolder, IFormFile formFile)
         {

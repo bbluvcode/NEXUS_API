@@ -37,9 +37,10 @@ namespace NEXUS_API.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
+                    new Claim(ClaimTypes.NameIdentifier, employee.EmployeeId.ToString()),
                     new Claim(ClaimTypes.Email, employee.Email),
                     new Claim(ClaimTypes.Name, employee.FullName),
-                    new Claim(ClaimTypes.Role, employee.EmployeeRole.RoleName),
+                    new Claim(ClaimTypes.Role, employee.EmployeeRoleId.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -95,6 +96,7 @@ namespace NEXUS_API.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
+                    new Claim(ClaimTypes.NameIdentifier, customer.CustomerId.ToString()),
                     new Claim(ClaimTypes.Email, customer.Email),
                     new Claim(ClaimTypes.Name, customer.FullName)
                 }),
