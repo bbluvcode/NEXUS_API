@@ -36,7 +36,7 @@ namespace NEXUS_API.Models
         [StringLength(20)]
         public string? IdentificationNo { get; set; }
 
-        [StringLength(50)]
+        [StringLength(255)]
         public string? Image { get; set; }
         public string? Password { get; set; }
 
