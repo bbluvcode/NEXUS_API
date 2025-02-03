@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NEXUS_API.Data;
 
@@ -11,9 +12,11 @@ using NEXUS_API.Data;
 namespace NEXUS_API.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250203062516_nh32")]
+    partial class nh32
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +47,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Connection", b =>
@@ -82,7 +85,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("ServiceOrderId");
 
-                    b.ToTable("Connections", (string)null);
+                    b.ToTable("Connections");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.ConnectionDiary", b =>
@@ -107,7 +110,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("ConnectionId");
 
-                    b.ToTable("ConnectionDiary", (string)null);
+                    b.ToTable("ConnectionDiary");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Customer", b =>
@@ -190,7 +193,7 @@ namespace NEXUS_API.Migrations
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.CustomerRequest", b =>
@@ -248,7 +251,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("CustomerRequests", (string)null);
+                    b.ToTable("CustomerRequests");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Discount", b =>
@@ -275,7 +278,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasKey("DiscountId");
 
-                    b.ToTable("Discounts", (string)null);
+                    b.ToTable("Discounts");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Employee", b =>
@@ -372,7 +375,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("RetailShopId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.EmployeeRole", b =>
@@ -442,7 +445,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("VendorId");
 
-                    b.ToTable("Equipments", (string)null);
+                    b.ToTable("Equipments");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.EquipmentType", b =>
@@ -466,7 +469,7 @@ namespace NEXUS_API.Migrations
                     b.HasIndex("TypeName")
                         .IsUnique();
 
-                    b.ToTable("EquipmentTypes", (string)null);
+                    b.ToTable("EquipmentTypes");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.FeedBack", b =>
@@ -500,7 +503,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("FeedBacks", (string)null);
+                    b.ToTable("FeedBacks");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.InStockOrder", b =>
@@ -559,7 +562,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("VendorId");
 
-                    b.ToTable("InStockOrders", (string)null);
+                    b.ToTable("InStockOrders");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.InStockOrderDetail", b =>
@@ -588,7 +591,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("InStockOrderId");
 
-                    b.ToTable("InStockOrderDetails", (string)null);
+                    b.ToTable("InStockOrderDetails");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.InStockRequest", b =>
@@ -612,7 +615,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("InStockRequests", (string)null);
+                    b.ToTable("InStockRequests");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.InStockRequestDetail", b =>
@@ -638,7 +641,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("InStockRequestId");
 
-                    b.ToTable("InStockRequestDetails", (string)null);
+                    b.ToTable("InStockRequestDetails");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.InstallationOrder", b =>
@@ -676,7 +679,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("TechnicianId");
 
-                    b.ToTable("InstallationOrders", (string)null);
+                    b.ToTable("InstallationOrders");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Keyword", b =>
@@ -699,7 +702,7 @@ namespace NEXUS_API.Migrations
                     b.HasIndex("Words")
                         .IsUnique();
 
-                    b.ToTable("Keywords", (string)null);
+                    b.ToTable("Keywords");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.News", b =>
@@ -734,7 +737,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("NewsTB", (string)null);
+                    b.ToTable("NewsTB");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.OutStockOrder", b =>
@@ -772,7 +775,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("StockId");
 
-                    b.ToTable("OutStockOrders", (string)null);
+                    b.ToTable("OutStockOrders");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.OutStockOrderDetail", b =>
@@ -801,7 +804,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("OutStockId");
 
-                    b.ToTable("OutStockOrderDetails", (string)null);
+                    b.ToTable("OutStockOrderDetails");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Plan", b =>
@@ -833,7 +836,7 @@ namespace NEXUS_API.Migrations
                     b.HasIndex("PlanName")
                         .IsUnique();
 
-                    b.ToTable("Plans", (string)null);
+                    b.ToTable("Plans");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.PlanFee", b =>
@@ -879,7 +882,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("PlanId");
 
-                    b.ToTable("PlanFees", (string)null);
+                    b.ToTable("PlanFees");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Region", b =>
@@ -908,7 +911,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasKey("RegionId");
 
-                    b.ToTable("Regions", (string)null);
+                    b.ToTable("Regions");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.RetailShop", b =>
@@ -960,7 +963,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("RetailShops", (string)null);
+                    b.ToTable("RetailShops");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.ServiceBill", b =>
@@ -1008,7 +1011,7 @@ namespace NEXUS_API.Migrations
                     b.HasIndex("ServiceOrderId")
                         .IsUnique();
 
-                    b.ToTable("ServiceBills", (string)null);
+                    b.ToTable("ServiceBills");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.ServiceBillDetail", b =>
@@ -1065,7 +1068,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("BillId");
 
-                    b.ToTable("ServiceBillDetails", (string)null);
+                    b.ToTable("ServiceBillDetails");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.ServiceOrder", b =>
@@ -1118,7 +1121,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("RequestId");
 
-                    b.ToTable("ServiceOrders", (string)null);
+                    b.ToTable("ServiceOrders");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Stock", b =>
@@ -1161,7 +1164,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Stocks", (string)null);
+                    b.ToTable("Stocks");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.SupportRequest", b =>
@@ -1209,7 +1212,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("SupportRequestId");
 
-                    b.ToTable("SupportRequests", (string)null);
+                    b.ToTable("SupportRequests");
                 });
 
             modelBuilder.Entity("Vendor", b =>
@@ -1259,7 +1262,7 @@ namespace NEXUS_API.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Vendors", (string)null);
+                    b.ToTable("Vendors");
                 });
 
             modelBuilder.Entity("NEXUS_API.Models.Account", b =>

@@ -48,6 +48,8 @@ namespace NEXUS_API.Models
 
         [Required(ErrorMessage = "Status is required.")]
         public bool Status { get; set; } // Status work of employee (bool)
+        [StringLength(255)]
+        public string? Image { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpried { get; set; }
         public int FailedLoginAttempts { get; set; } = 0;

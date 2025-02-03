@@ -16,7 +16,7 @@ namespace NEXUS_API.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly DatabaseContext _dbContext;
-
+        private readonly string subFolder = "customerImages";
         private readonly PayPalService _payPalService;
         public CustomerController(DatabaseContext dbContext, PayPalService payPalService)
         {
@@ -119,6 +119,127 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, response);
             }
         }
+
+        [HttpGet("customer-by-email/{email}")]
+        public async Task<IActionResult> GetCustomerByEmail(string email)
+        {
+            var customer = await _dbContext.Customers
+                .Include(c => c.SupportRequests)
+                .Include(c => c.CustomerRequests)
+                .Include(c => c.Accounts)
+                .Include(c => c.FeedBacks)
+                .FirstOrDefaultAsync(c => c.Email == email);
+
+            if (customer == null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null));
+            }
+
+            var response = new ApiResponse(StatusCodes.Status200OK, "Customer retrieved successfully", customer);
+            return Ok(response);
+        }
+
+        [HttpPut("update-info/{id}")]
+        public async Task<IActionResult> UpdateInfomation(int id, [FromBody] CustomerUpdateInfoDTO userUpdateDTO)
+        {
+            object response = null;
+            try
+            {
+                var user = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
+                if (user == null)
+                {
+                    response = new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null);
+                    return NotFound(response);
+                }
+
+                user.FullName = userUpdateDTO.FullName ?? user.FullName;
+                user.PhoneNumber = userUpdateDTO.PhoneNumber ?? user.PhoneNumber;
+                user.Gender = userUpdateDTO.Gender ?? user.Gender;
+                user.Address = userUpdateDTO.Address ?? user.Address;
+                user.DateOfBirth = userUpdateDTO.DOB ?? user.DateOfBirth;
+
+                await _dbContext.SaveChangesAsync();
+
+                response = new ApiResponse(StatusCodes.Status200OK, "Customer updated successfully", user);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error", null);
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
+        [HttpPut("update-image/{id}")]
+        public async Task<IActionResult> UpdateImage(int id, IFormFile? file)
+        {
+            object response = null;
+            try
+            {
+                var userExisting = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
+                if (userExisting == null)
+                {
+                    response = new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null);
+                    return NotFound(response);
+                }
+
+                if (file == null || file.Length == 0)
+                {
+                    response = new ApiResponse(StatusCodes.Status400BadRequest, "No image provided", null);
+                    return BadRequest(response);
+                }
+
+                var imagePath = await UploadFile.SaveImage(subFolder, file);
+                userExisting.Image = imagePath;
+
+                await _dbContext.SaveChangesAsync();
+
+                response = new ApiResponse(StatusCodes.Status200OK, "Updated successfully", userExisting);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating image: {ex}");
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error" + ex.Message, null);
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
+        [HttpPut("change-password/{id}")]
+        public async Task<IActionResult> ChangePassword(int id, [FromBody] ChangePasswordDTO model)
+        {
+            if (model == null || string.IsNullOrWhiteSpace(model.OldPassword) || string.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid request data", null));
+            }
+
+            try
+            {
+                var user = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
+                if (user == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null));
+                }
+
+                if (model.OldPassword != user.Password)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Current password is incorrect", null));
+                }
+                if (model.OldPassword == model.NewPassword)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Current password and New password match", null));
+                }
+                user.Password = model.NewPassword;
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Password changed successfully", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error", null));
+            }
+        }
+
 
         //=====================CUSMER REQUEST======================
         [HttpGet("all-customer-request")]

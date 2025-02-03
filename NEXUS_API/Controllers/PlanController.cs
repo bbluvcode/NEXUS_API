@@ -27,6 +27,20 @@ namespace NEXUS_API.Controllers
             var response = new ApiResponse(StatusCodes.Status200OK, "get plans successfully", plans);
             return Ok(response);
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPlanById(int id)
+        {
+            var plan = await _dbContext.Plans.FirstOrDefaultAsync(p => p.PlanId == id);
+
+            if (plan == null)
+            {
+                // If no plan with the given ID is found, return a 404 response
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Plan not found!", null));
+            }
+
+            // If the plan is found, return it with a success response
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Plan retrieved successfully", plan));
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreatePlan([FromBody] Plan plan)
@@ -87,28 +101,38 @@ namespace NEXUS_API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlan(int id)
+        [HttpPatch("{id}/isusing")]
+        public async Task<IActionResult> ChangePlanIsUsing(int id, [FromBody] bool isUsing)
         {
-            object response = null;
             try
             {
                 var plan = await _dbContext.Plans.FirstOrDefaultAsync(p => p.PlanId == id);
                 if (plan == null)
                 {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "plan not found", null);
-                    return NotFound(response);
+                    return NotFound(new
+                    {
+                        message = $"Plan with ID {id} not found.",
+                        status = HttpStatusCode.NotFound
+                    });
                 }
 
-                _dbContext.Plans.Remove(plan);
+                plan.IsUsing = isUsing;
                 await _dbContext.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "delete plan successfully", plan);
-                return Ok(response);
+
+                return Ok(new
+                {
+                    data = plan,
+                    message = "Plan status updated successfully",
+                    status = HttpStatusCode.OK
+                });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error", null);
-                return StatusCode(500, response);
+                return StatusCode(500, new
+                {
+                    message = ex.Message,
+                    status = HttpStatusCode.InternalServerError
+                });
             }
         }
     }

@@ -21,11 +21,10 @@ namespace NEXUS_API.Controllers
         }
 
         // GET: api/PlanFee
-        [HttpGet("list")]
+        [HttpGet]
         public async Task<IActionResult> GetPlanFees()
         {
             var planFees = await _context.PlanFees.Include(pf => pf.Plan).ToListAsync();
-
             var response = new ApiResponse(StatusCodes.Status200OK, "Get plan fees successfully", planFees);
             return Ok(response);
         }
@@ -35,106 +34,104 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetPlanFee(int id)
         {
             var planFee = await _context.PlanFees.Include(pf => pf.Plan).FirstOrDefaultAsync(pf => pf.PlanFeeId == id);
-
             if (planFee == null)
             {
-                var response = new ApiResponse(StatusCodes.Status404NotFound, "PlanFee not found", null);
-                return NotFound(response);
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "PlanFee not found", null));
             }
 
-            var successResponse = new ApiResponse(StatusCodes.Status200OK, "Get plan fee successfully", planFee);
-            return Ok(successResponse);
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Get plan fee successfully", planFee));
         }
-
 
         // POST: api/PlanFee
         [HttpPost]
-        public async Task<IActionResult> CreatePlanFee(PlanFee planFee)
+        public async Task<IActionResult> CreatePlanFee([FromBody] PlanFee planFee)
         {
-            object response = null;
             try
             {
                 if (ModelState.IsValid)
                 {
-                    _context.PlanFees.Add(planFee);
+                    await _context.PlanFees.AddAsync(planFee);
                     await _context.SaveChangesAsync();
-                    response = new ApiResponse(StatusCodes.Status201Created, "Create plan fee successfully", planFee);
-                    return CreatedAtAction(nameof(GetPlanFee), new { id = planFee.PlanFeeId }, response);
+                    return CreatedAtAction(nameof(GetPlanFee), new { id = planFee.PlanFeeId },
+                        new ApiResponse(StatusCodes.Status201Created, "Create plan fee successfully", planFee));
                 }
-
-                response = new ApiResponse(StatusCodes.Status400BadRequest, "Bad request", null);
-                return BadRequest(response);
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Bad request", null));
             }
             catch (Exception)
             {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Server error", null);
-                return StatusCode(500, response);
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Server error", null));
             }
         }
 
         // PUT: api/PlanFee/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePlanFee(int id, PlanFee planFee)
+        public async Task<IActionResult> UpdatePlanFee(int id, [FromBody] PlanFee planFeeUpdate)
         {
-            object response = null;
             try
             {
-                if (id != planFee.PlanFeeId)
-                {
-                    response = new ApiResponse(StatusCodes.Status400BadRequest, "PlanFee ID mismatch", null);
-                    return BadRequest(response);
-                }
-
-                _context.Entry(planFee).State = EntityState.Modified;
-
-                await _context.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "Update plan fee successfully", planFee);
-                return Ok(response);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlanFeeExists(id))
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "PlanFee not found", null);
-                    return NotFound(response);
-                }
-                else
-                {
-                    response = new ApiResponse(StatusCodes.Status500InternalServerError, "Server error", null);
-                    return StatusCode(500, response);
-                }
-            }
-        }
-
-        // DELETE: api/PlanFee/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlanFee(int id)
-        {
-            object response = null;
-            try
-            {
-                var planFee = await _context.PlanFees.FindAsync(id);
+                var planFee = await _context.PlanFees.FirstOrDefaultAsync(pf => pf.PlanFeeId == id);
                 if (planFee == null)
                 {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "PlanFee not found", null);
-                    return NotFound(response);
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "PlanFee not found", null));
                 }
 
-                _context.PlanFees.Remove(planFee);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Bad request", null));
+                }
+
+                planFee.PlanFeeName = planFeeUpdate.PlanFeeName;
+                planFee.Description = planFeeUpdate.Description;
+                planFee.IsUsing = planFeeUpdate.IsUsing;
+                planFee.Rental = planFeeUpdate.Rental;
+                planFee.CallCharge = planFeeUpdate.CallCharge;
+                planFee.DTDCallCharge = planFeeUpdate.DTDCallCharge;
+                planFee.MessageMobileCharge = planFeeUpdate.MessageMobileCharge;
+                planFee.LocalCallCharge = planFeeUpdate.LocalCallCharge;
+
                 await _context.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "Delete plan fee successfully", planFee);
-                return Ok(response);
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Update plan fee successfully", planFee));
             }
             catch (Exception)
             {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Server error", null);
-                return StatusCode(500, response);
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Server error", null));
             }
         }
 
-        private bool PlanFeeExists(int id)
+        [HttpPatch("{id}/isusing")]
+        public async Task<IActionResult> ChangePlanFeeIsUsing(int id, [FromBody] bool isUsing)
         {
-            return _context.PlanFees.Any(pf => pf.PlanFeeId == id);
+            try
+            {
+                var planFee = await _context.PlanFees.FirstOrDefaultAsync(pf => pf.PlanFeeId == id);
+                if (planFee == null)
+                {
+                    return NotFound(new
+                    {
+                        message = $"Plan fee with ID {id} not found.",
+                        status = HttpStatusCode.NotFound
+                    });
+                }
+
+                planFee.IsUsing = isUsing;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    data = planFee,
+                    message = "Plan fee status updated successfully",
+                    status = HttpStatusCode.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = ex.Message,
+                    status = HttpStatusCode.InternalServerError
+                });
+            }
         }
+
     }
 }

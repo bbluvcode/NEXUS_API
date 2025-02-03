@@ -14,6 +14,7 @@ namespace NEXUS_API.Models
         [Required]
         [StringLength(1000)]
         public string Description { get; set; }
+        [Required]
         public bool IsUsing { get; set; }
         [Column(TypeName = "decimal(10,2)")]
         public decimal Rental { get; set; }
