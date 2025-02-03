@@ -32,6 +32,53 @@ namespace NEXUS_API.Data
                 _dbContext.Keywords.AddRange(keywords);
                 _dbContext.SaveChanges();
             }
+            // Seed Plan
+            if (!_dbContext.Plans.Any())
+            {
+                var plans = new List<Plan>
+                {
+                    new Plan { PlanName = "Dial – Up Connection", SecurityDeposit = 325, Description = "Dial-up Internet service.", IsUsing = true},
+                    new Plan { PlanName = "Broad Band Connection", SecurityDeposit = 500, Description = "High-speed broadband.", IsUsing = true},
+                    new Plan { PlanName = "LandLine Connection", SecurityDeposit = 250, Description = "Landline telephone service.", IsUsing = true}
+                };
+                _dbContext.Plans.AddRange(plans);
+                _dbContext.SaveChanges();
+            }
+
+            if (!_dbContext.PlanFees.Any())
+            {
+                var planFees = new List<PlanFee>
+                {
+                    // Dial-Up Connection
+                    new PlanFee { PlanFeeName = "10 Hrs.", Description = "10 Hours - Valid for 1 Month", Rental = 50, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "30 Hrs.", Description = "30 Hours - Valid for 3 Months", Rental = 130, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "60 Hrs.", Description = "60 Hours - Valid for 6 Months", Rental = 260, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 28Kbps Monthly", Description = "Unlimited Monthly Plan", Rental = 75, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 28Kbps Quarterly", Description = "Unlimited Quarterly Plan", Rental = 150, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 56Kbps Monthly", Description = "Unlimited Monthly Plan", Rental = 100, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 56Kbps Quarterly", Description = "Unlimited Quarterly Plan", Rental = 180, PlanId = 1, IsUsing = true },
+
+                    // Broadband Connection
+                    new PlanFee { PlanFeeName = "30 Hrs.", Description = "30 Hours - Valid for 1 Month", Rental = 175, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "60 Hrs.", Description = "60 Hours - Valid for 6 Months", Rental = 315, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 64Kbps Monthly", Description = "Unlimited Monthly Plan", Rental = 225, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 64Kbps Quarterly", Description = "Unlimited Quarterly Plan", Rental = 400, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 128Kbps Monthly", Description = "Unlimited Monthly Plan", Rental = 350, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 128Kbps Quarterly", Description = "Unlimited Quarterly Plan", Rental = 445, PlanId = 2, IsUsing = true },
+
+                    // LandLine Connection
+                    new PlanFee { PlanFeeName = "Local Unlimited", Description = "Unlimited - Valid for an year", Rental = 75, CallCharge = 0.55m, PlanId = 3, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Local Monthly", Description = "Monthly Plan", Rental = 35, CallCharge = 0.75m, PlanId = 3, IsUsing = true },
+                    new PlanFee { PlanFeeName = "STD Monthly", Description = "Monthly Plan", Rental = 125, LocalCallCharge = 0.70m, DTDCallCharge = 2.25m, MessageMobileCharge = 1.00m, PlanId = 3, IsUsing = true },
+                    new PlanFee { PlanFeeName = "STD Half-Yearly", Description = "Half-Yearly Plan", Rental = 420, LocalCallCharge = 0.60m, DTDCallCharge = 2.00m, MessageMobileCharge = 1.15m, PlanId = 3, IsUsing = true },
+                    new PlanFee { PlanFeeName = "STD Yearly", Description = "Yearly Plan", Rental = 600, LocalCallCharge = 0.60m, DTDCallCharge = 1.75m, MessageMobileCharge = 1.25m, PlanId = 3, IsUsing = true }
+                };
+
+                _dbContext.PlanFees.AddRange(planFees);
+                _dbContext.SaveChanges();
+            }
+
+
             // Seed Regions
             if (!_dbContext.Regions.Any())
             {
