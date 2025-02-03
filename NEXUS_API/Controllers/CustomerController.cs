@@ -337,32 +337,12 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetSupportRequests()
         {
             var supportRequests = await _dbContext.SupportRequests
-                //.Include(x => x.Customer)
                 .Include(x => x.Employee)
                 .ToListAsync();
 
-            //var supportRequestDTOs = supportRequests.Select(sr => new SupportRequestDTO
-            //{
-            //    SupportRequestId = sr.SupportRequestId,
-            //    Email = sr.Email,
-            //    DateRequest = sr.DateRequest,
-            //    Title = sr.Title,
-            //    DetailContent = sr.DetailContent,
-            //    DateResolved = sr.DateResolved,
-            //    IsResolved = sr.IsResolved,      
-            //    CustomerId = sr.Customer.CustomerId,
-            //    FullName = sr.Customer.FullName,
-            //    Gender = sr.Customer.Gender,
-            //    DateOfBirth = sr.Customer.DateOfBirth,
-            //    Address = sr.Customer.Address,
-            //    PhoneNumber = sr.Customer.PhoneNumber
-            //}).ToList();
-
-            //var response = new ApiResponse(StatusCodes.Status200OK, "Get support requests successfully", supportRequestDTOs);
             var response = new ApiResponse(StatusCodes.Status200OK, "Get support requests successfully", supportRequests);
             return Ok(response);
         }
-
 
         [HttpPost("create-support-request")]
         public async Task<IActionResult> CreateSupportRequest([FromForm] SupportRequest supportRequest)
@@ -405,10 +385,10 @@ namespace NEXUS_API.Controllers
                     response = new ApiResponse(StatusCodes.Status404NotFound, "Support request not found", null);
                     return NotFound(response);
                 }
-
-                supportRequest.IsResolved = true;
-                supportRequest.DateResolved = DateTime.Now;
-                supportRequest.EmpIdResolver = empIdResolver;
+                var supReqStatus = !supportRequest.IsResolved;
+                supportRequest.IsResolved = supReqStatus;
+                supportRequest.DateResolved = supReqStatus ? DateTime.Now: null;
+                supportRequest.EmpIdResolver = supReqStatus? empIdResolver:null;
 
                 await _dbContext.SaveChangesAsync();
 
