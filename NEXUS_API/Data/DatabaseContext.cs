@@ -7,6 +7,7 @@ namespace NEXUS_API.Data
 
         public DatabaseContext(DbContextOptions options) : base(options) { }       
         //
+        public DbSet<Keyword> Keywords { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<ConnectionDiary> ConnectionDiaries { get; set; }
@@ -20,6 +21,7 @@ namespace NEXUS_API.Data
         public DbSet<ConnectionDiary> ConnectionDiarys { get; set; }
         public DbSet<CustomerRequest> CustomerRequests { get; set; }
         public DbSet<FeedBack> FeedBacks { get; set; }
+        public DbSet<InstallationOrder> InstallationOrders { get; set; }
         public DbSet<InStockOrder> InStockOrders { get; set; }
         public DbSet<InStockOrderDetail> InStockOrderDetails { get; set; }
         public DbSet<InStockRequest> InStockRequests { get; set; }
@@ -40,7 +42,7 @@ namespace NEXUS_API.Data
         {
             modelBuilder.Entity<EmployeeRole>().ToTable("EmployeeRoles"); // Sửa tên bảng thành EmployeeRole
             base.OnModelCreating(modelBuilder);
-            base.OnModelCreating(modelBuilder);
+            
             //Customer
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.CustomerRequests)
@@ -50,6 +52,13 @@ namespace NEXUS_API.Data
                 .HasMany(c => c.FeedBacks)
                 .WithOne(fb => fb.Customer)
                 .HasForeignKey(fb => fb.CustomerId);
+
+            //CustomerRequest
+            modelBuilder.Entity<CustomerRequest>()
+                .HasOne(cr => cr.Region)
+                .WithMany()
+                .HasForeignKey(cr => cr.RegionId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             //Account
             modelBuilder.Entity<Account>()
@@ -200,15 +209,35 @@ namespace NEXUS_API.Data
 
             // ServiceOrder
             modelBuilder.Entity<ServiceOrder>()
-                .HasOne(so => so.EmployeeCreater)
-                .WithMany(e => e.CreatedOrders)
+                .HasOne(so => so.EmployeeCreator)
+                .WithMany()
                 .HasForeignKey(so => so.EmpIDCreater)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(s => s.EmployeeSurveyor)
+                .WithMany()
+                .HasForeignKey(s => s.EmpIDSurveyor)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ServiceOrder>()
                 .HasOne(so => so.Account)
                 .WithMany(a => a.ServiceOrders)
                 .HasForeignKey(so => so.AccountId)
+                .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(s => s.CustomerRequest)
+                .WithMany()
+                .HasForeignKey(s => s.RequestId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(s => s.PlanFee)
+                .WithMany()
+                .HasForeignKey(s => s.PlanFeeId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ServiceOrder>()
+                .HasOne(so => so.InstallationOrder) 
+                .WithOne(io => io.ServiceOrder)    
+                .HasForeignKey<InstallationOrder>(io => io.ServiceOrderId) 
+                .OnDelete(DeleteBehavior.Cascade);
 
             //ServiceBill
             modelBuilder.Entity<ServiceBill>()
@@ -239,10 +268,10 @@ namespace NEXUS_API.Data
                 .HasOne(sr => sr.Employee)
                 .WithMany(e => e.SupportRequests)
                 .HasForeignKey(sr => sr.EmpIdResolver);
-            modelBuilder.Entity<SupportRequest>()
-                .HasOne(sr => sr.Customer)
-                .WithMany(c => c.SupportRequests)
-                .HasForeignKey(sr => sr.CustomerId);
+            //modelBuilder.Entity<SupportRequest>()
+            //    .HasOne(sr => sr.Customer)
+            //    .WithMany(c => c.SupportRequests)
+            //    .HasForeignKey(sr => sr.Email);
 
             //Vendor
             modelBuilder.Entity<Vendor>()
@@ -299,6 +328,7 @@ namespace NEXUS_API.Data
             {
                 entity.HasIndex(fb => fb.CustomerId); 
             });
+            modelBuilder.Entity<Keyword>().HasIndex(k => k.Words).IsUnique();
         }
     }
 }

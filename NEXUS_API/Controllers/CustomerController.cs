@@ -7,6 +7,7 @@ using NEXUS_API.Models;
 using NEXUS_API.Data;
 using NEXUS_API.Helpers;
 using NEXUS_API.DTOs;
+using NEXUS_API.Service;
 
 namespace NEXUS_API.Controllers
 {
@@ -15,10 +16,12 @@ namespace NEXUS_API.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly DatabaseContext _dbContext;
-
-        public CustomerController(DatabaseContext dbContext)
+        private readonly string subFolder = "customerImages";
+        private readonly PayPalService _payPalService;
+        public CustomerController(DatabaseContext dbContext, PayPalService payPalService)
         {
             _dbContext = dbContext;
+            _payPalService = payPalService;
         }
 
         [HttpGet]
@@ -117,19 +120,145 @@ namespace NEXUS_API.Controllers
             }
         }
 
+        [HttpGet("customer-by-email/{email}")]
+        public async Task<IActionResult> GetCustomerByEmail(string email)
+        {
+            var customer = await _dbContext.Customers
+                .Include(c => c.SupportRequests)
+                .Include(c => c.CustomerRequests)
+                .Include(c => c.Accounts)
+                .Include(c => c.FeedBacks)
+                .FirstOrDefaultAsync(c => c.Email == email);
+
+            if (customer == null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null));
+            }
+
+            var response = new ApiResponse(StatusCodes.Status200OK, "Customer retrieved successfully", customer);
+            return Ok(response);
+        }
+
+        [HttpPut("update-info/{id}")]
+        public async Task<IActionResult> UpdateInfomation(int id, [FromBody] CustomerUpdateInfoDTO userUpdateDTO)
+        {
+            object response = null;
+            try
+            {
+                var user = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
+                if (user == null)
+                {
+                    response = new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null);
+                    return NotFound(response);
+                }
+
+                user.FullName = userUpdateDTO.FullName ?? user.FullName;
+                user.PhoneNumber = userUpdateDTO.PhoneNumber ?? user.PhoneNumber;
+                user.Gender = userUpdateDTO.Gender ?? user.Gender;
+                user.Address = userUpdateDTO.Address ?? user.Address;
+                user.DateOfBirth = userUpdateDTO.DOB ?? user.DateOfBirth;
+
+                await _dbContext.SaveChangesAsync();
+
+                response = new ApiResponse(StatusCodes.Status200OK, "Customer updated successfully", user);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error", null);
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
+        [HttpPut("update-image/{id}")]
+        public async Task<IActionResult> UpdateImage(int id, IFormFile? file)
+        {
+            object response = null;
+            try
+            {
+                var userExisting = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
+                if (userExisting == null)
+                {
+                    response = new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null);
+                    return NotFound(response);
+                }
+
+                if (file == null || file.Length == 0)
+                {
+                    response = new ApiResponse(StatusCodes.Status400BadRequest, "No image provided", null);
+                    return BadRequest(response);
+                }
+
+                var imagePath = await UploadFile.SaveImage(subFolder, file);
+                userExisting.Image = imagePath;
+
+                await _dbContext.SaveChangesAsync();
+
+                response = new ApiResponse(StatusCodes.Status200OK, "Updated successfully", userExisting);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating image: {ex}");
+                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error" + ex.Message, null);
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
+            }
+        }
+
+        [HttpPut("change-password/{id}")]
+        public async Task<IActionResult> ChangePassword(int id, [FromBody] ChangePasswordDTO model)
+        {
+            if (model == null || string.IsNullOrWhiteSpace(model.OldPassword) || string.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid request data", null));
+            }
+
+            try
+            {
+                var user = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == id);
+                if (user == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null));
+                }
+
+                if (model.OldPassword != user.Password)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Current password is incorrect", null));
+                }
+                if (model.OldPassword == model.NewPassword)
+                {
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Current password and New password match", null));
+                }
+                user.Password = model.NewPassword;
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Password changed successfully", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error", null));
+            }
+        }
+
+
         //=====================CUSMER REQUEST======================
         [HttpGet("all-customer-request")]
         public async Task<IActionResult> GetAllCustomerRequest()
         {
-            var list = await _dbContext.CustomerRequests.Include(x => x.Customer).ToListAsync();
+            var list = await _dbContext.CustomerRequests.Include(x => x.Customer).Include(x=>x.Region).ToListAsync();
             var customerRequestList = list.Select(x => new CustomerRequestDTO
             {
-                CustomerId = x.CustomerId,
                 RequestId = x.RequestId,
                 RequestTitle = x.RequestTitle,
                 ServiceRequest = x.ServiceRequest,
                 EquipmentRequest = x.EquipmentRequest,
                 IsResponse = x.IsResponse,
+                RegionId = x.RegionId,
+                RegionCode = x.Region.RegionCode,
+                RegionName = x.Region.RegionName,
+                Deposit = x.Deposit,
+                DepositStatus = x.DepositStatus,
+                InstallationAddress = x.InstallationAddress,
                 FullName = x.Customer.FullName,
                 Gender = x.Customer.Gender,
                 DateOfBirth = x.Customer.DateOfBirth,
@@ -137,7 +266,6 @@ namespace NEXUS_API.Controllers
                 Email = x.Customer.Email,
                 PhoneNumber = x.Customer.PhoneNumber,
                 DateCreate = x.DateCreate,
-                DateResolve = x.DateResolve,
             }).ToList();
             var response = new ApiResponse(StatusCodes.Status200OK, "Get list of customer request successfully", customerRequestList);
             return Ok(response);
@@ -149,14 +277,19 @@ namespace NEXUS_API.Controllers
             var list = await _dbContext.CustomerRequests
                 .Where(x => x.CustomerId == cusID)
                 .Include(x => x.Customer)
+                .Include(x => x.Region)
                 .ToListAsync();
             var customerRequestList = list.Select(x => new CustomerRequestDTO
             {
-                CustomerId = x.CustomerId,
                 RequestId = x.RequestId,
                 RequestTitle = x.RequestTitle,
                 ServiceRequest = x.ServiceRequest,
                 EquipmentRequest = x.EquipmentRequest,
+                RegionId = x.RegionId,
+                RegionCode = x.Region.RegionCode,
+                RegionName = x.Region.RegionName,
+                Deposit = x.Deposit,
+                InstallationAddress = x.InstallationAddress,
                 IsResponse = x.IsResponse,
                 FullName = x.Customer.FullName,
                 Gender = x.Customer.Gender,
@@ -165,9 +298,8 @@ namespace NEXUS_API.Controllers
                 Email = x.Customer.Email,
                 PhoneNumber = x.Customer.PhoneNumber,
                 DateCreate = x.DateCreate,
-                DateResolve = x.DateResolve,
             }).ToList();
-            var response = new ApiResponse(StatusCodes.Status200OK, "Get Requests of CustomerID: successfully", customerRequestList);
+            var response = new ApiResponse(StatusCodes.Status200OK, "Get Requests of CustomerID:"+ cusID + " successfully", customerRequestList);
             return Ok(response);
         }
 
@@ -179,10 +311,17 @@ namespace NEXUS_API.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // Gọi dịch vụ PayPal để tạo thanh toán và lấy thông tin đơn hàng
+                    var order = await _payPalService.CreatePayment(cusReq.Deposit);
+
+                    // Lấy URL phê duyệt từ PayPal
+                    // (nơi người dùng sẽ được chuyển hướng để xác nhận thanh toán)
+                    var approvalLink = order.Links?.FirstOrDefault(link => link.Rel == "approve")?.Href;
+                    cusReq.DepositPaymentId = order.Id;
                     await _dbContext.CustomerRequests.AddAsync(cusReq);
                     await _dbContext.SaveChangesAsync();
-                    response = new ApiResponse(StatusCodes.Status200OK, "Create customer request successfully", cusReq);
-                    return Created("success", response);
+                    //response = new ApiResponse(StatusCodes.Status200OK, "Create customer request successfully", cusReq);
+                    return Created("success", new { data = cusReq, approvalUrl = approvalLink });
                 }
                 response = new ApiResponse(StatusCodes.Status400BadRequest, "Create customer request fail", null);
                 return BadRequest(response);
@@ -192,6 +331,37 @@ namespace NEXUS_API.Controllers
                 response = new ApiResponse(StatusCodes.Status500InternalServerError, "Server error, loi sql da ton tai fk", null);
                 return StatusCode(500, response);
 
+            }
+        }
+
+        [HttpPost("capture-deposit")]
+        public async Task<IActionResult> CapturePayment([FromBody] PayPalCaptureDepositRequest captureRequest)
+        {
+            try
+            {
+                // Gọi dịch vụ PayPal để capture thanh toán dựa
+                // trên orderId (mà người dùng đã xác nhận)
+                var order = await _payPalService.CapturePayment(captureRequest.CustomerRequestId);
+                
+                // Kiểm tra trạng thái thanh toán
+                // của đơn hàng (được hoàn thành hay chưa)
+                bool isPaid = order.Status == "COMPLETED";
+
+                // Cập nhật trạng thái đơn hàng trong cơ sở dữ liệu
+                //await _dbContext.UpdateDepositStatus(captureRequest.OrderId, isPaid ? "Paid" : "Pending");
+                var cusReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(o => o.DepositPaymentId.ToString() == captureRequest.CustomerRequestId);
+                if (cusReq != null)
+                {
+                    cusReq.DepositStatus = isPaid ? "Paid" : "Pending";
+                    await _dbContext.SaveChangesAsync();
+                }
+                // Trả về thông tin đơn hàng đã được capture
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                // Nếu có lỗi xảy ra, trả về mã lỗi 400 và thông báo lỗi
+                return BadRequest(new { message = ex.Message });
             }
         }
 
@@ -288,31 +458,12 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetSupportRequests()
         {
             var supportRequests = await _dbContext.SupportRequests
-                .Include(x => x.Customer)
                 .Include(x => x.Employee)
                 .ToListAsync();
 
-            var supportRequestDTOs = supportRequests.Select(sr => new SupportRequestDTO
-            {
-                SupportRequestId = sr.SupportRequestId,
-                DateRequest = sr.DateRequest,
-                CustomerId = sr.CustomerId,
-                Title = sr.Title,
-                DetailContent = sr.DetailContent,
-                DateResolved = sr.DateResolved,
-                IsResolved = sr.IsResolved,
-                FullName = sr.Customer.FullName,
-                Gender = sr.Customer.Gender,
-                DateOfBirth = sr.Customer.DateOfBirth,
-                Address = sr.Customer.Address,
-                Email = sr.Customer.Email,
-                PhoneNumber = sr.Customer.PhoneNumber
-            }).ToList();
-
-            var response = new ApiResponse(StatusCodes.Status200OK, "Get support requests successfully", supportRequestDTOs);
+            var response = new ApiResponse(StatusCodes.Status200OK, "Get support requests successfully", supportRequests);
             return Ok(response);
         }
-
 
         [HttpPost("create-support-request")]
         public async Task<IActionResult> CreateSupportRequest([FromForm] SupportRequest supportRequest)
@@ -355,10 +506,10 @@ namespace NEXUS_API.Controllers
                     response = new ApiResponse(StatusCodes.Status404NotFound, "Support request not found", null);
                     return NotFound(response);
                 }
-
-                supportRequest.IsResolved = true;
-                supportRequest.DateResolved = DateTime.Now;
-                supportRequest.EmpIdResolver = empIdResolver;
+                var supReqStatus = !supportRequest.IsResolved;
+                supportRequest.IsResolved = supReqStatus;
+                supportRequest.DateResolved = supReqStatus ? DateTime.Now: null;
+                supportRequest.EmpIdResolver = supReqStatus? empIdResolver:null;
 
                 await _dbContext.SaveChangesAsync();
 

@@ -8,6 +8,77 @@ namespace NEXUS_API.Data
         public static void SeedingData(DatabaseContext _dbContext)
         {
             _dbContext.Database.Migrate();
+            //Seed Keywords
+            if (!_dbContext.Keywords.Any())
+            {
+                var keywords = new List<Keyword>()
+                {
+                    new Keyword
+                    {
+                        Words = "fuck",
+                        Status = true,
+                    },
+                    new Keyword
+                    {
+                        Words = "fck",
+                        Status = true,
+                    },
+                    new Keyword
+                    {
+                        Words = "dog",
+                        Status = true,
+                    },
+                };
+                _dbContext.Keywords.AddRange(keywords);
+                _dbContext.SaveChanges();
+            }
+            // Seed Plan
+            if (!_dbContext.Plans.Any())
+            {
+                var plans = new List<Plan>
+                {
+                    new Plan { PlanName = "Dial – Up Connection", SecurityDeposit = 325, Description = "Dial-up Internet service.", IsUsing = true},
+                    new Plan { PlanName = "Broad Band Connection", SecurityDeposit = 500, Description = "High-speed broadband.", IsUsing = true},
+                    new Plan { PlanName = "LandLine Connection", SecurityDeposit = 250, Description = "Landline telephone service.", IsUsing = true}
+                };
+                _dbContext.Plans.AddRange(plans);
+                _dbContext.SaveChanges();
+            }
+
+            if (!_dbContext.PlanFees.Any())
+            {
+                var planFees = new List<PlanFee>
+                {
+                    // Dial-Up Connection
+                    new PlanFee { PlanFeeName = "10 Hrs.", Description = "10 Hours - Valid for 1 Month", Rental = 50, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "30 Hrs.", Description = "30 Hours - Valid for 3 Months", Rental = 130, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "60 Hrs.", Description = "60 Hours - Valid for 6 Months", Rental = 260, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 28Kbps Monthly", Description = "Unlimited Monthly Plan", Rental = 75, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 28Kbps Quarterly", Description = "Unlimited Quarterly Plan", Rental = 150, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 56Kbps Monthly", Description = "Unlimited Monthly Plan", Rental = 100, PlanId = 1, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 56Kbps Quarterly", Description = "Unlimited Quarterly Plan", Rental = 180, PlanId = 1, IsUsing = true },
+
+                    // Broadband Connection
+                    new PlanFee { PlanFeeName = "30 Hrs.", Description = "30 Hours - Valid for 1 Month", Rental = 175, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "60 Hrs.", Description = "60 Hours - Valid for 6 Months", Rental = 315, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 64Kbps Monthly", Description = "Unlimited Monthly Plan", Rental = 225, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 64Kbps Quarterly", Description = "Unlimited Quarterly Plan", Rental = 400, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 128Kbps Monthly", Description = "Unlimited Monthly Plan", Rental = 350, PlanId = 2, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Unlimited 128Kbps Quarterly", Description = "Unlimited Quarterly Plan", Rental = 445, PlanId = 2, IsUsing = true },
+
+                    // LandLine Connection
+                    new PlanFee { PlanFeeName = "Local Unlimited", Description = "Unlimited - Valid for an year", Rental = 75, CallCharge = 0.55m, PlanId = 3, IsUsing = true },
+                    new PlanFee { PlanFeeName = "Local Monthly", Description = "Monthly Plan", Rental = 35, CallCharge = 0.75m, PlanId = 3, IsUsing = true },
+                    new PlanFee { PlanFeeName = "STD Monthly", Description = "Monthly Plan", Rental = 125, LocalCallCharge = 0.70m, DTDCallCharge = 2.25m, MessageMobileCharge = 1.00m, PlanId = 3, IsUsing = true },
+                    new PlanFee { PlanFeeName = "STD Half-Yearly", Description = "Half-Yearly Plan", Rental = 420, LocalCallCharge = 0.60m, DTDCallCharge = 2.00m, MessageMobileCharge = 1.15m, PlanId = 3, IsUsing = true },
+                    new PlanFee { PlanFeeName = "STD Yearly", Description = "Yearly Plan", Rental = 600, LocalCallCharge = 0.60m, DTDCallCharge = 1.75m, MessageMobileCharge = 1.25m, PlanId = 3, IsUsing = true }
+                };
+
+                _dbContext.PlanFees.AddRange(planFees);
+                _dbContext.SaveChanges();
+            }
+
+
             // Seed Regions
             if (!_dbContext.Regions.Any())
             {
@@ -66,14 +137,84 @@ namespace NEXUS_API.Data
                 _dbContext.Regions.AddRange(regions);
                 _dbContext.SaveChanges();
             }
+            // Seed Vendors
+            if (!_dbContext.Vendors.Any())
+            {
+                var vendors = new List<Vendor>
+                {
+                    new Vendor
+                    {
+                        VendorName = "Tech Supply Co.",
+                        Address = "123 Nguyen Hue, Ho Chi Minh City",
+                        Email = "contact@techsupply.com",
+                        Phone = "0901234567",
+                        Fax = "0281234567",
+                        Description = "Leading supplier of IT equipment.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "HCMC-001")?.RegionId
+                    },
+                    new Vendor
+                    {
+                        VendorName = "Hanoi Elec",
+                        Address = "456 Le Duan, Ha Noi",
+                        Email = "info@hanoielec.vn",
+                        Phone = "0987654321",
+                        Fax = "0241234567",
+                        Description = "Trusted provider of electronic components.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "HN-002")?.RegionId
+                    },
+                    new Vendor
+                    {
+                        VendorName = "AsiaTech",
+                        Address = "789 Tran Phu, Da Nang",
+                        Email = "support@asiatech.com",
+                        Phone = "0912345678",
+                        Fax = "0511234567",
+                        Description = "Supplier of networking and security equipment.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "DN-003")?.RegionId
+                    },
+                    new Vendor
+                    {
+                        VendorName = "SG Traders",
+                        Address = "12 Orchard Road, Singapore",
+                        Email = "sales@sgtraders.com",
+                        Phone = "6512345678",
+                        Fax = "6512345679",
+                        Description = "Leading B2B distributor in Southeast Asia.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "SG-005")?.RegionId
+                    },
+                    new Vendor
+                    {
+                        VendorName = "BKK Imports",
+                        Address = "88 Sukhumvit, Bangkok",
+                        Email = "contact@bkkimports.com",
+                        Phone = "6612345678",
+                        Fax = "6612345679",
+                        Description = "Specializing in hardware and industrial equipment.",
+                        Status = true,
+                        RegionId = _dbContext.Regions.FirstOrDefault(r => r.RegionCode == "BKK-007")?.RegionId
+                    }
+                };
+
+                _dbContext.Vendors.AddRange(vendors);
+                _dbContext.SaveChanges();
+            }
             // Seed EmployeeRoles
             if (!_dbContext.EmployeeRoles.Any())
             {
                 var roles = new List<EmployeeRole>
                 {
                     new EmployeeRole { RoleName = "Admin" },
+                    new EmployeeRole { RoleName = "ManagerShop" },
+                    new EmployeeRole { RoleName = "Accountant" },
+                    new EmployeeRole { RoleName = "ITSupport" },
                     new EmployeeRole { RoleName = "Technical" },
-                    new EmployeeRole { RoleName = "Accountant" }
+                    new EmployeeRole { RoleName = "Surveyor" },
+                    new EmployeeRole { RoleName = "CustomerSupport" },
+                    new EmployeeRole { RoleName = "SaleShop" },
                 };
                 _dbContext.EmployeeRoles.AddRange(roles);
                 _dbContext.SaveChanges();
@@ -82,89 +223,97 @@ namespace NEXUS_API.Data
             if (!_dbContext.RetailShops.Any())
             {
                 var retailShops = new List<RetailShop>
-            {
-                new RetailShop
                 {
-                    RetailShopName = "Main Office",
-                    Address = "123 Main St, District 1, HCMC",
-                    Email = "mainoffice@nexus.com",
-                    Phone = "0123456789",
-                    IsMainOffice = true,
-                    Fax = "012345678",
-                    RegionId = 1, // Replace with a valid RegionId in your database
-                    Image = "/Images/imageRetail/main_office.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Branch A",
-                    Address = "456 Branch St, District 3, HCMC",
-                    Email = "brancha@nexus.com",
-                    Phone = "0987654321",
-                    IsMainOffice = false,
-                    Fax = "987654321",
-                    RegionId = 2, // Replace with a valid RegionId in your database
-                    Image = "/Images/imageRetail/branch_a.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Branch B",
-                    Address = "789 Second Ave, District 7, HCMC",
-                    Email = "branchb@nexus.com",
-                    Phone = "0912345678",
-                    IsMainOffice = false,
-                    Fax = "091234567",
-                    RegionId = 3, // Replace with a valid RegionId in your database
-                    Image = "/Images/imageRetail/branch_b.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Asia HQ",
-                    Address = "789 Asia Center, Singapore",
-                    Email = "asiahq@nexus.com",
-                    Phone = "0923456789",
-                    IsMainOffice = false,
-                    Fax = "092345678",
-                    RegionId = 4, // Asia Headquarters
-                    Image = "/Images/imageRetail/asia_hq.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Singapore Branch",
-                    Address = "123 Orchard Rd, Singapore",
-                    Email = "sgbranch@nexus.com",
-                    Phone = "0911122233",
-                    IsMainOffice = false,
-                    Fax = "0911122233",
-                    RegionId = 5, // Singapore
-                    Image = "/Images/imageRetail/sg_branch.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Kuala Lumpur Branch",
-                    Address = "45 Jalan Ampang, Kuala Lumpur",
-                    Email = "klbranch@nexus.com",
-                    Phone = "0909988776",
-                    IsMainOffice = false,
-                    Fax = "0909988776",
-                    RegionId = 6, // Kuala Lumpur
-                    Image = "/Images/imageRetail/kl_branch.jpg"
-                },
-                new RetailShop
-                {
-                    RetailShopName = "Bangkok Branch",
-                    Address = "99 Sukhumvit Rd, Bangkok",
-                    Email = "bkkbranch@nexus.com",
-                    Phone = "0988765432",
-                    IsMainOffice = false,
-                    Fax = "0988765432",
-                    RegionId = 7, // Bangkok
-                    Image = "/Images/imageRetail/bkk_branch.jpg"
-                }
-            };
+                    new RetailShop
+                    {
+                        RetailShopName = "Main Office",
+                        Address = "123 Main St, District 1, HCMC",
+                        Email = "mainoffice@nexus.com",
+                        Phone = "0123456789",
+                        IsMainOffice = true,
+                        Fax = "012345678",
+                        RegionId = 1, // Replace with a valid RegionId in your database
+                        Image = "/Images/imageRetail/main_office.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Branch A",
+                        Address = "456 Branch St, District 3, HCMC",
+                        Email = "brancha@nexus.com",
+                        Phone = "0987654321",
+                        IsMainOffice = false,
+                        Fax = "987654321",
+                        RegionId = 2, // Replace with a valid RegionId in your database
+                        Image = "/Images/imageRetail/branch_a.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Branch B",
+                        Address = "789 Second Ave, District 7, HCMC",
+                        Email = "branchb@nexus.com",
+                        Phone = "0912345678",
+                        IsMainOffice = false,
+                        Fax = "091234567",
+                        RegionId = 3, // Replace with a valid RegionId in your database
+                        Image = "/Images/imageRetail/branch_b.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Asia HQ",
+                        Address = "789 Asia Center, Singapore",
+                        Email = "asiahq@nexus.com",
+                        Phone = "0923456789",
+                        IsMainOffice = false,
+                        Fax = "092345678",
+                        RegionId = 4, // Asia Headquarters
+                        Image = "/Images/imageRetail/asia_hq.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Singapore Branch",
+                        Address = "123 Orchard Rd, Singapore",
+                        Email = "sgbranch@nexus.com",
+                        Phone = "0911122233",
+                        IsMainOffice = false,
+                        Fax = "0911122233",
+                        RegionId = 5, // Singapore
+                        Image = "/Images/imageRetail/sg_branch.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Kuala Lumpur Branch",
+                        Address = "45 Jalan Ampang, Kuala Lumpur",
+                        Email = "klbranch@nexus.com",
+                        Phone = "0909988776",
+                        IsMainOffice = false,
+                        Fax = "0909988776",
+                        RegionId = 6, // Kuala Lumpur
+                        Image = "/Images/imageRetail/kl_branch.jpg",
+                        Status = true
+                    },
+                    new RetailShop
+                    {
+                        RetailShopName = "Bangkok Branch",
+                        Address = "99 Sukhumvit Rd, Bangkok",
+                        Email = "bkkbranch@nexus.com",
+                        Phone = "0988765432",
+                        IsMainOffice = false,
+                        Fax = "0988765432",
+                        RegionId = 7, // Bangkok
+                        Image = "/Images/imageRetail/bkk_branch.jpg",
+                        Status = true
+                    }
+                };
 
                 _dbContext.RetailShops.AddRange(retailShops);
                 _dbContext.SaveChanges();
             }
+
 
 
             // Seed Employees
@@ -325,6 +474,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "test",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 1
                     },
                     new CustomerRequest
@@ -334,6 +484,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Broadband Router Model BR123",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 1
                     },
                     new CustomerRequest
@@ -343,6 +494,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Replacement Handset Model LH456",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 1
                     },
                     new CustomerRequest
@@ -352,6 +504,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Dial-up Modem Model DM789",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
+                        RegionId = 1,
                         CustomerId = 1
                     },
                     new CustomerRequest
@@ -361,6 +514,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 2
                     },
                     new CustomerRequest
@@ -370,7 +524,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Land-line Phone Model LL321",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
-                        CustomerId = 2
+                        RegionId = 1,
+                        CustomerId = 2,
                     },
                     new CustomerRequest
                     {
@@ -379,6 +534,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 2
                     },
                     new CustomerRequest
@@ -388,6 +544,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "New Router Model BR999",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
+                        RegionId = 1,
                         CustomerId = 3
                     },
                     new CustomerRequest
@@ -397,6 +554,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        RegionId = 1,
                         CustomerId = 3
                     },
                     new CustomerRequest
@@ -406,6 +564,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Replacement Modem Model DM111",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
+                        RegionId = 1,
                         CustomerId = 3
                     },
                     new CustomerRequest
@@ -415,6 +574,7 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "test",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = true,
+                        RegionId = 1,
                         CustomerId = 3
                     }
                 };
@@ -427,48 +587,48 @@ namespace NEXUS_API.Data
             if (!_dbContext.SupportRequests.Any())
             {
                 var supportRequests = new List<SupportRequest>
+            {
+                new SupportRequest
                 {
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 5),
-                        Title = "test",
-                        DetailContent = "test",
-                        DateResolved = null,
-                        IsResolved = false,
-                        CustomerId = 1, // Replace with valid CustomerId
-                        EmpIdResolver = null // No resolver yet
-                    },
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 5),
-                        Title = "Request for Broadband Repair",
-                        DetailContent = "The broadband connection is not working since yesterday evening.",
-                        DateResolved = null,
-                        IsResolved = false,
-                        CustomerId = 1, // Replace with valid CustomerId
-                        EmpIdResolver = null // No resolver yet
-                    },
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 10),
-                        Title = "Request for Land-line Repair",
-                        DetailContent = "Land-line phone is not working properly; there is a lot of static noise.",
-                        DateResolved = new DateTime(2024, 1, 12),
-                        IsResolved = true,
-                        CustomerId = 2, // Replace with valid CustomerId
-                        EmpIdResolver = 1 // EmployeeId of resolver
-                    },
-                    new SupportRequest
-                    {
-                        DateRequest = new DateTime(2024, 1, 15),
-                        Title = "Help with Dial-up Internet Configuration",
-                        DetailContent = "Need assistance in configuring the dial-up connection for better speed.",
-                        DateResolved = null,
-                        IsResolved = false,
-                        CustomerId = 3, // Replace with valid CustomerId
-                        EmpIdResolver = null // No resolver yet
-                    },
-                };
+                    DateRequest = new DateTime(2024, 1, 5),
+                    Title = "test",
+                    DetailContent = "test",
+                    DateResolved = null,
+                    IsResolved = false,
+                    Email = "bbluvcode@gmail.com", // Replace with valid Email
+                    EmpIdResolver = null // No resolver yet
+                },
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 5),
+                    Title = "Request for Broadband Repair",
+                    DetailContent = "The broadband connection is not working since yesterday evening.",
+                    DateResolved = null,
+                    IsResolved = false,
+                    Email = "bbluvcode@gmail.com", // Replace with valid Email
+                    EmpIdResolver = null // No resolver yet
+                },
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 10),
+                    Title = "Request for Land-line Repair",
+                    DetailContent = "Land-line phone is not working properly; there is a lot of static noise.",
+                    DateResolved = new DateTime(2024, 1, 12),
+                    IsResolved = true,
+                    Email = "bbluvcode@gmail.com", // Replace with valid Email
+                    EmpIdResolver = 1 // EmployeeId of resolver
+                },
+                new SupportRequest
+                {
+                    DateRequest = new DateTime(2024, 1, 15),
+                    Title = "Help with Dial-up Internet Configuration",
+                    DetailContent = "Need assistance in configuring the dial-up connection for better speed.",
+                    DateResolved = null,
+                    IsResolved = false,
+                    Email = "bbluvcode@gmail.com", // Replace with valid Email
+                    EmpIdResolver = null // No resolver yet
+                },
+            };
                 _dbContext.SupportRequests.AddRange(supportRequests);
                 _dbContext.SaveChanges();
             }
@@ -514,8 +674,6 @@ namespace NEXUS_API.Data
                 _dbContext.FeedBacks.AddRange(feedbacks);
                 _dbContext.SaveChanges();
             }
-
         }
-
     }
 }

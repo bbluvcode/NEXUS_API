@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NEXUS_API.Service;
+using System.ComponentModel.DataAnnotations;
 
 namespace NEXUS_API.Models
 {
@@ -12,13 +13,11 @@ namespace NEXUS_API.Models
         public string? Description { get; set; }
 
         //Relationship
-        [Required]
-        public int ServiceOrderId { get; set; }
+        public string ServiceOrderId { get; set; }
         public ServiceOrder? ServiceOrder { get; set; }
         [Required]
         public int PlanId { get; set; }
         public Plan? Plan { get; set; }
-        [Required]
         public int? EquipmentId { get; set; }
         public Equipment? Equipment { get; set; }
         public ICollection<ConnectionDiary>? ConnectionDiaries { get; set; }

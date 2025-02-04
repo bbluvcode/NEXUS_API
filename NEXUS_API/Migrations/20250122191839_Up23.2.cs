@@ -6,25 +6,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NEXUS_API.Migrations
 {
     /// <inheritdoc />
-    public partial class ver8 : Migration
+    public partial class Up232 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
-                name: "Date",
-                table: "FeedBacks",
+                name: "CreatedDate",
+                table: "Accounts",
                 type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Date",
-                table: "FeedBacks");
+                name: "CreatedDate",
+                table: "Accounts");
         }
     }
 }

@@ -39,6 +39,7 @@ namespace NEXUS_API.Controllers
                     message = ex.Message,
                     status = HttpStatusCode.InternalServerError
                 });
+                //2
             }
         }
 
@@ -89,8 +90,9 @@ namespace NEXUS_API.Controllers
                 // Kiểm tra nếu có file ảnh
                 if (imageFile != null && imageFile.Length > 0)
                 {
-                    // Sử dụng thư mục con trong project hiện tại
-                    var uploadsFolder = Path.Combine(@"D:\2308A0\HK3\API\NEXUS_API\NEXUS_API\NEXUS_API\NEXUS_API\Images\imageRetail");
+                    // Thay đổi baseDirectory để trỏ tới thư mục root của dự án
+                    var baseDirectory = Directory.GetCurrentDirectory();
+                    var uploadsFolder = Path.Combine(baseDirectory, "Images", "imageRetail");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -107,7 +109,8 @@ namespace NEXUS_API.Controllers
                     }
 
                     // Lưu đường dẫn ảnh vào database
-                    retailShop.Image = "/Images/imageRetail/" + fileName;
+                    retailShop.Image = Path.Combine("/Images", "imageRetail", fileName).Replace("\\", "/");
+                    Console.WriteLine(filePath);
                 }
                 else
                 {
@@ -133,8 +136,6 @@ namespace NEXUS_API.Controllers
             }
         }
 
-
-
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRetailShop(int id, [FromForm] RetailShop retailShop, IFormFile? imageFile)
         {
@@ -145,22 +146,38 @@ namespace NEXUS_API.Controllers
 
                 if (imageFile != null)
                 {
-                    // Sử dụng thư mục con trong project hiện tại
-                    string uploadsFolder = Path.Combine(@"D:\2308A0\HK3\API\NEXUS_API\NEXUS_API\NEXUS_API\NEXUS_API\Images\imageRetail");
+                    // Check if there is an existing image and delete it
+                    if (!string.IsNullOrEmpty(retailShop.Image))
+                    {
+                        var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), retailShop.Image.Replace("/", "\\"));
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath); // Delete old image file
+                        }
+                    }
+
+                    // Save new image
+                    var baseDirectory = Directory.GetCurrentDirectory();
+                    var uploadsFolder = Path.Combine(baseDirectory, "Images", "imageRetail");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
                     }
 
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-                    string filePath = Path.Combine(uploadsFolder, fileName);
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await imageFile.CopyToAsync(stream);
                     }
 
-                    retailShop.Image = "/Images/imageRetail/" + fileName;
+                    retailShop.Image = Path.Combine("Images", "imageRetail", fileName).Replace("\\", "/");
+                }
+                else if (Request.Form.ContainsKey("keepExistingImage") && Request.Form["keepExistingImage"] == "true")
+                {
+                    // If no new image is uploaded, keep the old image
+                    // retailShop.Image already contains the old image path
                 }
 
                 await _retailShopRepository.UpdateRetailShopAsync(retailShop);
@@ -171,5 +188,42 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, new { message = ex.Message, status = HttpStatusCode.InternalServerError });
             }
         }
+
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateRetailShopStatus(int id, [FromBody] bool status)
+        {
+            try
+            {
+                var retailShop = await _retailShopRepository.GetRetailShopByIdAsync(id);
+                if (retailShop == null)
+                {
+                    return NotFound(new
+                    {
+                        message = $"RetailShop with ID {id} not found.",
+                        status = HttpStatusCode.NotFound
+                    });
+                }
+
+                retailShop.Status = status;
+                await _retailShopRepository.UpdateRetailShopAsync(retailShop);
+
+                return Ok(new
+                {
+                    data = retailShop,
+                    message = "RetailShop status updated successfully",
+                    status = HttpStatusCode.OK
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = ex.Message,
+                    status = HttpStatusCode.InternalServerError
+                });
+            }
+        }
+
     }
 }

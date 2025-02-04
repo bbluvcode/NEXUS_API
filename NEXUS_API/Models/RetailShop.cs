@@ -34,6 +34,9 @@ namespace NEXUS_API.Models
         [StringLength(255)] // Lưu đường dẫn ảnh
         public string? Image { get; set; }
 
+        [Required]
+        public bool Status { get; set; } // Trạng thái hoạt động
+
         // Relationship
         [Required]
         public int RegionId { get; set; }

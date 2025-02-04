@@ -1,10 +1,11 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using NEXUS_API.Controllers;
 using NEXUS_API.Data;
 using NEXUS_API.Helpers;
+using NEXUS_API.Models;
 using NEXUS_API.Repository;
 using NEXUS_API.Service;
 using System.Text;
@@ -24,6 +25,10 @@ namespace NEXUS_API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            // Add PayPal configuration from appsettings.json
+            builder.Services.Configure<PayPalConfig>(builder.Configuration.GetSection("PayPalConfig"));
+            builder.Services.AddSingleton<PayPalService>();
+            //mail config
             builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.AddTransient<EmailService>();
             builder.Services.AddDbContext<DatabaseContext>(options =>
@@ -33,6 +38,7 @@ namespace NEXUS_API
             builder.Services.AddScoped<IEmployeeRepository, EmployeeService>();
             builder.Services.AddScoped<IRegionRepository, RegionService>();
             builder.Services.AddScoped<IRetailShopRepository, RetailShopService>();
+            builder.Services.AddScoped<IVendorRepository, VendorService>();
 
             builder.Services.AddControllersWithViews().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -56,6 +62,13 @@ namespace NEXUS_API
                 };
             });
             var app = builder.Build();
+
+            // Cho phép truy cập thư mục Images
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+                RequestPath = "/Images"
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
