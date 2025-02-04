@@ -120,6 +120,22 @@ namespace NEXUS_API.Controllers
             }
         }
 
+
+        [HttpGet("customer-info/{email}")]
+        public async Task<IActionResult> GetCustomerInfo(string email)
+        {
+            var customer = await _dbContext.Customers                
+                .FirstOrDefaultAsync(c => c.Email == email);
+
+            if (customer == null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Customer not found", null));
+            }
+
+            var response = new ApiResponse(StatusCodes.Status200OK, "Customer retrieved successfully", customer);
+            return Ok(response);
+        }
+
         [HttpGet("customer-by-email/{email}")]
         public async Task<IActionResult> GetCustomerByEmail(string email)
         {
