@@ -2,6 +2,6 @@
 {
     public class CompleteInstallationDTO
     {
-        public string? Notes { get; set; }
+        public string Notes { get; set; }
     }
 }
