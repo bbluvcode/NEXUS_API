@@ -289,7 +289,11 @@ namespace NEXUS_API.Data
             });
             modelBuilder.Entity<Stock>(entity =>
             {
-                entity.HasIndex(s => s.RegionId);        
+                entity.HasIndex(s => s.RegionId);
+                entity.HasIndex(s => s.StockName).IsUnique();
+                entity.HasIndex(s => s.Email).IsUnique();
+                entity.HasIndex(s => s.Phone).IsUnique();
+                entity.HasIndex(s => s.Fax).IsUnique();
             });
             modelBuilder.Entity<SupportRequest>(entity =>
             { 
