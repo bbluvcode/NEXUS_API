@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using NEXUS_API.Data;
 using NEXUS_API.DTOs;
 using NEXUS_API.Helpers;
 using NEXUS_API.Models;
+using NEXUS_API.Service;
 using System;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -16,10 +18,12 @@ namespace NEXUS_API.Controllers
     public class ServiceOrderController : ControllerBase
     {
         private readonly DatabaseContext _dbContext;
+        private readonly EmailService _emailService;
 
-        public ServiceOrderController(DatabaseContext databaseContext)
+        public ServiceOrderController(DatabaseContext databaseContext, EmailService emailService)
         {
             _dbContext = databaseContext;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -147,7 +151,9 @@ namespace NEXUS_API.Controllers
             try
             {
                 //Find CustomerRequest from RequestId
-                var customerRequest = await _dbContext.CustomerRequests.FirstOrDefaultAsync(cr => cr.RequestId == requestId);
+                var customerRequest = await _dbContext.CustomerRequests
+                    .Include(cr => cr.Customer)
+                    .FirstOrDefaultAsync(cr => cr.RequestId == requestId);
 
                 if (customerRequest == null)
                 {
@@ -210,6 +216,103 @@ namespace NEXUS_API.Controllers
                 _dbContext.CustomerRequests.Update(customerRequest);
 
                 await _dbContext.SaveChangesAsync();
+
+                // Send email to customer
+                var emailRequest = new EmailRequest
+                {
+                    ToMail = customerRequest.Customer.Email,
+                    Subject = "Your Service Order Has Been Created",
+                    HtmlContent = $@"
+                        <html>
+                        <head>
+                            <style>
+                                .email-container {{
+                                    font-family: 'Arial', sans-serif;
+                                    line-height: 1.6;
+                                    color: #333333;
+                                    background-color: #f4f4f4;
+                                    width: 50%;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    border: 1px solid #dddddd;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                }}
+                                .header {{
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #2c3e50;
+                                    color: #ffffff;
+                                    padding: 15px;
+                                    border-radius: 5px 5px 0 0;
+                                }}
+                                .header img {{
+                                    width: 80px;
+                                    height: 80px;
+                                    border-radius: 50%;
+                                }}
+                                .header h2 {{
+                                    text-align: center;
+                                    font-size: 36px;
+                                    font-weight: bold;
+                                    margin-top: 5px;
+                                    margin-left: 60px;
+                                    color: #e74c3c;
+                                }}
+                                .content {{
+                                    padding: 15px;
+                                    background-color: #ffffff;
+                                    text-align: left;
+                                }}
+                                .content p {{
+                                    font-size: 16px;
+                                    color: #666666;
+                                }}
+                                .footer {{
+                                    font-size: 16px;
+                                    color: #999999;
+                                    text-align: center;
+                                    padding: 10px 0;
+                                    background-color: #2c3e50;
+                                    border-radius: 0 0 5px 5px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='email-container'>
+                                <div class='header'>
+                                    <img src='https://i.postimg.cc/sgyV5SqZ/logo-textwhite.png' alt='Company Logo'>
+                                    <h2>Service Order Confirmation</h2>
+                                </div>
+                                <div class='content'>
+                                    <p>Dear {customerRequest.Customer.FullName},</p>
+                                    <p>Thank you for choosing us as your dedicated provider.</p>
+                                    <p>We are extremely grateful that you took the time to send us your request about our Service.</p>
+                                    <p>Your service order <strong>{orderId}</strong> has been successfully created.</p>
+                                    <p>A surveyor has been assigned to evaluate your request.</p>
+                                    <p>Deposit Amount: <strong>${depositAmount}</strong></p>
+                                    <p>Surveyor Name: <strong>{surveyor.FullName}</strong></p>
+                                    <p>We will keep you updated on further progress.</p>
+                                    <p>Best regards,</p>
+                                    <p>The NEXUS team</p>
+                                </div>
+                                <div class='footer'>
+                                    <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>"
+                };
+
+                try
+                {
+                    await _emailService.SendMailAsync(emailRequest);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(StatusCodes.Status500InternalServerError, "Error sending email: " + ex.Message, null));
+                }
 
                 return Created("success", new ApiResponse(StatusCodes.Status201Created, "ServiceOrder created and surveyor assigned successfully", serviceOrder));
             }
@@ -351,6 +454,98 @@ namespace NEXUS_API.Controllers
                     _dbContext.ServiceOrders.Update(serviceOrder);
                     await _dbContext.SaveChangesAsync();
 
+                    // Send email to customer
+                    var emailRequest = new EmailRequest
+                    {
+                        ToMail = serviceOrder.CustomerRequest.Customer.Email,
+                        Subject = "Survey Approved - Account Created",
+                        HtmlContent = $@"
+                        <html>
+                        <head>
+                            <style>
+                                .email-container {{
+                                    font-family: 'Arial', sans-serif;
+                                    line-height: 1.6;
+                                    color: #333333;
+                                    background-color: #f4f4f4;
+                                    width: 50%;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    border: 1px solid #dddddd;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                }}
+                                .header {{
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #2c3e50;
+                                    color: #ffffff;
+                                    padding: 15px;
+                                    border-radius: 5px 5px 0 0;
+                                }}
+                                .header img {{
+                                    width: 80px;
+                                    height: 80px;
+                                    border-radius: 50%;
+                                }}
+                                .header h2 {{
+                                    text-align: center;
+                                    font-size: 36px;
+                                    font-weight: bold;
+                                    margin-top: 5px;
+                                    margin-left: 60px;
+                                    color: #e74c3c;
+                                }}
+                                .content {{
+                                    padding: 15px;
+                                    background-color: #ffffff;
+                                    text-align: left;
+                                }}
+                                .content p {{
+                                    font-size: 16px;
+                                    color: #666666;
+                                }}
+                                .footer {{
+                                    font-size: 16px;
+                                    color: #999999;
+                                    text-align: center;
+                                    padding: 10px 0;
+                                    background-color: #2c3e50;
+                                    border-radius: 0 0 5px 5px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='email-container'>
+                                <div class='header'>
+                                    <img src='https://i.postimg.cc/sgyV5SqZ/logo-textwhite.png' alt='Company Logo'>
+                                    <h2>Survey Approved</h2>
+                                </div>
+                                <div class='content'>
+                                    <p>Dear {serviceOrder.CustomerRequest.Customer.FullName},</p>                               
+                                    <p>Your service order <strong>{serviceOrder.OrderId}</strong> has been approved.</p>
+                                    <p>Your account ID: <strong>{accountId}</strong></p>
+                                    <p>Installation will proceed soon.</p>
+                                    <p>Best regards,</p>
+                                    <p>The NEXUS team</p>
+                                </div>
+                                <div class='footer'>
+                                    <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>"
+                    };
+                    try
+                    {
+                        await _emailService.SendMailAsync(emailRequest);
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(StatusCodes.Status500InternalServerError, "Error sending email: " + ex.Message, null));
+                    }
+
                     return Ok(new ApiResponse(StatusCodes.Status200OK, "Survey updated and account created successfully", serviceOrder));
                 }
                 else if (updateSurveyDto.SurveyStatus == "Invalid")
@@ -365,6 +560,99 @@ namespace NEXUS_API.Controllers
                     serviceOrder.SurveyDescribe = updateSurveyDto.CancellationReason;
                     _dbContext.ServiceOrders.Update(serviceOrder);
                     await _dbContext.SaveChangesAsync();
+
+                    // Send email to customer
+                    var emailRequest = new EmailRequest
+                    {
+                        ToMail = serviceOrder.CustomerRequest.Customer.Email,
+                        Subject = "Survey Rejected",
+                        HtmlContent = $@"
+                        <html>
+                        <head>
+                            <style>
+                                .email-container {{
+                                    font-family: 'Arial', sans-serif;
+                                    line-height: 1.6;
+                                    color: #333333;
+                                    background-color: #f4f4f4;
+                                    width: 50%;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    border: 1px solid #dddddd;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                }}
+                                .header {{
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #2c3e50;
+                                    color: #ffffff;
+                                    padding: 15px;
+                                    border-radius: 5px 5px 0 0;
+                                }}
+                                .header img {{
+                                    width: 80px;
+                                    height: 80px;
+                                    border-radius: 50%;
+                                }}
+                                .header h2 {{
+                                    text-align: center;
+                                    font-size: 36px;
+                                    font-weight: bold;
+                                    margin-top: 5px;
+                                    margin-left: 60px;
+                                    color: #e74c3c;
+                                }}
+                                .content {{
+                                    padding: 15px;
+                                    background-color: #ffffff;
+                                    text-align: left;
+                                }}
+                                .content p {{
+                                    font-size: 16px;
+                                    color: #666666;
+                                }}
+                                .footer {{
+                                    font-size: 16px;
+                                    color: #999999;
+                                    text-align: center;
+                                    padding: 10px 0;
+                                    background-color: #2c3e50;
+                                    border-radius: 0 0 5px 5px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='email-container'>
+                                <div class='header'>
+                                    <img src='https://i.postimg.cc/sgyV5SqZ/logo-textwhite.png' alt='Company Logo'>
+                                    <h2>Survey Rejected</h2>
+                                </div>
+                                <div class='content'>
+                                    <p>Dear {serviceOrder.CustomerRequest.Customer.FullName},</p>
+                                    <p>Thanks a lot for sending us the details of request, it really sounds like a great opportunity!</p>
+                                    <p>However, after reading through the proposal and having a discussion with my team, we’ve decided that unfortunately we won’t be able to take on this project.</p>
+                                    <p>Though we’d love to move forward with this, at this moment we simply don’t have enough resources that this project deserves.</p>                                    
+                                    <p>Should things change in the nearest future, I will definitely be in tough and let you know.</p>
+                                    <p>Best regards,</p>
+                                    <p>The NEXUS team</p>
+                                </div>
+                                <div class='footer'>
+                                    <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>"
+                    };
+                    try
+                    {
+                        await _emailService.SendMailAsync(emailRequest);
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(StatusCodes.Status500InternalServerError, "Error sending email: " + ex.Message, null));
+                    }
 
                     return Ok(new ApiResponse(StatusCodes.Status200OK, "Survey updated as cancelled", serviceOrder));
                 }
