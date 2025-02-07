@@ -20,6 +20,7 @@ namespace NEXUS_API.Models
         public string DetailContent { get; set; }
         public DateTime? DateResolved { get; set; }
         public bool IsResolved { get; set; } = false;
+        public string? ResponseContent { get; set; }
 
         //Relationship
         [Required]
