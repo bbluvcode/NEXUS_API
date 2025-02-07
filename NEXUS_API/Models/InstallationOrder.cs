@@ -15,7 +15,7 @@ namespace NEXUS_API.Models
         public int TechnicianId { get; set; } 
         public Employee Technician { get; set; }
         public DateTime DateAssigned { get; set; } 
-        public DateTime? DateCompleted { get; set; } 
+        public DateTime? DateCompleted { get; set; }
         public string Status { get; set; } // "Assigned", "InProgress", "Completed"
         public string? Notes { get; set; } 
     }
