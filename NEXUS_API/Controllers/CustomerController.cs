@@ -441,23 +441,23 @@ namespace NEXUS_API.Controllers
             try
             {
                 var existingReq = await _dbContext.CustomerRequests.FirstOrDefaultAsync(x => x.RequestId == reqID);
-                if (existingReq != null)
+
+                if (existingReq == null)
                 {
-                    existingReq.IsResponse = !existingReq.IsResponse;
-                    if (existingReq.IsResponse)
-                    {
-                        existingReq.DateResolve = DateTime.Now; // Fixed the DateTime.Now() to DateTime.Now
-                    }
-                    else
-                    {
-                        existingReq.DateResolve = null;
-                    }
-                    await _dbContext.SaveChangesAsync();
-                    response = new ApiResponse(StatusCodes.Status200OK, "Change status customer request successfully!", existingReq);
-                    return Ok(response);
+                    return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid request ID", null));
                 }
-                response = new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null);
-                return BadRequest(response);
+
+                // Nếu chưa phản hồi, thì đặt IsResponse = true
+                if (!existingReq.IsResponse)
+                {
+                    existingReq.IsResponse = true;
+                    existingReq.DateResolve = DateTime.Now; // Đánh dấu thời gian hoàn thành
+                    await _dbContext.SaveChangesAsync();
+
+                    return Ok(new ApiResponse(StatusCodes.Status200OK, "Request marked as resolved!", existingReq));
+                }
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Request was already resolved!", existingReq));
             }
             catch (Exception ex)
             {

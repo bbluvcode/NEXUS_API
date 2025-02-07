@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NEXUS_API.Data;
@@ -24,10 +25,22 @@ namespace NEXUS_API.Controllers
         [HttpGet]
         public async Task<ActionResult> GetServiceOrders()
         {
-            var data =  await _dbContext.ServiceOrders.ToListAsync();
+            var data = await _dbContext.ServiceOrders
+                .Select(o => new
+                {
+                    o.OrderId,
+                    o.DateCreate,
+                    o.Deposit,
+                    o.EmpIDSurveyor,
+                    o.SurveyStatus,
+                    InstallationOrderId = o.InstallationOrder != null ? o.InstallationOrder.InstallationId : (int?)null
+                })
+                .ToListAsync();
+
             var response = new ApiResponse(StatusCodes.Status200OK, "Get all successfully", data);
             return Ok(response);
         }
+
 
         [HttpGet("get-order/{id}")]
         public async Task<ActionResult> GetServiceOrder(string id)
@@ -89,57 +102,38 @@ namespace NEXUS_API.Controllers
             }
         }
 
-        [HttpGet("get-surveyors/{regionId}")]
-        public async Task<IActionResult> GetSurveyorsByRegion(int regionId)
+        [HttpGet("get-surveyors/{requestId}")]
+        public async Task<IActionResult> GetSurveyorsByRegion(int requestId)
         {
             try
             {
-                var surveyors = await _dbContext.Employees
-                    .Include(e => e.EmployeeRole) 
-                    .Include(e => e.RetailShop) 
-                    .Where(e => e.RetailShop.RegionId == regionId && e.EmployeeRole.RoleName == "Surveyor")
-                    .Select(e => new
-                    {
-                        EmployeeId = e.EmployeeId,
-                        FullName = e.FullName + " - " + e.RetailShop.RetailShopName
-                    })
-                    .ToListAsync();
+                var request = await _dbContext.CustomerRequests.FirstOrDefaultAsync(c => c.RequestId == requestId);
 
-                if (surveyors == null || !surveyors.Any())
+                if (request == null)
                 {
-                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No surveyors found in this region.", null));
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Request not found", null));
                 }
 
-                return Ok(new ApiResponse(StatusCodes.Status200OK, "Surveyors retrieved successfully", surveyors));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
-            }
-        }
+                int regionId = request.RegionId;
 
-        [HttpGet("get-technicals/{regionId}")]
-        public async Task<IActionResult> GetTechnicalsByRegion(int regionId)
-        {
-            try
-            {               
-                var technicals = await _dbContext.Employees
-                    .Include(e => e.EmployeeRole) 
+                var employees = await _dbContext.Employees
+                    .Include(e => e.EmployeeRole)
                     .Include(e => e.RetailShop)
-                    .Where(e => e.RetailShop.RegionId == regionId && e.EmployeeRole.RoleName == "Technical")
+                    .Where(e => e.RetailShop.RegionId == regionId
+                        && (e.EmployeeRole.RoleName == "Surveyor" || e.EmployeeRole.RoleName == "Technical"))
                     .Select(e => new
                     {
                         EmployeeId = e.EmployeeId,
-                        FullName = e.FullName + " - " + e.RetailShop.RetailShopName
+                        FullName = e.FullName + " - " + e.EmployeeRole.RoleName + " - " + e.RetailShop.RetailShopName
                     })
                     .ToListAsync();
 
-                if (technicals == null || !technicals.Any())
+                if (!employees.Any())
                 {
-                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No technical staff found in this region.", null));
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No surveyors or technical staff found in this region.", null));
                 }
 
-                return Ok(new ApiResponse(StatusCodes.Status200OK, "Technicals retrieved successfully", technicals));
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Employees retrieved successfully", employees));
             }
             catch (Exception ex)
             {
@@ -163,9 +157,13 @@ namespace NEXUS_API.Controllers
                 // Create OrderId from Request
                 string orderPrefix = (customerRequest.ServiceRequest + " " + customerRequest.RequestTitle).ToLower() switch
                 {
-                    var s when s.Contains("Dial-up", StringComparison.OrdinalIgnoreCase) => "D",
-                    var s when s.Contains("Telephone", StringComparison.OrdinalIgnoreCase) => "T",
-                    var s when s.Contains("Broadband", StringComparison.OrdinalIgnoreCase) => "B",
+                    var s when s.Contains("Dial-up", StringComparison.OrdinalIgnoreCase)
+                          || s.Contains("Dialup", StringComparison.OrdinalIgnoreCase) => "D",
+                    var s when s.Contains("Telephone", StringComparison.OrdinalIgnoreCase)
+                          || s.Contains("Land-line", StringComparison.OrdinalIgnoreCase)
+                          || s.Contains("Landline", StringComparison.OrdinalIgnoreCase) => "T",
+                    var s when s.Contains("Broadband", StringComparison.OrdinalIgnoreCase)
+                          || s.Contains("Broad-band", StringComparison.OrdinalIgnoreCase) => "B",
                     _ => throw new Exception("Invalid connection type in RequestTitle or ServiceRequest")
                 };
 
@@ -189,7 +187,7 @@ namespace NEXUS_API.Controllers
                 };
 
                 // Find employee with role Surveyor
-                var surveyor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignSurveyorDto.SurveyorId && e.EmployeeRoleId == 6);
+                var surveyor = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignSurveyorDto.SurveyorId && (e.EmployeeRoleId == 6 || e.EmployeeRoleId == 5));
                 if (surveyor == null)
                 {
                     return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Surveyor not found or not eligible", null));
@@ -218,6 +216,50 @@ namespace NEXUS_API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error " + ex.Message, null));
+            }
+        }
+
+        [HttpGet("get-planfees/{orderId}")]
+        public async Task<IActionResult> GetPlanFeesByOrderPrefix(string orderId)
+        {
+            try
+            {
+                string orderPrefix = orderId.Substring(0, 1);
+                object plan = null;
+                if (orderPrefix == "T")
+                {
+                    plan = await _dbContext.Plans.Where(p => p.PlanName.Contains("LandLine")).FirstOrDefaultAsync();
+
+                }
+                else
+                {
+                    plan = await _dbContext.Plans.Where(p => p.PlanName.StartsWith(orderPrefix)).FirstOrDefaultAsync();
+                }
+
+                if (plan == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No plans found for the given orderPrefix", null));
+                }
+
+                var planFees = await _dbContext.PlanFees
+                    .Where(pf => pf.PlanId == ((Plan)plan).PlanId)
+                    .Select(pf => new
+                    {
+                        pf.PlanFeeId,
+                        pf.PlanFeeName
+                    })
+                    .ToListAsync();
+
+                if (planFees == null || planFees.Count == 0)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No PlanFees found for the given plans", null));
+                }
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Plan fees fetched successfully", planFees));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
             }
         }
 
@@ -275,7 +317,6 @@ namespace NEXUS_API.Controllers
                     //Create ConnectionId
                     string connectionPrefix = serviceOrder.OrderId.Substring(0, 1); // D, B, T
 
-                    // Lấy số thứ tự tiếp theo
                     var lastConnection = await _dbContext.Connections
                         .Where(c => c.ConnectionId.StartsWith(connectionPrefix + "-" + regionCode))
                         .OrderByDescending(c => c.ConnectionId)
@@ -285,7 +326,7 @@ namespace NEXUS_API.Controllers
                         ? 1
                         : int.Parse(lastConnection.ConnectionId.Split('-')[2]) + 1;
 
-                    // Tạo ConnectionId
+                    // Create ConnectionId
                     string connectionId = $"{connectionPrefix}-{regionCode}-{nextSerialNumberConnection:D6}";
                     var connections = new List<Connection>
                     {
@@ -298,7 +339,7 @@ namespace NEXUS_API.Controllers
                             Description = "Connection pending activation",
                             ServiceOrderId = serviceOrder.OrderId,
                             PlanId = planFee.PlanId,
-                            EquipmentId = updateSurveyDto.EquipmentId 
+                            EquipmentId = updateSurveyDto.EquipmentId ?? null
                         }
                     };
                     _dbContext.Connections.AddRange(connections);
@@ -342,6 +383,51 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
             }
         }
+
+        [HttpGet("get-technicals/{orderId}")]
+        public async Task<IActionResult> GetTechnicalsByRegion(string orderId)
+        {
+            try
+            {
+                var order = await _dbContext.ServiceOrders.FirstOrDefaultAsync(c => c.OrderId == orderId);
+
+                if (order == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Request not found", null));
+                }
+
+                var request = await _dbContext.CustomerRequests.FirstOrDefaultAsync(c => c.RequestId == order.RequestId);
+
+                if (request == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Request not found", null));
+                }
+                int regionId = request.RegionId;
+
+                var technicals = await _dbContext.Employees
+                    .Include(e => e.EmployeeRole)
+                    .Include(e => e.RetailShop)
+                    .Where(e => e.RetailShop.RegionId == regionId && e.EmployeeRole.RoleName == "Technical")
+                    .Select(e => new
+                    {
+                        EmployeeId = e.EmployeeId,
+                        FullName = e.FullName + " - " + e.EmployeeRole.RoleName + " - " + e.RetailShop.RetailShopName
+                    })
+                    .ToListAsync();
+
+                if (technicals == null || !technicals.Any())
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No technical staff found in this region.", null));
+                }
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Technicals retrieved successfully", technicals));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
+
         [HttpPost("assign-technician/{orderId}")]
         public async Task<IActionResult> AssignTechnician(string orderId, [FromBody] AssignTechnicianDTO assignDto)
         {
@@ -382,6 +468,7 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
             }
         }
+
         [HttpPut("complete-installation/{installationId}")]
         public async Task<IActionResult> CompleteInstallation(int installationId, [FromBody] CompleteInstallationDTO completeDto)
         {
@@ -414,9 +501,11 @@ namespace NEXUS_API.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error: {ex.Message}");
                 return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
             }
         }
+
         [HttpPost("activate-connection/{orderId}")]
         public async Task<IActionResult> ActivateConnection(string orderId)
         {
@@ -461,6 +550,7 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
             }
         }
+
         [HttpPut("deactivate-connection/{connectionId}")]
         public async Task<IActionResult> DeactivateConnection(string connectionId)
         {

@@ -48,6 +48,28 @@ namespace NEXUS_API.Controllers
             }
 
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteKeyword(int id)
+        {
+            try
+            {
+                var keyword = await _dbContext.Keywords.FindAsync(id);
+                if (keyword == null)
+                {
+                    return NotFound(new { message = "Keyword not found" });
+                }
+
+                _dbContext.Keywords.Remove(keyword);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new { message = "Keyword deleted successfully" });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
     }
 
 }
