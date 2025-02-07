@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace NEXUS_API.Models
 {
@@ -12,20 +13,18 @@ namespace NEXUS_API.Models
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Employee ID is required")]
-        [StringLength(50, ErrorMessage = "Employee ID cannot be longer than 50 characters")]
-        public int EmployeeId { get; set; } // Foreign Key to Employee
+        public int EmployeeId { get; set; } // Foreign Key
 
         [Required(ErrorMessage = "Content is required")]
-        [StringLength(1000, ErrorMessage = "Content cannot be longer than 1000 characters")]
-        public string Content { get; set; }
+        public string Content { get; set; } // Lưu HTML có ảnh
 
         [Required(ErrorMessage = "Creation date is required")]
         public DateTime CreateDate { get; set; }
 
         [Required(ErrorMessage = "Status is required")]
-        public bool Status { get; set; } // News status
+        public bool Status { get; set; }
 
-        //Relationship
+        // Relationship
         public Employee? Employee { get; set; }
     }
 }
