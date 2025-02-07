@@ -180,7 +180,7 @@ namespace NEXUS_API.Controllers
         {
             object response = null;
             int expiryCodeTime = 2;
-            int maxAttemptsPerDay = 3;
+            int maxAttemptsPerDay = 30;
 
             var employee = await _dbContext.Employees.FirstOrDefaultAsync(u => u.Email == authSendCode.Email);
             IUserAuth user = employee;
@@ -304,7 +304,7 @@ namespace NEXUS_API.Controllers
                 <body>
                     <div class='email-container'>
                         <div class='header'>                            
-                            <img src='https://cdn-imddh.nitrocdn.com/BgpVdYdrOyYzGZDHCldtezOehOYupTPa/assets/images/optimized/rev-f05fc79/www.technoserve.org/files/images/content/our-work_how-we-work_market-system_graphic.png' alt='Company Logo'>
+                            <img src='https://i.postimg.cc/sgyV5SqZ/logo-textwhite.png' alt='Company Logo'>
                             <h1>Reset Password</h1>                        
                         </div>
                         <div class='content'>

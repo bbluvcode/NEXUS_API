@@ -144,6 +144,9 @@ namespace NEXUS_API.Controllers
                 .Include(c => c.CustomerRequests)
                 .Include(c => c.Accounts)
                 .Include(c => c.FeedBacks)
+                .Include(c => c.Accounts)
+                    .ThenInclude(a => a.ServiceOrders) 
+                        .ThenInclude(o => o.Connections)
                 .FirstOrDefaultAsync(c => c.Email == email);
 
             if (customer == null)

@@ -25,5 +25,35 @@ namespace NEXUS_API.Controllers
             var response = new ApiResponse(StatusCodes.Status200OK, "get Accounts successfully", Accounts);
             return Ok(response);
         }
+        [HttpGet("connections-by-account/{accountId}")]
+        public async Task<IActionResult> GetConnectionsByAccountId(string accountId)
+        {
+            var connections = await _dbContext.ServiceOrders
+                .Where(o => o.AccountId == accountId)
+                .SelectMany(o => o.Connections)
+                .Select(c => new
+                {
+                    OrderId = c.ServiceOrderId,
+                    ConnectionId = c.ConnectionId,
+                    IsActive = c.IsActive,
+                    ConnectionDiaryDateStart = c.ConnectionDiaries
+                        .OrderBy(cd => cd.DateStart)
+                        .Select(cd => cd.DateStart)
+                        .FirstOrDefault(),
+                    ConnectionDiaryDateEnd = c.ConnectionDiaries
+                        .OrderBy(cd => cd.DateEnd)
+                        .Select(cd => cd.DateEnd)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+
+            if (!connections.Any())
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "No connections found for the given account", null));
+            }
+
+            var response = new ApiResponse(StatusCodes.Status200OK, "Connections retrieved successfully", connections);
+            return Ok(response);
+        }
     }
 }
