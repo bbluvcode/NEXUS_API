@@ -283,6 +283,7 @@ namespace NEXUS_API.Data
             modelBuilder.Entity<EquipmentType>(entity =>
             {
                 entity.HasIndex(e => e.TypeName).IsUnique();
+                entity.HasIndex(e => e.Provider).IsUnique();
             });
             modelBuilder.Entity<Equipment>(entity =>
             {
