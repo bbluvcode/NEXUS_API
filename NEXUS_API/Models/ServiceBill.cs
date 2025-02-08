@@ -18,7 +18,7 @@ namespace NEXUS_API.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal Tax { get; set; }
         [Column(TypeName = "decimal(10,2)")]
-        public decimal Total { get; set; }
+        public decimal? Total { get; set; }
         public bool IsPay { get; set; }
 
         //Relationship

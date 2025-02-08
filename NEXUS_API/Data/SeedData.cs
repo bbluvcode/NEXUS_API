@@ -78,7 +78,6 @@ namespace NEXUS_API.Data
                 _dbContext.SaveChanges();
             }
 
-
             // Seed Regions
             if (!_dbContext.Regions.Any())
             {

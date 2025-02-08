@@ -22,10 +22,26 @@ namespace NEXUS_API.Controllers
         [HttpGet("get-all-connections")]
         public async Task<ActionResult> GetAllConnections()
         {
-            var data = await _dbContext.Connections.ToListAsync();
+            var data = await _dbContext.Connections
+                .Include(c => c.ConnectionDiaries) 
+                .Select(c => new
+                {
+                    c.ConnectionId,
+                    c.NumberOfConnections,
+                    c.DateCreate,
+                    c.IsActive,
+                    c.Description,
+                    c.ServiceOrderId,
+                    c.PlanId,
+                    c.EquipmentId,
+                    FirstConnectionDiary = c.ConnectionDiaries.OrderBy(cd => cd.DiaryId).FirstOrDefault() 
+                })
+                .ToListAsync();
+
             var response = new ApiResponse(StatusCodes.Status200OK, "Get all successfully", data);
             return Ok(response);
         }
+
 
         [HttpGet("get-all-connectiondiary")]
         public async Task<ActionResult> GetAllConnectiondiarys()

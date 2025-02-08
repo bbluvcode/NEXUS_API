@@ -22,7 +22,8 @@ namespace NEXUS_API.Models
         //Relationship
         public string? AccountId { get; set; }
         public Account? Account { get; set; }
-        public int? RequestId { get; set; }
+        [Required]
+        public int RequestId { get; set; }
         public CustomerRequest? CustomerRequest { get; set; }
         public int? PlanFeeId { get; set; }
         public PlanFee? PlanFee { get; set; }
