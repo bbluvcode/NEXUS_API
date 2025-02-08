@@ -632,48 +632,217 @@ namespace NEXUS_API.Data
                 _dbContext.SupportRequests.AddRange(supportRequests);
                 _dbContext.SaveChanges();
             }
-            // Seed FeedBacks
-            if (!_dbContext.FeedBacks.Any())
+            
+            //seed equipment type
+            if (!_dbContext.EquipmentTypes.Any())
             {
-                var feedbacks = new List<FeedBack>
-                {
-                    new FeedBack
+                var equipmentTypes = new List<EquipmentType>
                     {
-                        Date = new DateTime(2024, 1, 5),
-                        Title = "test",
-                        FeedBackContent = "test",
-                        Status = true, // Feedback has been read
-                        CustomerId = 1 // Replace with valid CustomerId
-                    },
-                    new FeedBack
-                    {
-                        Date = new DateTime(2024, 1, 6),
-                        Title = "Excellent Service",
-                        FeedBackContent = "The technician was very helpful and resolved my issue quickly.",
-                        Status = true, // Feedback has been read
-                        CustomerId = 1 // Replace with valid CustomerId
-                    },
-                    new FeedBack
-                    {
-                        Date = new DateTime(2024, 1, 6),
-                        Title = "Need Faster Response",
-                        FeedBackContent = "The service team took longer than expected to respond to my request.",
-                        Status = false, // Feedback not yet read
-                        CustomerId = 2 // Replace with valid CustomerId
-                    },
-                    new FeedBack
-                    {
-                        Date = new DateTime(2024, 1, 7),
-                        Title = "Great Support",
-                        FeedBackContent = "I appreciate the support I received for setting up my new broadband connection.",
-                        Status = true, // Feedback has been read
-                        CustomerId = 3 // Replace with valid CustomerId
-                    }
-                };
+                        new EquipmentType { TypeName = "Dial-Up Modem v1", Provider = "U.S. Robotics" },
+                        new EquipmentType { TypeName = "Dial-Up Modem v2", Provider = "Zoom" },
+                        new EquipmentType { TypeName = "Dial-Up Modem v3", Provider = "Trendnet" },
+                        new EquipmentType { TypeName = "ADSL Modem v1", Provider = "TP-Link A" },
+                        new EquipmentType { TypeName = "ADSL Modem v2", Provider = "D-Link" },
+                        new EquipmentType { TypeName = "ADSL Modem v3", Provider = "Zyxel" },
+                        new EquipmentType { TypeName = "Cable Modem v1", Provider = "ARRIS" },
+                        new EquipmentType { TypeName = "Cable Modem v2", Provider = "Netgear" },
+                        new EquipmentType { TypeName = "Cable Modem v3", Provider = "Motorola" },
+                        new EquipmentType { TypeName = "4G Modem v1", Provider = "Huawei" },
+                        new EquipmentType { TypeName = "4G Modem v2", Provider = "Cisco" }, 
+                        new EquipmentType { TypeName = "4G Modem v3", Provider = "TP-Link" }
+                    };
 
-                _dbContext.FeedBacks.AddRange(feedbacks);
+                _dbContext.EquipmentTypes.AddRange(equipmentTypes);
                 _dbContext.SaveChanges();
             }
+            //seed stock
+            if (!_dbContext.Stocks.Any())
+            {
+                var stocks = new List<Stock>
+            {
+                new Stock { StockName = "Stock A", Address = "123 Main St, City A", Email = "stocka@example.com", Phone = "1234567890", Fax = "1234567890", RegionId = 1 },
+                new Stock { StockName = "Stock B", Address = "456 Side St, City B", Email = "stockb@example.com", Phone = "0987654321", Fax = "0987654321", RegionId = 2 },
+                new Stock { StockName = "Stock C", Address = "789 Center St, City C", Email = "stockc@example.com", Phone = "1122334455", Fax = "1122334455", RegionId = 3 },
+                new Stock { StockName = "Stock D", Address = "101 Highway St, City D", Email = "stockd@example.com", Phone = "5566778899", Fax = "5566778899", RegionId = 4 }
+            };
+
+                _dbContext.Stocks.AddRange(stocks);
+                _dbContext.SaveChanges();
+            }
+            //seed equipment
+            if (!_dbContext.Equipments.Any())
+            {
+                var equipments = new List<Equipment>
+                {
+                    new Equipment {
+                        EquipmentName = "U.S. Robotics 56K USB Modem", Price = 49.99M, StockQuantity = 100, Description = "Modem Dial-Up tốc độ 56Kbps", Status = true, EquipmentTypeId = 37, VendorId = 1, StockId = 2,
+                        Image = "/Image/imageEquipment/equip1.jpg"
+                    },
+                    new Equipment { 
+                        EquipmentName = "Zoom 3095 V.92 USB Modem", Price = 39.99M, StockQuantity = 80, Description = "Modem Dial-Up hỗ trợ V.92", Status = true, EquipmentTypeId = 38, VendorId = 2, StockId = 2,
+                        Image = "/Image/imageEquipment/equip2.jpg"
+                    },
+                    new Equipment { 
+                        EquipmentName = "Trendnet TFM-561U", Price = 29.99M, StockQuantity = 120, Description = "Modem Dial-Up USB cho Windows/Mac", Status = true, EquipmentTypeId = 39, VendorId = 3, StockId = 2 ,
+                        Image = "/Image/imageEquipment/equip3.jpg"
+                    },
+                    new Equipment {
+                        EquipmentName = "TP-Link TD-W8961N", Price = 59.99M, StockQuantity = 50, Description = "Modem ADSL2+ tích hợp Wi-Fi", Status = true, EquipmentTypeId = 40, VendorId = 4, StockId = 2 ,
+                        Image = "/Image/imageEquipment/equip4.jpg"
+                    },
+                    new Equipment { EquipmentName = "D-Link DSL-2750U", Price = 54.99M, StockQuantity = 70, Description = "Modem ADSL2+ tốc độ cao", Status = true, EquipmentTypeId = 41, VendorId = 5, StockId = 2 ,
+                        Image = "/Image/imageEquipment/equip5.jpg"
+                    },
+                    new Equipment { EquipmentName = "Zyxel P-600 Series", Price = 45.99M, StockQuantity = 90, Description = "Modem ADSL tiêu chuẩn", Status = true, EquipmentTypeId = 42, VendorId = 1, StockId = 2 ,
+                        Image = "/Image/imageEquipment/equip6.jpg"
+                    },
+                    new Equipment { EquipmentName = "ARRIS SURFboard SB8200", Price = 129.99M, StockQuantity = 40, Description = "Modem Cable DOCSIS 3.1", Status = true, EquipmentTypeId = 43, VendorId = 1, StockId = 3 ,
+                        Image = "/Image/imageEquipment/equip7.jpg"
+                    },
+                    new Equipment { EquipmentName = "Netgear CM500", Price = 89.99M, StockQuantity = 60, Description = "Modem Cable DOCSIS 3.0 tốc độ cao", Status = true, EquipmentTypeId = 48, VendorId = 2, StockId = 3 ,
+                        Image = "/Image/imageEquipment/equip8.jpg"
+                    },
+                };
+
+                _dbContext.Equipments.AddRange(equipments);
+                _dbContext.SaveChanges();
+            }
+
+            //seed instockrequest
+            if (!_dbContext.InStockRequests.Any())
+            {
+                var inStockRequests = new List<InStockRequest>
+            {
+                new InStockRequest
+                {
+                    EmployeeId = 1,
+                    CreateDate = DateTime.UtcNow,
+                    TotalNumber = 10
+                },
+                new InStockRequest
+                {
+                    EmployeeId = 2,
+                    CreateDate = DateTime.UtcNow,
+                    TotalNumber = 8
+                }
+            };
+
+                _dbContext.InStockRequests.AddRange(inStockRequests);
+                _dbContext.SaveChanges();
+            }
+            //seed instockrequestdetail
+            if (!_dbContext.InStockRequestDetails.Any())
+            {
+                var inStockRequestDetails = new List<InStockRequestDetail>
+            {
+                new InStockRequestDetail { InStockRequestId = 1, EquipmentId = 14, Quantity = 5 },
+                new InStockRequestDetail { InStockRequestId = 1, EquipmentId = 15, Quantity = 3 },
+                new InStockRequestDetail { InStockRequestId = 2, EquipmentId = 16, Quantity = 4 },
+                new InStockRequestDetail { InStockRequestId = 2, EquipmentId = 17, Quantity = 2 }
+            };
+
+                _dbContext.InStockRequestDetails.AddRange(inStockRequestDetails);
+                _dbContext.SaveChanges();
+            }
+            //seed Instockorder
+            if (!_dbContext.InStockOrders.Any())
+            {
+                var inStockOrders = new List<InStockOrder>
+            {
+                new InStockOrder {
+                    InStockRequestId = 1,
+                    VendorId = 1,
+                    EmployeeId = 1,
+                    StockId = 1,
+                    Payer = 1,
+                    CreateDate = DateTime.UtcNow,
+                    InstockDate = DateTime.UtcNow.AddDays(2),
+                    PayDate = DateTime.UtcNow.AddDays(5),
+                    Tax = 50.00m,
+                    Total = 1050.00m,
+                    CurrencyUnit = "USD",
+                    isPay = true
+                },
+                new InStockOrder {
+                    InStockRequestId = 2,
+                    VendorId = 2,
+                    EmployeeId = 2,
+                    StockId = 2,
+                    Payer = 2,
+                    CreateDate = DateTime.UtcNow,
+                    InstockDate = DateTime.UtcNow.AddDays(3),
+                    PayDate = DateTime.UtcNow.AddDays(6),
+                    Tax = 30.00m,
+                    Total = 830.00m,
+                    CurrencyUnit = "EUR",
+                    isPay = false
+                }
+            };
+
+                _dbContext.InStockOrders.AddRange(inStockOrders);
+                _dbContext.SaveChanges();
+            }
+            //seed Instockorderdetail
+
+            if (!_dbContext.InStockOrderDetails.Any())
+            {
+                var inStockOrderDetails = new List<InStockOrderDetail>
+            {
+                new InStockOrderDetail {  InStockOrderId = 2, EquipmentId = 14, Quantity = 5, Price = 200.00m },
+                new InStockOrderDetail {  InStockOrderId = 2, EquipmentId = 15, Quantity = 3, Price = 150.00m },
+                new InStockOrderDetail {  InStockOrderId = 3, EquipmentId = 16, Quantity = 4, Price = 180.00m },
+                new InStockOrderDetail {  InStockOrderId = 3, EquipmentId = 17, Quantity = 2, Price = 110.00m }
+            };
+
+                _dbContext.InStockOrderDetails.AddRange(inStockOrderDetails);
+                _dbContext.SaveChanges();
+            }
+            //seed Outstockorder
+            if (!_dbContext.OutStockOrders.Any())
+            {
+                var outStockOrders = new List<OutStockOrder>
+            {
+                new OutStockOrder
+                {
+                    StockId = 1,
+                    EmployeeId = 1,
+                    CreateDate = DateTime.UtcNow,
+                    PayDate = DateTime.UtcNow.AddDays(5),
+                    Tax = 50.00m,
+                    Total = 1050.00m,
+                    isPay = true
+                },
+                new OutStockOrder
+                {
+                    StockId = 2,
+                    EmployeeId = 2,
+                    CreateDate = DateTime.UtcNow,
+                    PayDate = DateTime.UtcNow.AddDays(3),
+                    Tax = 30.00m,
+                    Total = 830.00m,
+                    isPay = false
+                }
+            };
+
+                _dbContext.OutStockOrders.AddRange(outStockOrders);
+                _dbContext.SaveChanges();
+            }
+            //seed outstockorderdetail
+            if (!_dbContext.OutStockOrderDetails.Any())
+            {
+                var outStockOrderDetails = new List<OutStockOrderDetail>
+            {
+                new OutStockOrderDetail { OutStockId = 1, EquipmentId = 14, Quantity = 5, Price = 200.00m },
+                new OutStockOrderDetail { OutStockId = 1, EquipmentId = 17, Quantity = 3, Price = 150.00m },
+                new OutStockOrderDetail { OutStockId = 2, EquipmentId = 18, Quantity = 4, Price = 180.00m },
+                new OutStockOrderDetail { OutStockId = 2, EquipmentId = 21, Quantity = 2, Price = 110.00m }
+            };
+
+                _dbContext.OutStockOrderDetails.AddRange(outStockOrderDetails);
+                _dbContext.SaveChanges();
+            }
+
+
         }
     }
 }

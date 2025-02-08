@@ -23,6 +23,8 @@ namespace NEXUS_API.Models
         public EquipmentType? EquipmentType { get; set; }
         [Required]
         public int VendorId { get; set; }
+        [StringLength(255)]
+        public string? Image { get; set; }
         public Vendor? Vendor { get; set; }
         [Required]
         public int StockId { get; set; }

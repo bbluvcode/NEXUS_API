@@ -21,6 +21,7 @@
 	<ItemGroup>
 	  <Folder Include="Images\customerImages\" />
 	  <Folder Include="Images\imageNews\" />
+	  <Folder Include="Images\imageEquipment\" />
 	</ItemGroup>
 
 </Project>
