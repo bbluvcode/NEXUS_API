@@ -219,7 +219,6 @@ namespace NEXUS_API.Data
                 _dbContext.EmployeeRoles.AddRange(roles);
                 _dbContext.SaveChanges();
             }
-
             if (!_dbContext.RetailShops.Any())
             {
                 var retailShops = new List<RetailShop>
@@ -333,8 +332,8 @@ namespace NEXUS_API.Data
                         IdentificationNo = "123456789",
                         Password = "password123",
                         Status = true,
-                        EmployeeRoleId = 1, // Replace with valid RoleId
-                        RetailShopId = 1 // Replace with valid RetailShopId
+                        EmployeeRoleId = 1, 
+                        RetailShopId = 1 
                     },
                     new Employee
                     {
@@ -348,8 +347,8 @@ namespace NEXUS_API.Data
                         IdentificationNo = "987654321",
                         Password = "password456",
                         Status = true,
-                        EmployeeRoleId = 2, // Replace with valid RoleId
-                        RetailShopId = 2 // Replace with valid RetailShopId
+                        EmployeeRoleId = 2, 
+                        RetailShopId = 2 
                     },
                     new Employee
                     {
@@ -363,10 +362,115 @@ namespace NEXUS_API.Data
                         IdentificationNo = "2233445566",
                         Password = "password789",
                         Status = true,
-                        EmployeeRoleId = 3, // Accountant
-                        RetailShopId = 3 // Asia HQ
-                    }
-                    // Add more employees as needed
+                        EmployeeRoleId = 3, 
+                        RetailShopId = 3
+                    },
+                    new Employee
+                    {
+                        EmployeeCode = "E004",
+                        FullName = "Pham Van C",
+                        Gender = "Male",
+                        DateOfBirth = new DateTime(1988, 5, 20),
+                        Address = "100 Vo Van Tan, District 1, HCMC",
+                        Email = "pvc@nexus.com",
+                        Phone = "0912345678",
+                        IdentificationNo = "234567890",
+                        Password = "password234",
+                        Status = true,
+                        EmployeeRoleId = 2,
+                        RetailShopId = 1 
+                    },
+                    new Employee
+                    {
+                        EmployeeCode = "E005",
+                        FullName = "Hoang Minh D",
+                        Gender = "Male",
+                        DateOfBirth = new DateTime(1993, 9, 25),
+                        Address = "200 Bach Dang, District 2, HCMC",
+                        Email = "hmd@nexus.com",
+                        Phone = "0923456789",
+                        IdentificationNo = "345678901",
+                        Password = "password345",
+                        Status = true,
+                        EmployeeRoleId = 5, 
+                        RetailShopId = 2 
+                    },
+                    new Employee
+                    {
+                        EmployeeCode = "E006",
+                        FullName = "Le Thi E",
+                        Gender = "Female",
+                        DateOfBirth = new DateTime(1995, 6, 18),
+                        Address = "300 Tran Hung Dao, District 5, HCMC",
+                        Email = "lte@nexus.com",
+                        Phone = "0934567890",
+                        IdentificationNo = "456789012",
+                        Password = "password456",
+                        Status = true,
+                        EmployeeRoleId = 6, 
+                        RetailShopId = 3 
+                    },
+                    new Employee
+                    {
+                        EmployeeCode = "E007",
+                        FullName = "Nguyen Hoang F",
+                        Gender = "Male",
+                        DateOfBirth = new DateTime(1991, 8, 12),
+                        Address = "400 Ly Tu Trong, District 10, HCMC",
+                        Email = "nhf@nexus.com",
+                        Phone = "0945678901",
+                        IdentificationNo = "567890123",
+                        Password = "password567",
+                        Status = true,
+                        EmployeeRoleId = 2, 
+                        RetailShopId = 3 
+                    },
+                    new Employee
+                    {
+                        EmployeeCode = "E008",
+                        FullName = "Bui Thanh G",
+                        Gender = "Male",
+                        DateOfBirth = new DateTime(1989, 11, 30),
+                        Address = "500 Hai Ba Trung, District 6, HCMC",
+                        Email = "btg@nexus.com",
+                        Phone = "0956789012",
+                        IdentificationNo = "678901234",
+                        Password = "password678",
+                        Status = true,
+                        EmployeeRoleId = 5, 
+                        RetailShopId = 1 
+                    },
+                    new Employee
+                    {
+                        EmployeeCode = "E009",
+                        FullName = "Doan Thanh H",
+                        Gender = "Female",
+                        DateOfBirth = new DateTime(1994, 2, 22),
+                        Address = "600 Phan Xich Long, Phu Nhuan, HCMC",
+                        Email = "dth@nexus.com",
+                        Phone = "0967890123",
+                        IdentificationNo = "789012345",
+                        Password = "password789",
+                        Status = true,
+                        EmployeeRoleId = 6,
+                        RetailShopId = 2
+                    },
+                    new Employee { EmployeeCode = "E010", FullName = "Pham Van C", Gender = "Male", DateOfBirth = new DateTime(1988, 5, 20), Address = "100 Vo Van Tan, District 1, HCMC", Email = "pvc@nexus.com", Phone = "0912345678", IdentificationNo = "234567890", Password = "password234", Status = true, EmployeeRoleId = 5, RetailShopId = 1 }, // ManagerShop
+                    new Employee { EmployeeCode = "E011", FullName = "Hoang Minh D", Gender = "Male", DateOfBirth = new DateTime(1993, 9, 25), Address = "200 Bach Dang, District 2, HCMC", Email = "hmd@nexus.com", Phone = "0923456789", IdentificationNo = "345678901", Password = "password345", Status = true, EmployeeRoleId = 5, RetailShopId = 1 }, // Technical
+                    new Employee { EmployeeCode = "E012", FullName = "Le Thi E", Gender = "Female", DateOfBirth = new DateTime(1995, 6, 18), Address = "300 Tran Hung Dao, District 5, HCMC", Email = "lte@nexus.com", Phone = "0934567890", IdentificationNo = "456789012", Password = "password456", Status = true, EmployeeRoleId = 5, RetailShopId = 1 }, // Technical
+                    new Employee { EmployeeCode = "E013", FullName = "Nguyen Hoang F", Gender = "Male", DateOfBirth = new DateTime(1991, 8, 12), Address = "400 Ly Tu Trong, District 10, HCMC", Email = "nhf@nexus.com", Phone = "0945678901", IdentificationNo = "567890123", Password = "password567", Status = true, EmployeeRoleId = 6, RetailShopId = 1 }, // Surveyor
+
+                    // RetailShopId = 2
+                    new Employee { EmployeeCode = "E014", FullName = "Tran Quoc G", Gender = "Male", DateOfBirth = new DateTime(1987, 7, 14), Address = "101 Nguyen Hue, District 1, HCMC", Email = "tqg@nexus.com", Phone = "0971234567", IdentificationNo = "678901234", Password = "password678", Status = true, EmployeeRoleId = 5, RetailShopId = 2 }, // ManagerShop
+                    new Employee { EmployeeCode = "E015", FullName = "Bui Thanh H", Gender = "Male", DateOfBirth = new DateTime(1992, 3, 22), Address = "102 Pasteur, District 3, HCMC", Email = "bth@nexus.com", Phone = "0982345678", IdentificationNo = "789012345", Password = "password789", Status = true, EmployeeRoleId = 5, RetailShopId = 2 }, // Technical
+                    new Employee { EmployeeCode = "E016", FullName = "Doan Thanh I", Gender = "Female", DateOfBirth = new DateTime(1994, 6, 30), Address = "103 Hai Ba Trung, District 1, HCMC", Email = "dti@nexus.com", Phone = "0993456789", IdentificationNo = "890123456", Password = "password890", Status = true, EmployeeRoleId = 5, RetailShopId = 2 }, // Technical
+                    new Employee { EmployeeCode = "E017", FullName = "Vu Thi K", Gender = "Female", DateOfBirth = new DateTime(1995, 9, 8), Address = "104 Dong Khoi, District 1, HCMC", Email = "vtk@nexus.com", Phone = "0914567890", IdentificationNo = "901234567", Password = "password901", Status = true, EmployeeRoleId = 6, RetailShopId = 2 }, // Surveyor
+
+                    // RetailShopId = 3
+                    new Employee { EmployeeCode = "E018", FullName = "Nguyen Xuan L", Gender = "Male", DateOfBirth = new DateTime(1990, 12, 15), Address = "105 Le Thanh Ton, District 1, HCMC", Email = "nxl@nexus.com", Phone = "0925678901", IdentificationNo = "012345678", Password = "password012", Status = true, EmployeeRoleId = 2, RetailShopId = 3 }, // ManagerShop
+                    new Employee { EmployeeCode = "E019", FullName = "Hoang Duc M", Gender = "Male", DateOfBirth = new DateTime(1986, 2, 10), Address = "106 Nguyen Dinh Chieu, District 3, HCMC", Email = "hdm@nexus.com", Phone = "0936789012", IdentificationNo = "123456789", Password = "password123", Status = true, EmployeeRoleId = 5, RetailShopId = 3 }, // Technical
+                    new Employee { EmployeeCode = "E020", FullName = "Le Quang N", Gender = "Male", DateOfBirth = new DateTime(1993, 5, 25), Address = "107 Vo Thi Sau, District 1, HCMC", Email = "lqn@nexus.com", Phone = "0947890123", IdentificationNo = "234567890", Password = "password234", Status = true, EmployeeRoleId = 5, RetailShopId = 3 }, // Technical
+                    new Employee { EmployeeCode = "E021", FullName = "Pham Minh O", Gender = "Female", DateOfBirth = new DateTime(1991, 10, 8), Address = "108 Pham Ngoc Thach, District 3, HCMC", Email = "pmo@nexus.com", Phone = "0958901234", IdentificationNo = "345678901", Password = "password345", Status = true, EmployeeRoleId = 6, RetailShopId = 3 } // Surveyor
                 };
 
                 _dbContext.Employees.AddRange(employees);
@@ -655,6 +759,7 @@ namespace NEXUS_API.Data
                 _dbContext.EquipmentTypes.AddRange(equipmentTypes);
                 _dbContext.SaveChanges();
             }
+<<<<<<< HEAD
             //seed stock
             if (!_dbContext.Stocks.Any())
             {
@@ -842,6 +947,8 @@ namespace NEXUS_API.Data
                 _dbContext.SaveChanges();
             }
 
+=======
+>>>>>>> 4421f1d22bc5bc5a8a84b70be2b3c57a80600719
 
         }
     }

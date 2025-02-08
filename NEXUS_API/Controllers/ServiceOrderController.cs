@@ -128,7 +128,7 @@ namespace NEXUS_API.Controllers
                     .Select(e => new
                     {
                         EmployeeId = e.EmployeeId,
-                        FullName = e.FullName + " - " + e.EmployeeRole.RoleName + " - " + e.RetailShop.RetailShopName
+                        FullName = e.FullName + " - " + e.EmployeeRole.RoleName + " - " + e.RetailShop.RetailShopName + " - Code: " + e.EmployeeCode
                     })
                     .ToListAsync();
 
@@ -828,6 +828,9 @@ namespace NEXUS_API.Controllers
                 };
 
                 _dbContext.ConnectionDiaries.Add(connectionDiary);
+
+                serviceOrder.SurveyStatus = "Activated Connection";
+                _dbContext.ServiceOrders.Update(serviceOrder);
 
                 await _dbContext.SaveChangesAsync();
 
