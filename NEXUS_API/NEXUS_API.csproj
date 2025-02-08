@@ -21,6 +21,15 @@
 	<ItemGroup>
 	  <Folder Include="Images\customerImages\" />
 	  <Folder Include="Images\imageNews\" />
+	  <Folder Include="Images\imageEquipment\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EditorConfigFiles Remove="D:\APTECH\Term3\Project_NEXUS\code\NEXUS_BE\NEXUS_API\DTOs\.editorconfig" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="D:\APTECH\Term3\Project_NEXUS\code\NEXUS_BE\NEXUS_API\DTOs\.editorconfig" />
 	</ItemGroup>
 
 </Project>

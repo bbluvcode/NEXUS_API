@@ -8,6 +8,8 @@ using NEXUS_API.Data;
 using NEXUS_API.Helpers;
 using NEXUS_API.DTOs;
 using NEXUS_API.Service;
+using Azure;
+using Microsoft.Extensions.Configuration;
 
 namespace NEXUS_API.Controllers
 {
@@ -18,11 +20,17 @@ namespace NEXUS_API.Controllers
         private readonly DatabaseContext _dbContext;
         private readonly string subFolder = "customerImages";
         private readonly PayPalService _payPalService;
-        public CustomerController(DatabaseContext dbContext, PayPalService payPalService)
+        private readonly IConfiguration _configuration;
+        private readonly EmailService _emailService;
+        public CustomerController(DatabaseContext dbContext, PayPalService payPalService, IConfiguration configuration, EmailService emailService)
         {
             _dbContext = dbContext;
             _payPalService = payPalService;
+            _configuration = configuration;
+            _emailService = emailService;
         }
+        
+
 
         [HttpGet]
         public async Task<IActionResult> GetCustomers()
@@ -140,12 +148,12 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetCustomerByEmail(string email)
         {
             var customer = await _dbContext.Customers
-                .Include(c => c.SupportRequests)
-                .Include(c => c.CustomerRequests)
-                .Include(c => c.Accounts)
-                .Include(c => c.FeedBacks)
-                .Include(c => c.Accounts)
-                    .ThenInclude(a => a.ServiceOrders) 
+                        .Include(c => c.SupportRequests)
+                        .Include(c => c.CustomerRequests)
+                        .Include(c => c.Accounts)
+                        .Include(c => c.FeedBacks)
+                        .Include(c => c.Accounts)
+                        .ThenInclude(a => a.ServiceOrders) 
                         .ThenInclude(o => o.Connections)
                 .FirstOrDefaultAsync(c => c.Email == email);
 
@@ -541,6 +549,110 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, response);
             }
         }
+
+        [HttpPost("support-response-mail")]
+        public async Task<IActionResult> SupportResponseMail([FromBody] SupportRequestResponse SupReqRes)
+        {
+            if (SupReqRes == null || string.IsNullOrWhiteSpace(SupReqRes.ToEmail))
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid request", "Email is required"));
+            }
+
+            var supportRequest = await _dbContext.SupportRequests.FindAsync(SupReqRes.SupReqId);
+            if (supportRequest == null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Support request not found", null));
+            }
+
+            var emailRequest = new EmailRequest
+            {
+                ToMail = SupReqRes.ToEmail,
+                Subject = SupReqRes.Subject,
+                HtmlContent = $@"
+        <html>
+        <head>
+            <style>
+                .email-container {{
+                    font-family: 'Arial', sans-serif;
+                    line-height: 1.6;
+                    color: #333333;
+                    background-color: #f4f4f4;
+                    width: 50%;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 1px solid #dddddd;
+                    border-radius: 5px;
+                    text-align: center;
+                }}
+                .header {{
+                    background-color: #2c3e50;
+                    color: #ffffff;
+                    padding: 15px;
+                    font-size: 24px;
+                    font-weight: bold;
+                    border-radius: 5px 5px 0 0;
+                }}
+                .content {{
+                    padding: 15px;
+                    text-align: left;
+                    background-color: #ffffff;
+                }}
+                .content p {{
+                    font-size: 16px;
+                    color: #666666;
+                }}
+                .footer {{
+                    font-size: 14px;
+                    color: #999999;
+                    text-align: center;
+                    padding: 10px 0;
+                    background-color: #2c3e50;
+                    border-radius: 0 0 5px 5px;
+                    color: #ffffff;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class='email-container'>
+                <div class='header'>Support Response</div>
+                <div class='content'>
+                    <p>Dear {SupReqRes.CustomerName},</p>
+                    <p>Thank you for reaching out to our support team.</p>
+                    <p>{SupReqRes.ResponseContent}</p>
+                    <p>Best regards,</p>
+                    <p><strong>NEXUS Support Team</strong></p>
+                </div>
+                <div class='footer'>
+                    &copy; 2024 NEXUS Company. All rights reserved.
+                </div>
+            </div>
+        </body>
+        </html>"
+            };
+
+            try
+            {
+                // Gửi email
+                await _emailService.SendMailAsync(emailRequest);
+
+                // Cập nhật vào database
+                supportRequest.ResponseContent = SupReqRes.ResponseContent;
+                supportRequest.DateResolved = DateTime.UtcNow;
+                supportRequest.IsResolved = true;
+
+                _dbContext.SupportRequests.Update(supportRequest);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Email sent and response saved successfully", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new ApiResponse(StatusCodes.Status500InternalServerError, "Error processing request", ex.Message));
+            }
+        }
+
+
         //=====================END - SUPPORT REQUEST======================
         //================================================================
         //=====================FEED BACKS=================================
