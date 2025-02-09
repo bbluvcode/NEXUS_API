@@ -759,7 +759,7 @@ namespace NEXUS_API.Data
                 _dbContext.EquipmentTypes.AddRange(equipmentTypes);
                 _dbContext.SaveChanges();
             }
-<<<<<<< HEAD
+
             //seed stock
             if (!_dbContext.Stocks.Any())
             {
@@ -947,8 +947,7 @@ namespace NEXUS_API.Data
                 _dbContext.SaveChanges();
             }
 
-=======
->>>>>>> 4421f1d22bc5bc5a8a84b70be2b3c57a80600719
+
 
         }
     }
