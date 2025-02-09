@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NEXUS_API.Data;
+using NEXUS_API.DTOs;
 using NEXUS_API.Helpers;
 using NEXUS_API.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace NEXUS_API.Controllers
 {
@@ -12,110 +16,104 @@ namespace NEXUS_API.Controllers
     public class EquipmentController : ControllerBase
     {
         private readonly DatabaseContext _dbContext;
+
         public EquipmentController(DatabaseContext dbContext)
         {
             _dbContext = dbContext;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllEquipments()
         {
-            try
-            {
-                var equipments = await _dbContext.Equipments
-                    .Include(e=>e.Discount)
-                    .Include(e=>e.EquipmentType)
-                    .ToListAsync();
-                var response = new ApiResponse(StatusCodes.Status200OK, "Get all successfully", equipments);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null);
-                return StatusCode(500, response);
-            }
+            var equipments = await _dbContext.Equipments
+                .AsNoTracking() 
+                .Include(e => e.Discount)
+                .Include(e => e.EquipmentType)
+                .Include(e => e.Vendor)
+                .Include(e => e.Stock)
+                .ToListAsync();
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Get all successfully", equipments));
         }
+
         [HttpGet("GetByType/{type}")]
         public async Task<IActionResult> GetEquipmentsByType(int type)
         {
-            try
-            {
-                var equipments = await _dbContext.Equipments
-                    .Where(e=>e.EquipmentTypeId == type)
-                    .ToListAsync();
-                var response = new ApiResponse(StatusCodes.Status200OK, "Get Equipments By Type successfully", equipments);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                var response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null);
-                return StatusCode(500, response);
-            }
+            var equipments = await _dbContext.Equipments
+                .AsNoTracking()
+                .Where(e => e.EquipmentTypeId == type)
+                .ToListAsync();
+
+            return Ok(new ApiResponse(StatusCodes.Status200OK, "Get Equipments By Type successfully", equipments));
         }
+
         [HttpPost]
-        public async Task<IActionResult> AddEquipment([FromBody] Equipment Equipment)
+        public async Task<IActionResult> AddEquipment([FromForm] EquipmentDTO equipmentDto, IFormFile imageFile)
         {
-            object response = null;
             try
             {
-                await _dbContext.Equipments.AddAsync(Equipment);
+                var equipment = new Equipment
+                {
+                    EquipmentName = equipmentDto.EquipmentName,
+                    Price = equipmentDto.Price,
+                    StockQuantity = equipmentDto.StockQuantity,
+                    Description = equipmentDto.Description,
+                    Status = equipmentDto.Status,
+                    DiscountId = equipmentDto.DiscountId,
+                    EquipmentTypeId = equipmentDto.EquipmentTypeId,
+                    VendorId = equipmentDto.VendorId,
+                    StockId = equipmentDto.StockId,
+                    Image = imageFile != null ? await UploadFile.SaveImage("imageEquipment", imageFile) : null
+                };
+
+                await _dbContext.Equipments.AddAsync(equipment);
                 await _dbContext.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status201Created, "Equipment created successfully", Equipment);
-                return Created("success", response);
+
+                return Created("success", new ApiResponse(StatusCodes.Status201Created, "Equipment created successfully", equipment));
             }
             catch (Exception ex)
             {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null);
-                return new ObjectResult(response);
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, $"Error: {ex.Message}", null));
             }
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEquipment(int id, [FromBody] Equipment Equipment)
+        public async Task<IActionResult> UpdateEquipment(int id, [FromForm] EquipmentDTO equipmentDto, IFormFile imageFile)
         {
-            object response = null;
             try
             {
-                var equipmentExisting = await _dbContext.Equipments.FindAsync(id);
-                if (equipmentExisting == null)
+                var existingEquipment = await _dbContext.Equipments.FindAsync(id);
+                if (existingEquipment == null)
                 {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "Equipment not found", null);
-                    return NotFound(response);
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Equipment not found", null));
                 }
-                equipmentExisting.EquipmentId = id;
-                equipmentExisting.StockQuantity = Equipment.StockQuantity;
-                equipmentExisting.Price = Equipment.Price;
-                equipmentExisting.Status = Equipment.Status;
-                equipmentExisting.DiscountId = Equipment.DiscountId;
+
+                existingEquipment.EquipmentName = equipmentDto.EquipmentName;
+                existingEquipment.Price = equipmentDto.Price;
+                existingEquipment.StockQuantity = equipmentDto.StockQuantity;
+                existingEquipment.Description = equipmentDto.Description;
+                existingEquipment.Status = equipmentDto.Status;
+                existingEquipment.DiscountId = equipmentDto.DiscountId;
+                existingEquipment.EquipmentTypeId = equipmentDto.EquipmentTypeId;
+                existingEquipment.VendorId = equipmentDto.VendorId;
+                existingEquipment.StockId = equipmentDto.StockId;
+
+                // Cập nhật ảnh nếu có file mới
+                if (imageFile != null)
+                {
+                    if (!string.IsNullOrEmpty(existingEquipment.Image))
+                    {
+                        UploadFile.DeleteImage(existingEquipment.Image);
+                    }
+                    existingEquipment.Image = await UploadFile.SaveImage("imageEquipment", imageFile);
+                }
+
                 await _dbContext.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "Equipment updated successfully", equipmentExisting);
-                return Ok(response);
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Equipment updated successfully", existingEquipment));
             }
             catch (Exception ex)
             {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error", null);
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEquipment(int id)
-        {
-            object response = null;
-            try
-            {
-                var equipmentExisting = await _dbContext.Equipments.FindAsync(id);
-                if (equipmentExisting == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "Equipment not found", null);
-                    return NotFound(response);
-                }
-                _dbContext.Equipments.Remove(equipmentExisting);
-                await _dbContext.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "Equipment deleted successfully", equipmentExisting);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error", null);
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, $"Error: {ex.Message}", null));
             }
         }
     }

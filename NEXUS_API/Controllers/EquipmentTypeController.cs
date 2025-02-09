@@ -48,53 +48,6 @@ namespace NEXUS_API.Controllers
                 return new ObjectResult(response);
             }
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateType(int id,[FromBody] EquipmentType equipmentType)
-        {
-            object response = null;
-            try
-            {
-                var typeExisting = await _dbContext.EquipmentTypes.FirstOrDefaultAsync(ep => ep.EquipmentTypeId == id);
-                if (typeExisting == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "EquipmentType not found", null);
-                    return NotFound(response);
-                }
-                typeExisting.EquipmentTypeId = id;
-                typeExisting.TypeName = equipmentType.TypeName;
-                typeExisting.Provider = equipmentType.Provider;
-                await _dbContext.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "EquipmentType updated successfully", typeExisting);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error", null);
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteType(int id)
-        {
-            object response = null;
-            try
-            {
-                var typeExisting = await _dbContext.EquipmentTypes.FindAsync(id);
-                if (typeExisting == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "EquipmentType not found", null);
-                    return NotFound(response);
-                }
-                _dbContext.EquipmentTypes.Remove(typeExisting);
-                await _dbContext.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "EquipmentType deleted successfully", typeExisting);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "Internal server error", null);
-                return StatusCode(StatusCodes.Status500InternalServerError, response);
-            }
-        }
+        
     }
 }

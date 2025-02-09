@@ -758,6 +758,7 @@ namespace NEXUS_API.Data
                 _dbContext.EquipmentTypes.AddRange(equipmentTypes);
                 _dbContext.SaveChanges();
             }
+
             //seed stock
             if (!_dbContext.Stocks.Any())
             {
@@ -931,20 +932,19 @@ namespace NEXUS_API.Data
                 _dbContext.SaveChanges();
             }
             //seed outstockorderdetail
-            //if (!_dbContext.OutStockOrderDetails.Any())
-            //{
-            //    var outStockOrderDetails = new List<OutStockOrderDetail>
-            //{
-            //    new OutStockOrderDetail { OutStockId = 1, EquipmentId = 14, Quantity = 5, Price = 200.00m },
-            //    new OutStockOrderDetail { OutStockId = 1, EquipmentId = 17, Quantity = 3, Price = 150.00m },
-            //    new OutStockOrderDetail { OutStockId = 2, EquipmentId = 18, Quantity = 4, Price = 180.00m },
-            //    new OutStockOrderDetail { OutStockId = 2, EquipmentId = 21, Quantity = 2, Price = 110.00m }
-            //};
+            if (!_dbContext.OutStockOrderDetails.Any())
+            {
+                var outStockOrderDetails = new List<OutStockOrderDetail>
+            {
+                new OutStockOrderDetail { OutStockId = 1, EquipmentId = 14, Quantity = 5, Price = 200.00m },
+                new OutStockOrderDetail { OutStockId = 1, EquipmentId = 17, Quantity = 3, Price = 150.00m },
+                new OutStockOrderDetail { OutStockId = 2, EquipmentId = 18, Quantity = 4, Price = 180.00m },
+                new OutStockOrderDetail { OutStockId = 2, EquipmentId = 21, Quantity = 2, Price = 110.00m }
+            };
 
-            //    _dbContext.OutStockOrderDetails.AddRange(outStockOrderDetails);
-            //    _dbContext.SaveChanges();
-            //}
-
+                _dbContext.OutStockOrderDetails.AddRange(outStockOrderDetails);
+                _dbContext.SaveChanges();
+            }
         }
     }
 }
