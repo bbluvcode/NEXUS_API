@@ -319,7 +319,6 @@ namespace NEXUS_API.Controllers
                         </div>
                         <div class='footer'>
                             <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
-                            <p><a href='https://youtube.com'>Visit our website</a></p>
                         </div>
                     </div>
                 </body>
