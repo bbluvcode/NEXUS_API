@@ -77,17 +77,6 @@ namespace NEXUS_API.Controllers
             return Ok(new ApiResponse(200, "Updated out-stock order successfully", order));
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOutStockOrder(int id)
-        {
-            var order = await _dbContext.OutStockOrders.FindAsync(id);
-            if (order == null)
-                return NotFound(new ApiResponse(404, "Out-stock order not found", null));
-
-            _dbContext.OutStockOrders.Remove(order);
-            await _dbContext.SaveChangesAsync();
-
-            return Ok(new ApiResponse(200, "Deleted out-stock order successfully", order));
-        }
+        
     }
 }

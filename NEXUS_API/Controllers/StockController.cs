@@ -95,29 +95,6 @@ namespace NEXUS_API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStock(int id)
-        {
-            object response = null;
-            try
-            {
-                var stock = await _dbContext.Stocks.FirstOrDefaultAsync(s => s.StockId == id);
-                if (stock == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "stock not found", null);
-                    return NotFound(response);
-                }
-
-                _dbContext.Stocks.Remove(stock);
-                await _dbContext.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "delete stock successfully", stock);
-                return Ok(response);
-            }
-            catch (Exception)
-            {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error", null);
-                return StatusCode(500, response);
-            }
-        }
+      
     }
 }
