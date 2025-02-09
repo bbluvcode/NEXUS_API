@@ -10,6 +10,8 @@ using NEXUS_API.DTOs;
 using NEXUS_API.Service;
 using Azure;
 using Microsoft.Extensions.Configuration;
+using static System.Net.Mime.MediaTypeNames;
+using System.Net.Mail;
 
 namespace NEXUS_API.Controllers
 {
@@ -28,9 +30,7 @@ namespace NEXUS_API.Controllers
             _payPalService = payPalService;
             _configuration = configuration;
             _emailService = emailService;
-        }
-        
-
+        }      
 
         [HttpGet]
         public async Task<IActionResult> GetCustomers()
@@ -40,6 +40,30 @@ namespace NEXUS_API.Controllers
             return Ok(response);
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> CreateCustomer([FromForm] Customer customer)
+        //{
+        //    object response = null;
+        //    try
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            await _dbContext.Customers.AddAsync(customer);
+        //            await _dbContext.SaveChangesAsync();
+        //            response = new ApiResponse(StatusCodes.Status201Created, "create customer successfully", customer);
+        //            return Created("success", response);
+        //        }
+
+        //        response = new ApiResponse(StatusCodes.Status400BadRequest, "bad request", null);
+        //        return BadRequest(response);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error", null);
+        //        return StatusCode(500, response);
+        //    }
+        //}
+
         [HttpPost]
         public async Task<IActionResult> CreateCustomer([FromForm] Customer customer)
         {
@@ -48,8 +72,17 @@ namespace NEXUS_API.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // Tạo mật khẩu ngẫu nhiên
+                    string randomPassword = GenerateRandomPassword(8);
+
+                    customer.Password = randomPassword;
+
                     await _dbContext.Customers.AddAsync(customer);
                     await _dbContext.SaveChangesAsync();
+
+                    // Gửi mật khẩu cho khách hàng qua email
+                    await SendPasswordToCustomer(customer.Email, randomPassword);
+
                     response = new ApiResponse(StatusCodes.Status201Created, "create customer successfully", customer);
                     return Created("success", response);
                 }
@@ -63,6 +96,96 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, response);
             }
         }
+
+        private string GenerateRandomPassword(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+        private async Task SendPasswordToCustomer(string email, string password)
+        {
+            string emailBody = $@"
+                <html>
+                <head>
+                    <style>
+                        body {{
+                            font-family: Arial, sans-serif;
+                            background-color: #f4f4f4;
+                            padding: 20px;
+                        }}
+                        .container {{
+                            max-width: 600px;
+                            background-color: #ffffff;
+                            margin: auto;
+                            padding: 20px;
+                            border-radius: 10px;
+                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                        }}
+                        .header {{
+                            background-color: #0073e6;
+                            color: #ffffff;
+                            text-align: center;
+                            padding: 10px;
+                            border-radius: 10px 10px 0 0;
+                        }}
+                        .content {{
+                            padding: 20px;
+                            text-align: center;
+                            font-size: 16px;
+                            color: #333333;
+                        }}
+                        .password-box {{
+                            display: inline-block;
+                            background-color: #0073e6;
+                            color: #ffffff;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            font-size: 18px;
+                            font-weight: bold;
+                            margin: 20px 0;
+                        }}
+                        .footer {{
+                            text-align: center;
+                            font-size: 14px;
+                            color: #666666;
+                            padding-top: 10px;
+                            border-top: 1px solid #dddddd;
+                            margin-top: 20px;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='header'>
+                            <h2>NEXUS SERVICE MARKETING SYSTEM</h2>
+                        </div>
+                        <div class='content'>
+                            <p>Dear Customer,</p>
+                            <p>Welcome to <strong>NEXUS SERVICE MARKETING SYSTEM</strong>. Your account has been successfully created.</p>
+                            <p>Your temporary password is:</p>
+                            <div class='password-box'>{password}</div>
+                            <p>Please change your password after logging in.</p>
+                        </div>
+                        <div class='footer'>
+                            <p>For support, please contact <a href='mailto:mnhbgr@gmail.com'>support@nexus.com</a></p>
+                            <p>Thank you for choosing our service!</p>
+                        </div>
+                    </div>
+                </body>
+                </html>";
+
+            var emailRequest = new EmailRequest
+            {
+                ToMail = email,
+                Subject = "Welcome to NEXUS - Your Account Password",
+                HtmlContent = emailBody
+            };
+
+            await _emailService.SendMailAsync(emailRequest);
+        }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomer(int id, [FromForm] Customer customerUpdate)
@@ -684,7 +807,7 @@ namespace NEXUS_API.Controllers
         }
 
         [HttpPost("create-feedback")]
-        public async Task<IActionResult> CreateFeedback([FromForm] FeedBack feedback)
+        public async Task<IActionResult> CreateFeedback([FromBody] FeedBack feedback)
         {
             object response = null;
             try

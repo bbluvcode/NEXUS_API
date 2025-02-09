@@ -575,8 +575,10 @@ namespace NEXUS_API.Data
                         RequestTitle = "test",
                         ServiceRequest = "test",
                         EquipmentRequest = "test",
-                        DateCreate = new DateTime(2024,1,10),
+                        DateCreate = new DateTime(2024,1,10),                        
                         IsResponse = false,
+                        Deposit = 10,
+                        DepositStatus = "Paid",
                         RegionId = 1,
                         CustomerId = 1
                     },
@@ -587,6 +589,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Broadband Router Model BR123",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        Deposit = 10,
+                        DepositStatus = "Paid",
                         RegionId = 1,
                         CustomerId = 1
                     },
@@ -597,6 +601,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = "Replacement Handset Model LH456",
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        Deposit = 10,
+                        DepositStatus = "pending",
                         RegionId = 1,
                         CustomerId = 1
                     },
@@ -606,7 +612,9 @@ namespace NEXUS_API.Data
                         ServiceRequest = "Unable to connect to the internet using dial-up.",
                         EquipmentRequest = "Dial-up Modem Model DM789",
                         DateCreate = new DateTime(2024,1,10),
-                        IsResponse = true,
+                        IsResponse = false,
+                        Deposit = 10,
+                        DepositStatus = "Paid",
                         RegionId = 1,
                         CustomerId = 1
                     },
@@ -617,6 +625,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        Deposit = 10,
+                        DepositStatus = "pending",
                         RegionId = 1,
                         CustomerId = 2
                     },
@@ -626,7 +636,9 @@ namespace NEXUS_API.Data
                         ServiceRequest = "Request to install a new land-line phone.",
                         EquipmentRequest = "Land-line Phone Model LL321",
                         DateCreate = new DateTime(2024,1,10),
-                        IsResponse = true,
+                        IsResponse = false,
+                        Deposit = 10,
+                        DepositStatus = "Paid",
                         RegionId = 1,
                         CustomerId = 2,
                     },
@@ -637,6 +649,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        Deposit = 30,
+                        DepositStatus = "Paid",
                         RegionId = 1,
                         CustomerId = 2
                     },
@@ -646,7 +660,9 @@ namespace NEXUS_API.Data
                         ServiceRequest = "The broadband router is not working and needs replacement.",
                         EquipmentRequest = "New Router Model BR999",
                         DateCreate = new DateTime(2024,1,10),
-                        IsResponse = true,
+                        IsResponse = false,
+                        Deposit = 10,
+                        DepositStatus = "Paid",
                         RegionId = 1,
                         CustomerId = 3
                     },
@@ -657,6 +673,8 @@ namespace NEXUS_API.Data
                         EquipmentRequest = null,
                         DateCreate = new DateTime(2024,1,10),
                         IsResponse = false,
+                        Deposit = 60,
+                        DepositStatus = "Paid",
                         RegionId = 1,
                         CustomerId = 3
                     },
@@ -666,7 +684,9 @@ namespace NEXUS_API.Data
                         ServiceRequest = "Frequent disconnections while using dial-up internet.",
                         EquipmentRequest = "Replacement Modem Model DM111",
                         DateCreate = new DateTime(2024,1,10),
-                        IsResponse = true,
+                        IsResponse = false,
+                        Deposit = 25,
+                        DepositStatus = "Paid",
                         RegionId = 1,
                         CustomerId = 3
                     },
@@ -676,7 +696,9 @@ namespace NEXUS_API.Data
                         ServiceRequest = "test",
                         EquipmentRequest = "test",
                         DateCreate = new DateTime(2024,1,10),
-                        IsResponse = true,
+                        IsResponse = false,
+                        Deposit = 20,
+                        DepositStatus = "pending",
                         RegionId = 1,
                         CustomerId = 3
                     }
