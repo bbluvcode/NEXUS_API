@@ -8,6 +8,7 @@ using NEXUS_API.DTOs;
 using NEXUS_API.Helpers;
 using NEXUS_API.Models;
 using NEXUS_API.Service;
+using PayPalCheckoutSdk.Orders;
 using System;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -305,9 +306,97 @@ namespace NEXUS_API.Controllers
                         </html>"
                 };
 
+                //Send email to surveyor
+                var emailRequestToSurveyor = new EmailRequest
+                {
+                    ToMail = surveyor.Email,
+                    Subject = "New Survey Assignment",
+                    HtmlContent = $@"
+                        <html>
+                        <head>
+                            <style>
+                                .email-container {{
+                                    font-family: 'Arial', sans-serif;
+                                    line-height: 1.6;
+                                    color: #333333;
+                                    background-color: #f4f4f4;
+                                    width: 50%;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    border: 1px solid #dddddd;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                }}
+                                .header {{
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #2c3e50;
+                                    color: #ffffff;
+                                    padding: 15px;
+                                    border-radius: 5px 5px 0 0;
+                                }}
+                                .header img {{
+                                    width: 80px;
+                                    height: 80px;
+                                    border-radius: 50%;
+                                }}
+                                .header h2 {{
+                                    text-align: center;
+                                    font-size: 36px;
+                                    font-weight: bold;
+                                    margin-top: 5px;
+                                    margin-left: 60px;
+                                    color: #e74c3c;
+                                }}
+                                .content {{
+                                    padding: 15px;
+                                    background-color: #ffffff;
+                                    text-align: left;
+                                }}
+                                .content p {{
+                                    font-size: 16px;
+                                    color: #666666;
+                                }}
+                                .footer {{
+                                    font-size: 16px;
+                                    color: #999999;
+                                    text-align: center;
+                                    padding: 10px 0;
+                                    background-color: #2c3e50;
+                                    border-radius: 0 0 5px 5px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='email-container'>
+                                <div class='header'>
+                                    <img src='https://i.postimg.cc/sgyV5SqZ/logo-textwhite.png' alt='Company Logo'>
+                                    <h2>Service Order Confirmation</h2>
+                                </div>
+                                <div class='content'>
+                                    <p>Dear {surveyor.FullName},</p>
+                                    <p>You have been assigned to conduct a survey for the following service request:</p>
+                                    <p><strong>Service Order ID:</strong> {orderId}</p>
+                                    <p><strong>Customer Name:</strong> {customerRequest.Customer.FullName}</p>
+                                    <p><strong>Address:</strong> {customerRequest.Customer.Address}</p>
+                                    <p><strong>Phone Number:</strong> {customerRequest.Customer.PhoneNumber}</p>
+                                    <p><strong>Request Details:</strong> {customerRequest.RequestTitle} - {customerRequest.ServiceRequest}</p>
+                                    <p>Please schedule the survey as soon as possible.</p>
+                                    <p>Best regards,</p>
+                                    <p>The NEXUS team</p>
+                                </div>
+                                <div class='footer'>
+                                    <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>"
+                };
                 try
                 {
                     await _emailService.SendMailAsync(emailRequest);
+                    await _emailService.SendMailAsync(emailRequestToSurveyor);
                 }
                 catch (Exception ex)
                 {
@@ -364,6 +453,59 @@ namespace NEXUS_API.Controllers
             {
                 return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
             }
+        }
+
+        [HttpGet("get-equipment")]
+        public async Task<IActionResult> GetEquipments()
+        {
+            try
+            {
+                var equipments = await _dbContext.Equipments
+                    .Include(e => e.EquipmentType)
+                    .Select(e => new
+                    {
+                        EquipmentId = e.EquipmentId,
+                        EquipmentName = e.EquipmentName + " - " + e.EquipmentType.TypeName + " - " + e.Price
+                    }).ToListAsync();
+
+                if (!equipments.Any())
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Error", null));
+                }
+
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Get equipments successfully", equipments));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
+            }
+        }
+
+        [HttpGet("details/{orderId}")]
+        public async Task<IActionResult> GetServiceOrderDetails(string orderId)
+        {
+            var serviceOrder = await _dbContext.ServiceOrders
+                .Include(so => so.CustomerRequest)
+                    .ThenInclude(cr => cr.Customer)
+                .FirstOrDefaultAsync(so => so.OrderId == orderId);
+
+            if (serviceOrder == null)
+                return NotFound(new { message = "Service Order not found" });
+
+            var bill = await _dbContext.ServiceBills.FirstOrDefaultAsync(c => c.ServiceOrderId == orderId);
+
+            return Ok(new
+            {
+                customer = new
+                {
+                    FullName = serviceOrder.CustomerRequest.Customer.FullName,
+                    PhoneNumber = serviceOrder.CustomerRequest.Customer.PhoneNumber,
+                    InstallationAddress = serviceOrder.CustomerRequest.InstallationAddress ?? serviceOrder.CustomerRequest.Customer.Address,
+                    Deposit = serviceOrder.Deposit.HasValue ? serviceOrder.Deposit.Value : (decimal?)null, 
+                    Total = (bill != null && bill.Total.HasValue) ? bill.Total.Value : (decimal?)null,
+                    IsPay = (bill != null && bill.IsPay) ? bill.Total.Value : (decimal?)null
+                }
+            });
         }
 
         [HttpPut("update-survey/{orderId}")]
@@ -452,6 +594,25 @@ namespace NEXUS_API.Controllers
                     serviceOrder.SurveyStatus = "Installation";
                     serviceOrder.SurveyDate = DateTime.UtcNow;
                     _dbContext.ServiceOrders.Update(serviceOrder);
+
+                    //Create bill
+                    decimal tax;
+                    decimal totalAmount = CalculateBillAmount(serviceOrder, out tax);
+
+                    var serviceBill = new ServiceBill
+                    {
+                        Payer = serviceOrder.CustomerRequest.Customer.FullName,
+                        ServiceOrderId = serviceOrder.OrderId,
+                        CreateDate = DateTime.UtcNow,
+                        FromDate = DateTime.UtcNow,
+                        ToDate = DateTime.UtcNow.AddMonths(1),
+                        PayDate = null, // Chưa thanh toán
+                        Tax = tax,
+                        Total = totalAmount,
+                        IsPay = false // Chưa thanh toán
+                    };
+                    _dbContext.ServiceBills.Add(serviceBill);
+
                     await _dbContext.SaveChangesAsync();
 
                     // Send email to customer
@@ -672,6 +833,37 @@ namespace NEXUS_API.Controllers
             }
         }
 
+        private decimal CalculateBillAmount(ServiceOrder serviceOrder, out decimal tax)
+        {
+            decimal servicePrice = 0;
+            decimal securityDeposit = 0;
+
+            char orderType = serviceOrder.OrderId[0];
+
+            switch (orderType)
+            {
+                case 'D': 
+                    servicePrice = 50;
+                    securityDeposit = 325;
+                    break;
+                case 'B': 
+                    servicePrice = 225;
+                    securityDeposit = 500;
+                    break;
+                case 'T': 
+                    servicePrice = 75;
+                    securityDeposit = 250;
+                    break;
+                default:
+                    throw new Exception("Invalid service type in OrderId");
+            }
+            decimal subtotal = servicePrice  + securityDeposit;
+
+            tax = subtotal * 0.1224M;
+
+            return subtotal + tax;
+        }
+
         [HttpGet("get-technicals/{orderId}")]
         public async Task<IActionResult> GetTechnicalsByRegion(string orderId)
         {
@@ -721,17 +913,33 @@ namespace NEXUS_API.Controllers
         {
             try
             {
-                var serviceOrder = await _dbContext.ServiceOrders
-                    .FirstOrDefaultAsync(so => so.OrderId == orderId);
-
+                var serviceOrder = await _dbContext.ServiceOrders.FirstOrDefaultAsync(so => so.OrderId == orderId);
                 if (serviceOrder == null)
                 {
                     return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "ServiceOrder not found", null));
                 }
 
+                var request = await _dbContext.CustomerRequests.FirstOrDefaultAsync(c=>c.RequestId == serviceOrder.RequestId);
+                if (request == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "request not found", null));
+                }
+
+                var customer = await _dbContext.Customers.FirstOrDefaultAsync(c=>c.CustomerId == request.CustomerId);
+                if (customer == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "customer not found", null));
+                }
+
                 if (serviceOrder.SurveyStatus != "Installation")
                 {
                     return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Survey must be valid to assign technician", null));
+                }
+
+                var technician = await _dbContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == assignDto.TechnicianId);
+                if (technician == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Technician not found", null));
                 }
 
                 // Create InstallationOrder
@@ -748,6 +956,102 @@ namespace NEXUS_API.Controllers
                 _dbContext.ServiceOrders.Update(serviceOrder);
 
                 await _dbContext.SaveChangesAsync();
+
+                //Send mail to Technician
+                var emailRequestToTechnician = new EmailRequest
+                {
+                    ToMail = technician.Email,
+                    Subject = "New Survey Assignment",
+                    HtmlContent = $@"
+                        <html>
+                        <head>
+                            <style>
+                                .email-container {{
+                                    font-family: 'Arial', sans-serif;
+                                    line-height: 1.6;
+                                    color: #333333;
+                                    background-color: #f4f4f4;
+                                    width: 50%;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    border: 1px solid #dddddd;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                }}
+                                .header {{
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #2c3e50;
+                                    color: #ffffff;
+                                    padding: 15px;
+                                    border-radius: 5px 5px 0 0;
+                                }}
+                                .header img {{
+                                    width: 80px;
+                                    height: 80px;
+                                    border-radius: 50%;
+                                }}
+                                .header h2 {{
+                                    text-align: center;
+                                    font-size: 36px;
+                                    font-weight: bold;
+                                    margin-top: 5px;
+                                    margin-left: 60px;
+                                    color: #e74c3c;
+                                }}
+                                .content {{
+                                    padding: 15px;
+                                    background-color: #ffffff;
+                                    text-align: left;
+                                }}
+                                .content p {{
+                                    font-size: 16px;
+                                    color: #666666;
+                                }}
+                                .footer {{
+                                    font-size: 16px;
+                                    color: #999999;
+                                    text-align: center;
+                                    padding: 10px 0;
+                                    background-color: #2c3e50;
+                                    border-radius: 0 0 5px 5px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='email-container'>
+                                <div class='header'>
+                                    <img src='https://i.postimg.cc/sgyV5SqZ/logo-textwhite.png' alt='Company Logo'>
+                                    <h2>New Installation Assignment</h2>
+                                </div>
+                                <div class='content'>
+                                    <p>Dear {technician.FullName},</p>
+                                    <p>You have been assigned a new installation task:</p>
+                                    <p><strong>Service Order ID:</strong> {serviceOrder.OrderId}</p>
+                                    <p><strong>Customer Name:</strong> {customer.FullName}</p>
+                                    <p><strong>Address:</strong> {customer.Address}</p>
+                                    <p><strong>Phone Number:</strong> {customer.PhoneNumber}</p>
+                                    <p><strong>Service Type:</strong> {request.ServiceRequest}</p>
+                                    <p>Please proceed with the installation as scheduled.</p>
+                                    <p>Best regards,</p>
+                                    <p>The NEXUS team</p>
+                                </div>
+                                <div class='footer'>
+                                    <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>"
+                };
+                try
+                {
+                    await _emailService.SendMailAsync(emailRequestToTechnician);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(StatusCodes.Status500InternalServerError, "Error sending email: " + ex.Message, null));
+                }
 
                 return Ok(new ApiResponse(StatusCodes.Status200OK, "Technician assigned successfully", installationOrder));
             }
@@ -777,13 +1081,134 @@ namespace NEXUS_API.Controllers
                 _dbContext.InstallationOrders.Update(installationOrder);
 
                 var serviceOrder = installationOrder.ServiceOrder;
+
+                if (serviceOrder == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "serviceOrder not found", null));
+                }
+
                 if (serviceOrder != null)
                 {
                     serviceOrder.SurveyStatus = "Installation Completed";
                     _dbContext.ServiceOrders.Update(serviceOrder);
+
+                    var serviceBill = await _dbContext.ServiceBills
+                            .FirstOrDefaultAsync(sb => sb.ServiceOrderId == serviceOrder.OrderId);
+
+                    if (serviceBill != null && !serviceBill.IsPay)
+                    {
+                        serviceBill.IsPay = true;
+                        serviceBill.PayDate = DateTime.UtcNow;
+                        _dbContext.ServiceBills.Update(serviceBill);
+                    }
                 }
 
                 await _dbContext.SaveChangesAsync();
+
+                var request = await _dbContext.CustomerRequests.FirstOrDefaultAsync(c => c.RequestId == serviceOrder.RequestId);
+                if (request == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "request not found", null));
+                }
+
+                var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == request.CustomerId);
+                if (customer == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "customer not found", null));
+                }
+
+                // Send email to customer
+                var emailRequest = new EmailRequest
+                {
+                    ToMail = customer.Email,
+                    Subject = "Installation Completed & Payment Confirmed",
+                    HtmlContent = $@"
+                        <html>
+                        <head>
+                            <style>
+                                .email-container {{
+                                    font-family: 'Arial', sans-serif;
+                                    line-height: 1.6;
+                                    color: #333333;
+                                    background-color: #f4f4f4;
+                                    width: 50%;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    border: 1px solid #dddddd;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                }}
+                                .header {{
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #2c3e50;
+                                    color: #ffffff;
+                                    padding: 15px;
+                                    border-radius: 5px 5px 0 0;
+                                }}
+                                .header img {{
+                                    width: 80px;
+                                    height: 80px;
+                                    border-radius: 50%;
+                                }}
+                                .header h2 {{
+                                    text-align: center;
+                                    font-size: 36px;
+                                    font-weight: bold;
+                                    margin-top: 5px;
+                                    margin-left: 60px;
+                                    color: #e74c3c;
+                                }}
+                                .content {{
+                                    padding: 15px;
+                                    background-color: #ffffff;
+                                    text-align: left;
+                                }}
+                                .content p {{
+                                    font-size: 16px;
+                                    color: #666666;
+                                }}
+                                .footer {{
+                                    font-size: 16px;
+                                    color: #999999;
+                                    text-align: center;
+                                    padding: 10px 0;
+                                    background-color: #2c3e50;
+                                    border-radius: 0 0 5px 5px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='email-container'>
+                                <div class='header'>
+                                    <img src='https://i.postimg.cc/sgyV5SqZ/logo-textwhite.png' alt='Company Logo'>
+                                    <h2>Service Order Confirmation</h2>
+                                </div>
+                                <div class='content'>
+                                    <p>Dear {customer.FullName},</p>
+                                    <p>Thank you for choosing us as your dedicated provider.</p>
+                                    <p>Your installation for service order <strong>{serviceOrder.OrderId}</strong> has been successfully completed.</p>
+                                    <p>The installation was completed on: <strong>{installationOrder.DateCompleted}</strong>.</p>
+                                    <p>Best regards,</p>
+                                    <p>The NEXUS team</p>
+                                </div>
+                                <div class='footer'>
+                                    <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>"
+                };
+
+                try
+                {
+                    await _emailService.SendMailAsync(emailRequest);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(StatusCodes.Status500InternalServerError, "Error sending email: " + ex.Message, null));
+                }
 
                 return Ok(new ApiResponse(StatusCodes.Status200OK, "Installation completed successfully", installationOrder));
             }
@@ -834,6 +1259,110 @@ namespace NEXUS_API.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
+                //Send mail to customer
+                var request = await _dbContext.CustomerRequests.FirstOrDefaultAsync(c => c.RequestId == serviceOrder.RequestId);
+                if (request == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "request not found", null));
+                }
+
+                var customer = await _dbContext.Customers.FirstOrDefaultAsync(c => c.CustomerId == request.CustomerId);
+                if (customer == null)
+                {
+                    return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "customer not found", null));
+                }
+
+                var emailRequest = new EmailRequest
+                {
+                    ToMail = customer.Email,
+                    Subject = "Your Connection is Now Active",
+                    HtmlContent = $@"
+                        <html>
+                        <head>
+                            <style>
+                                .email-container {{
+                                    font-family: 'Arial', sans-serif;
+                                    line-height: 1.6;
+                                    color: #333333;
+                                    background-color: #f4f4f4;
+                                    width: 50%;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    border: 1px solid #dddddd;
+                                    border-radius: 5px;
+                                    text-align: center;
+                                }}
+                                .header {{
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    background-color: #2c3e50;
+                                    color: #ffffff;
+                                    padding: 15px;
+                                    border-radius: 5px 5px 0 0;
+                                }}
+                                .header img {{
+                                    width: 80px;
+                                    height: 80px;
+                                    border-radius: 50%;
+                                }}
+                                .header h2 {{
+                                    text-align: center;
+                                    font-size: 36px;
+                                    font-weight: bold;
+                                    margin-top: 5px;
+                                    margin-left: 60px;
+                                    color: #e74c3c;
+                                }}
+                                .content {{
+                                    padding: 15px;
+                                    background-color: #ffffff;
+                                    text-align: left;
+                                }}
+                                .content p {{
+                                    font-size: 16px;
+                                    color: #666666;
+                                }}
+                                .footer {{
+                                    font-size: 16px;
+                                    color: #999999;
+                                    text-align: center;
+                                    padding: 10px 0;
+                                    background-color: #2c3e50;
+                                    border-radius: 0 0 5px 5px;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='email-container'>
+                                <div class='header'>
+                                    <img src='https://i.postimg.cc/sgyV5SqZ/logo-textwhite.png' alt='Company Logo'>
+                                    <h2>Service Order Confirmation</h2>
+                                </div>
+                                <div class='content'>
+                                    <p>Dear {customer.FullName},</p>
+                                    <p>Thank you for choosing us as your dedicated provider.</p>
+                                    <p>We are pleased to inform you that your connection for service order <strong>{serviceOrder.OrderId}</strong> has been successfully activated.</p>
+                                    <p>You can now start using our service. If you have any issues, feel free to contact our support team.</p>
+                                    <p>Best regards,</p>
+                                    <p>The NEXUS team</p>
+                                </div>
+                                <div class='footer'>
+                                    <p>&copy; 2024 NEXUS Company. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </body>
+                        </html>"
+                };
+
+                try
+                {
+                    await _emailService.SendMailAsync(emailRequest);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse(StatusCodes.Status500InternalServerError, "Error sending email: " + ex.Message, null));
+                }
                 return Ok(new ApiResponse(StatusCodes.Status200OK, "Connection activated successfully", connection));
             }
             catch (Exception ex)

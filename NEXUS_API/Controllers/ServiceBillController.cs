@@ -214,6 +214,5 @@ namespace NEXUS_API.Controllers
                 return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, "Internal Server Error", null));
             }
         }
-
     }
 }
