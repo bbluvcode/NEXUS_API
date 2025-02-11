@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 using System.Threading.Tasks;
 using NEXUS_API.Models;
 using NEXUS_API.Data;
@@ -23,60 +21,64 @@ namespace NEXUS_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetStocks()
         {
-            var stocks = await _dbContext.Stocks
-                .Include(s => s.Region)
-                .Include(s => s.Equipments)
-                .Include(s => s.InStockOrders)
-                .Include(s => s.OutStockOrders)
-                .ToListAsync();
+            try
+            {
+                var stocks = await _dbContext.Stocks
+                    .AsNoTracking()
+                    .Include(s => s.Region)
+                    .Include(s => s.Equipments)
+                    .Include(s => s.InStockOrders)
+                    .Include(s => s.OutStockOrders)
+                    .ToListAsync();
 
-            var response = new ApiResponse(StatusCodes.Status200OK, "get stocks successfully", stocks);
-            return Ok(response);
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Get stocks successfully", stocks));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, $"Server error: {ex.Message}", null));
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateStock([FromBody] Stock stock)
         {
-            object response = null;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null));
+            }
+
             try
             {
-                if (ModelState.IsValid)
-                {
-                    await _dbContext.Stocks.AddAsync(stock);
-                    await _dbContext.SaveChangesAsync();
-                    response = new ApiResponse(StatusCodes.Status201Created, "create stock successfully", stock);
-                    return Created("success", response);
-                }
-
-                response = new ApiResponse(StatusCodes.Status400BadRequest, "bad request", null);
-                return BadRequest(response);
+                await _dbContext.Stocks.AddAsync(stock);
+                await _dbContext.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetStocks), new { id = stock.StockId }, new ApiResponse(StatusCodes.Status201Created, "Stock created successfully", stock));
             }
-            catch (Exception)
+            catch (DbUpdateException ex)
             {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error", null);
-                return StatusCode(500, response);
+                return Conflict(new ApiResponse(StatusCodes.Status409Conflict, $"Database error: {ex.Message}", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, $"Server error: {ex.Message}", null));
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] Stock stockUpdate)
         {
-            object response = null;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, "Invalid data", null));
+            }
+
+            var stock = await _dbContext.Stocks.FindAsync(id);
+            if (stock == null)
+            {
+                return NotFound(new ApiResponse(StatusCodes.Status404NotFound, "Stock not found", null));
+            }
+
             try
             {
-                var stock = await _dbContext.Stocks.FirstOrDefaultAsync(s => s.StockId == id);
-                if (stock == null)
-                {
-                    response = new ApiResponse(StatusCodes.Status404NotFound, "stock not found", null);
-                    return NotFound(response);
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    response = new ApiResponse(StatusCodes.Status400BadRequest, "bad request", null);
-                    return BadRequest(response);
-                }
-
                 stock.StockName = stockUpdate.StockName;
                 stock.Address = stockUpdate.Address;
                 stock.Email = stockUpdate.Email;
@@ -85,16 +87,16 @@ namespace NEXUS_API.Controllers
                 stock.RegionId = stockUpdate.RegionId;
 
                 await _dbContext.SaveChangesAsync();
-                response = new ApiResponse(StatusCodes.Status200OK, "update stock successfully", stock);
-                return Ok(response);
+                return Ok(new ApiResponse(StatusCodes.Status200OK, "Stock updated successfully", stock));
             }
-            catch (Exception)
+            catch (DbUpdateException ex)
             {
-                response = new ApiResponse(StatusCodes.Status500InternalServerError, "server error", null);
-                return StatusCode(500, response);
+                return Conflict(new ApiResponse(StatusCodes.Status409Conflict, $"Database update error: {ex.Message}", null));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse(StatusCodes.Status500InternalServerError, $"Server error: {ex.Message}", null));
             }
         }
-
-      
     }
 }

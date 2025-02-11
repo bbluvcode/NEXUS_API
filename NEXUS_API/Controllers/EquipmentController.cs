@@ -26,7 +26,7 @@ namespace NEXUS_API.Controllers
         public async Task<IActionResult> GetAllEquipments()
         {
             var equipments = await _dbContext.Equipments
-                .AsNoTracking() 
+                .AsNoTracking()  
                 .Include(e => e.Discount)
                 .Include(e => e.EquipmentType)
                 .Include(e => e.Vendor)
