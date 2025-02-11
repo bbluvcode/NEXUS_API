@@ -21,6 +21,7 @@ namespace NEXUS_API.Models
         public DateTime? DateResolved { get; set; }
         public bool IsResolved { get; set; } = false;
         public string? ResponseContent { get; set; }
+        public string? CustomerName { get; set; }
 
         //Relationship
         [Required]

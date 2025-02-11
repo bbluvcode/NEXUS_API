@@ -480,26 +480,7 @@ namespace NEXUS_API.Data
             if (!_dbContext.Customers.Any())
             {
                 _dbContext.Customers.AddRange(
-                    new Customer
-                    {
-                        FullName = "test",
-                        Gender = "Male",
-                        DateOfBirth = new DateTime(1990, 5, 20),
-                        Address = "test",
-                        Email = "test@gmail.com",
-                        PhoneNumber = "09012345675",
-                        IdentificationNo = "123456789",
-                        Image = "test",
-                        Password = "password123",
-                        RefreshToken = null,
-                        RefreshTokenExpried = null,
-                        FailedLoginAttempts = 0,
-                        ExpiredBan = null,
-                        Code = null,
-                        ExpiredCode = null,
-                        SendCodeAttempts = 0,
-                        LastSendCodeDate = null
-                    },
+
                     new Customer
                     {
                         FullName = "Nguyen Van A",
@@ -560,8 +541,8 @@ namespace NEXUS_API.Data
                         SendCodeAttempts = 0,
                         LastSendCodeDate = null
                     }
-                );
-
+                    
+                );            
                 _dbContext.SaveChanges();
             }
 
@@ -569,19 +550,7 @@ namespace NEXUS_API.Data
             if (!_dbContext.CustomerRequests.Any())
             {
                 var customerRequests = new List<CustomerRequest>
-                {
-                    new CustomerRequest
-                    {
-                        RequestTitle = "test",
-                        ServiceRequest = "test",
-                        EquipmentRequest = "test",
-                        DateCreate = new DateTime(2024,1,10),                        
-                        IsResponse = false,
-                        Deposit = 10,
-                        DepositStatus = "Paid",
-                        RegionId = 1,
-                        CustomerId = 1
-                    },
+                {                   
                     new CustomerRequest
                     {
                         RequestTitle = "Broadband Installation",
@@ -690,18 +659,7 @@ namespace NEXUS_API.Data
                         RegionId = 1,
                         CustomerId = 3
                     },
-                    new CustomerRequest
-                    {
-                        RequestTitle = "test",
-                        ServiceRequest = "test",
-                        EquipmentRequest = "test",
-                        DateCreate = new DateTime(2024,1,10),
-                        IsResponse = false,
-                        Deposit = 20,
-                        DepositStatus = "pending",
-                        RegionId = 1,
-                        CustomerId = 3
-                    }
+                    
                 };
 
                 _dbContext.CustomerRequests.AddRange(customerRequests);
@@ -713,16 +671,7 @@ namespace NEXUS_API.Data
             {
                 var supportRequests = new List<SupportRequest>
             {
-                new SupportRequest
-                {
-                    DateRequest = new DateTime(2024, 1, 5),
-                    Title = "test",
-                    DetailContent = "test",
-                    DateResolved = null,
-                    IsResolved = false,
-                    Email = "bbluvcode@gmail.com", // Replace with valid Email
-                    EmpIdResolver = null // No resolver yet
-                },
+                
                 new SupportRequest
                 {
                     DateRequest = new DateTime(2024, 1, 5),
@@ -731,7 +680,8 @@ namespace NEXUS_API.Data
                     DateResolved = null,
                     IsResolved = false,
                     Email = "bbluvcode@gmail.com", // Replace with valid Email
-                    EmpIdResolver = null // No resolver yet
+                    EmpIdResolver = null,
+                    CustomerName = "Binh Vo" // No resolver yet
                 },
                 new SupportRequest
                 {
@@ -740,8 +690,9 @@ namespace NEXUS_API.Data
                     DetailContent = "Land-line phone is not working properly; there is a lot of static noise.",
                     DateResolved = new DateTime(2024, 1, 12),
                     IsResolved = true,
-                    Email = "bbluvcode@gmail.com", // Replace with valid Email
-                    EmpIdResolver = 1 // EmployeeId of resolver
+                    Email = "nvnhat.12b1.pdl@gmail.com", // Replace with valid Email
+                    EmpIdResolver = 1, // EmployeeId of resolver
+                    CustomerName = "Nhat Nguyen"
                 },
                 new SupportRequest
                 {
@@ -750,8 +701,9 @@ namespace NEXUS_API.Data
                     DetailContent = "Need assistance in configuring the dial-up connection for better speed.",
                     DateResolved = null,
                     IsResolved = false,
-                    Email = "bbluvcode@gmail.com", // Replace with valid Email
-                    EmpIdResolver = null // No resolver yet
+                    Email = "buitamman1231@gmail.com", // Replace with valid Email
+                    EmpIdResolver = null, // No resolver yet
+                    CustomerName = "Man Bui"
                 },
             };
                 _dbContext.SupportRequests.AddRange(supportRequests);
