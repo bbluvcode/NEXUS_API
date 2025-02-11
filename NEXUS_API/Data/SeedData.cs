@@ -799,6 +799,36 @@ namespace NEXUS_API.Data
             if (!_dbContext.Equipments.Any())
             {
                 var equipments = new List<Equipment>
+<<<<<<< HEAD
+               {
+                    new Equipment {
+                        EquipmentName = "U.S. Robotics 56K USB Modem", Price = 49.99M, StockQuantity = 100, Description = "Modem Dial-Up tốc độ 56Kbps", Status = true, EquipmentTypeId = 1, VendorId = 1, StockId = 2,
+                        Image = "/Image/imageEquipment/equip1.jpg"
+                    },
+                   new Equipment { 
+                        EquipmentName = "Zoom 3095 V.92 USB Modem", Price = 39.99M, StockQuantity = 80, Description = "Modem Dial-Up hỗ trợ V.92", Status = true, EquipmentTypeId = 2, VendorId = 2, StockId = 2,
+                       Image = "/Image/imageEquipment/equip2.jpg"
+                   },
+                    new Equipment { 
+                       EquipmentName = "Trendnet TFM-561U", Price = 29.99M, StockQuantity = 120, Description = "Modem Dial-Up USB cho Windows/Mac", Status = true, EquipmentTypeId = 3, VendorId = 3, StockId = 2 ,
+                       Image = "/Image/imageEquipment/equip3.jpg"
+                    },
+                    new Equipment {
+                        EquipmentName = "TP-Link TD-W8961N", Price = 59.99M, StockQuantity = 50, Description = "Modem ADSL2+ tích hợp Wi-Fi", Status = true, EquipmentTypeId = 4, VendorId = 4, StockId = 2 ,
+                        Image = "/Image/imageEquipment/equip4.jpg"
+                   },
+                    new Equipment { EquipmentName = "D-Link DSL-2750U", Price = 54.99M, StockQuantity = 70, Description = "Modem ADSL2+ tốc độ cao", Status = true, EquipmentTypeId = 5, VendorId = 5, StockId = 2 ,
+                        Image = "/Image/imageEquipment/equip5.jpg"
+                    },
+                    new Equipment { EquipmentName = "Zyxel P-600 Series", Price = 45.99M, StockQuantity = 90, Description = "Modem ADSL tiêu chuẩn", Status = true, EquipmentTypeId = 6, VendorId = 1, StockId = 2 ,
+                        Image = "/Image/imageEquipment/equip6.jpg"
+                    },
+                    new Equipment { EquipmentName = "ARRIS SURFboard SB8200", Price = 129.99M, StockQuantity = 40, Description = "Modem Cable DOCSIS 3.1", Status = true, EquipmentTypeId = 7, VendorId = 1, StockId = 3 ,
+                        Image = "/Image/imageEquipment/equip7.jpg"
+                    },
+                    new Equipment { EquipmentName = "Netgear CM500", Price = 89.99M, StockQuantity = 60, Description = "Modem Cable DOCSIS 3.0 tốc độ cao", Status = true, EquipmentTypeId = 8, VendorId = 2, StockId = 3 ,
+                       Image = "/Image/imageEquipment/equip8.jpg"
+=======
                 {
                     new Equipment {
                         EquipmentName = "U.S. Robotics 56K USB Modem", Price = 49.99M, StockQuantity = 100, Description = "Modem Dial-Up tốc độ 56Kbps", Status = true, EquipmentTypeId = 2, VendorId = 1, StockId = 2,
@@ -827,6 +857,7 @@ namespace NEXUS_API.Data
                     },
                     new Equipment { EquipmentName = "Netgear CM500", Price = 89.99M, StockQuantity = 60, Description = "Modem Cable DOCSIS 3.0 tốc độ cao", Status = true, EquipmentTypeId = 5, VendorId = 2, StockId = 3 ,
                         Image = "/Image/imageEquipment/equip8.jpg"
+>>>>>>> 8627099bfd67fff6a30c5b4f3eb1ff0cc652ee92
                     },
                 };
 
@@ -857,19 +888,19 @@ namespace NEXUS_API.Data
                 _dbContext.SaveChanges();
             }
             //seed instockrequestdetail
-            //if (!_dbContext.InStockRequestDetails.Any())
-            //{
-            //    var inStockRequestDetails = new List<InStockRequestDetail>
-            //{
-            //    new InStockRequestDetail { InStockRequestId = 1, EquipmentId = 14, Quantity = 5 },
-            //    new InStockRequestDetail { InStockRequestId = 1, EquipmentId = 15, Quantity = 3 },
-            //    new InStockRequestDetail { InStockRequestId = 2, EquipmentId = 16, Quantity = 4 },
-            //    new InStockRequestDetail { InStockRequestId = 2, EquipmentId = 17, Quantity = 2 }
-            //};
+            if (!_dbContext.InStockRequestDetails.Any())
+            {
+                var inStockRequestDetails = new List<InStockRequestDetail>
+            {
+                new InStockRequestDetail { InStockRequestId = 1, EquipmentId = 1, Quantity = 5 },
+                new InStockRequestDetail { InStockRequestId = 1, EquipmentId = 2, Quantity = 3 },
+                new InStockRequestDetail { InStockRequestId = 2, EquipmentId = 3, Quantity = 4 },
+                new InStockRequestDetail { InStockRequestId = 2, EquipmentId = 4, Quantity = 2 }
+            };
 
-            //    _dbContext.InStockRequestDetails.AddRange(inStockRequestDetails);
-            //    _dbContext.SaveChanges();
-            //}
+                _dbContext.InStockRequestDetails.AddRange(inStockRequestDetails);
+                _dbContext.SaveChanges();
+            }
             //seed Instockorder
             if (!_dbContext.InStockOrders.Any())
             {
@@ -910,19 +941,19 @@ namespace NEXUS_API.Data
             }
             //seed Instockorderdetail
 
-            //if (!_dbContext.InStockOrderDetails.Any())
-            //{
-            //    var inStockOrderDetails = new List<InStockOrderDetail>
-            //{
-            //    new InStockOrderDetail {  InStockOrderId = 2, EquipmentId = 14, Quantity = 5, Price = 200.00m },
-            //    new InStockOrderDetail {  InStockOrderId = 2, EquipmentId = 15, Quantity = 3, Price = 150.00m },
-            //    new InStockOrderDetail {  InStockOrderId = 3, EquipmentId = 16, Quantity = 4, Price = 180.00m },
-            //    new InStockOrderDetail {  InStockOrderId = 3, EquipmentId = 17, Quantity = 2, Price = 110.00m }
-            //};
+            if (!_dbContext.InStockOrderDetails.Any())
+            {
+                var inStockOrderDetails = new List<InStockOrderDetail>
+            {
+                new InStockOrderDetail {  InStockOrderId = 1, EquipmentId = 1, Quantity = 5, Price = 200.00m },
+                new InStockOrderDetail {  InStockOrderId = 1, EquipmentId = 2, Quantity = 3, Price = 150.00m },
+                new InStockOrderDetail {  InStockOrderId = 2, EquipmentId = 3, Quantity = 4, Price = 180.00m },
+                new InStockOrderDetail {  InStockOrderId = 2, EquipmentId = 4, Quantity = 2, Price = 110.00m }
+            };
 
-            //    _dbContext.InStockOrderDetails.AddRange(inStockOrderDetails);
-            //    _dbContext.SaveChanges();
-            //}
+                _dbContext.InStockOrderDetails.AddRange(inStockOrderDetails);
+                _dbContext.SaveChanges();
+            }
             //seed Outstockorder
             if (!_dbContext.OutStockOrders.Any())
             {
@@ -958,7 +989,11 @@ namespace NEXUS_API.Data
             {
                 var outStockOrderDetails = new List<OutStockOrderDetail>
             {
+<<<<<<< HEAD
+                new OutStockOrderDetail { OutStockId = 1, EquipmentId = 1, Quantity = 5, Price = 200.00m },
+=======
                 new OutStockOrderDetail { OutStockId = 1, EquipmentId = 2, Quantity = 5, Price = 200.00m },
+>>>>>>> 8627099bfd67fff6a30c5b4f3eb1ff0cc652ee92
                 new OutStockOrderDetail { OutStockId = 1, EquipmentId = 2, Quantity = 3, Price = 150.00m },
                 new OutStockOrderDetail { OutStockId = 2, EquipmentId = 3, Quantity = 4, Price = 180.00m },
                 new OutStockOrderDetail { OutStockId = 2, EquipmentId = 4, Quantity = 2, Price = 110.00m }
