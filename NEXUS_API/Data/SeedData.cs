@@ -754,31 +754,31 @@ namespace NEXUS_API.Data
                {
                     new Equipment {
                         EquipmentName = "U.S. Robotics 56K USB Modem", Price = 49.99M, StockQuantity = 100, Description = "Modem Dial-Up tốc độ 56Kbps", Status = true, EquipmentTypeId = 1, VendorId = 1, StockId = 2,
-                        Image = "/Image/imageEquipment/equip1.jpg"
+                        Image = "/Images/imageEquipment/equip1.jpg"
                     },
                    new Equipment { 
                         EquipmentName = "Zoom 3095 V.92 USB Modem", Price = 39.99M, StockQuantity = 80, Description = "Modem Dial-Up hỗ trợ V.92", Status = true, EquipmentTypeId = 2, VendorId = 2, StockId = 2,
-                       Image = "/Image/imageEquipment/equip2.jpg"
+                       Image = "/Images/imageEquipment/equip2.jpg"
                    },
                     new Equipment { 
                        EquipmentName = "Trendnet TFM-561U", Price = 29.99M, StockQuantity = 120, Description = "Modem Dial-Up USB cho Windows/Mac", Status = true, EquipmentTypeId = 3, VendorId = 3, StockId = 2 ,
-                       Image = "/Image/imageEquipment/equip3.jpg"
+                       Image = "/Images/imageEquipment/equip3.jpg"
                     },
                     new Equipment {
                         EquipmentName = "TP-Link TD-W8961N", Price = 59.99M, StockQuantity = 50, Description = "Modem ADSL2+ tích hợp Wi-Fi", Status = true, EquipmentTypeId = 4, VendorId = 4, StockId = 2 ,
-                        Image = "/Image/imageEquipment/equip4.jpg"
+                        Image = "/Images/imageEquipment/equip4.jpg"
                    },
                     new Equipment { EquipmentName = "D-Link DSL-2750U", Price = 54.99M, StockQuantity = 70, Description = "Modem ADSL2+ tốc độ cao", Status = true, EquipmentTypeId = 5, VendorId = 5, StockId = 2 ,
-                        Image = "/Image/imageEquipment/equip5.jpg"
+                        Image = "/Images/imageEquipment/equip5.jpg"
                     },
                     new Equipment { EquipmentName = "Zyxel P-600 Series", Price = 45.99M, StockQuantity = 90, Description = "Modem ADSL tiêu chuẩn", Status = true, EquipmentTypeId = 6, VendorId = 1, StockId = 2 ,
-                        Image = "/Image/imageEquipment/equip6.jpg"
+                        Image = "/Images/imageEquipment/equip6.jpg"
                     },
                     new Equipment { EquipmentName = "ARRIS SURFboard SB8200", Price = 129.99M, StockQuantity = 40, Description = "Modem Cable DOCSIS 3.1", Status = true, EquipmentTypeId = 7, VendorId = 1, StockId = 3 ,
-                        Image = "/Image/imageEquipment/equip7.jpg"
+                        Image = "/Images/imageEquipment/equip7.jpg"
                     },
                     new Equipment { EquipmentName = "Netgear CM500", Price = 89.99M, StockQuantity = 60, Description = "Modem Cable DOCSIS 3.0 tốc độ cao", Status = true, EquipmentTypeId = 8, VendorId = 2, StockId = 3 ,
-                       Image = "/Image/imageEquipment/equip8.jpg"
+                       Image = "/Images/imageEquipment/equip8.jpg"
                     },
                 };
 
