@@ -52,6 +52,15 @@ namespace NEXUS_API.Controllers
         {
             try
             {
+                var imagePath = imageFile != null ? await UploadFile.SaveImage("imageEquipment", imageFile) : null;
+
+                // Chỉ lưu đường dẫn tương đối (không bao gồm http://localhost:5185)
+                if (!string.IsNullOrEmpty(imagePath))
+                {
+                    // Lưu đường dẫn từ thư mục "uploads"
+                    imagePath = imagePath.Replace("wwwroot/", "");
+                }
+
                 var equipment = new Equipment
                 {
                     EquipmentName = equipmentDto.EquipmentName,
@@ -62,7 +71,7 @@ namespace NEXUS_API.Controllers
                     EquipmentTypeId = equipmentDto.EquipmentTypeId,
                     VendorId = equipmentDto.VendorId,
                     StockId = equipmentDto.StockId,
-                    Image = imageFile != null ? await UploadFile.SaveImage("imageEquipment", imageFile) : null
+                    Image = imagePath // Chỉ lưu đường dẫn tương đối
                 };
 
                 await _dbContext.Equipments.AddAsync(equipment);
@@ -75,6 +84,7 @@ namespace NEXUS_API.Controllers
                 return BadRequest(new ApiResponse(StatusCodes.Status400BadRequest, $"Error: {ex.Message}", null));
             }
         }
+
 
 
         [HttpPut("{id}")]

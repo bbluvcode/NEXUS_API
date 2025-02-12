@@ -27,7 +27,7 @@ namespace NEXUS_API.Helpers
             {
                 await formFile.CopyToAsync(fileStream);
             }
-            return "/" + Path.Combine(baseFolder, subFolder, imageName).Replace("\\", "/");
+            return rootUrl + Path.Combine(baseFolder, subFolder, imageName).Replace("\\", "/");
         }
 
         public static void DeleteImage(string urlImage)

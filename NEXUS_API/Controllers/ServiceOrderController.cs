@@ -165,12 +165,14 @@ namespace NEXUS_API.Controllers
                 string orderPrefix = (customerRequest.ServiceRequest + " " + customerRequest.RequestTitle).ToLower() switch
                 {
                     var s when s.Contains("Dial-up", StringComparison.OrdinalIgnoreCase)
-                          || s.Contains("Dialup", StringComparison.OrdinalIgnoreCase) => "D",
+                          || s.Contains("Dialup", StringComparison.OrdinalIgnoreCase)
+                          || s.Contains("Dial", StringComparison.OrdinalIgnoreCase) => "D",
                     var s when s.Contains("Telephone", StringComparison.OrdinalIgnoreCase)
                           || s.Contains("Land-line", StringComparison.OrdinalIgnoreCase)
-                          || s.Contains("Landline", StringComparison.OrdinalIgnoreCase) => "T",
+                          || s.Contains("Land", StringComparison.OrdinalIgnoreCase) => "T",
                     var s when s.Contains("Broadband", StringComparison.OrdinalIgnoreCase)
-                          || s.Contains("Broad-band", StringComparison.OrdinalIgnoreCase) => "B",
+                          || s.Contains("Broad-band", StringComparison.OrdinalIgnoreCase)
+                          || s.Contains("Broad", StringComparison.OrdinalIgnoreCase) => "B",
                     _ => throw new Exception("Invalid connection type in RequestTitle or ServiceRequest")
                 };
 
