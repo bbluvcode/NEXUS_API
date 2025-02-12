@@ -59,7 +59,6 @@ namespace NEXUS_API.Controllers
                     StockQuantity = equipmentDto.StockQuantity,
                     Description = equipmentDto.Description,
                     Status = equipmentDto.Status,
-                    DiscountId = equipmentDto.DiscountId,
                     EquipmentTypeId = equipmentDto.EquipmentTypeId,
                     VendorId = equipmentDto.VendorId,
                     StockId = equipmentDto.StockId,
@@ -77,6 +76,7 @@ namespace NEXUS_API.Controllers
             }
         }
 
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEquipment(int id, [FromForm] EquipmentDTO equipmentDto, IFormFile imageFile)
         {
@@ -93,7 +93,7 @@ namespace NEXUS_API.Controllers
                 existingEquipment.StockQuantity = equipmentDto.StockQuantity;
                 existingEquipment.Description = equipmentDto.Description;
                 existingEquipment.Status = equipmentDto.Status;
-                existingEquipment.DiscountId = equipmentDto.DiscountId;
+                //existingEquipment.DiscountId = equipmentDto.DiscountId;
                 existingEquipment.EquipmentTypeId = equipmentDto.EquipmentTypeId;
                 existingEquipment.VendorId = equipmentDto.VendorId;
                 existingEquipment.StockId = equipmentDto.StockId;
